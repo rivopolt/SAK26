@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>SAK26</title>
+
+<!-- Leaflet core -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Leaflet plugins -->
+<script src="https://unpkg.com/@mapbox/togeojson@0.16.0/togeojson.js"></script>
+<script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shpjs/6.2.0/shp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- LEFT PANEL: layer control -->
+  <aside id="layerPanel" class="collapsed">
+    <div class="panelHeader">
+      <button id="panelToggleBtn" title="Peida/näita paneel">☰</button>
+      <h1>Kihid</h1>
+      <button id="appInfoBtn" class="infoIconBtn" title="Rakenduse info">ⓘ</button>
+    </div>
+
+    <div class="panelBody">
+
+      <!-- SEARCH / LOCATE (not a layer section, stays above everything) -->
+      <section class="ctrlSection noCollapse">
+        <button id="locateBtn" class="wideBtn">📍 Minu asukoht</button>
+        <button id="fitEstoniaBtn" class="wideBtn">🇪🇪 Kogu Eesti</button>
+      </section>
+
+      <!-- LENNULIIKLUS (moved to top of layer sections) -->
+      <section class="ctrlSection">
+        <div class="sectionHeaderRow">
+          <button class="collapseBtn" data-target="body-eans" title="Ahenda/laienda">▾</button>
+          <h2>Lennuliiklus
+            <button class="infoIconBtn small" data-info="eansInfo">ⓘ</button>
+          </h2>
+        </div>
+        <div class="sectionBody" id="body-eans">
+          <div class="layerRow">
+            <label>
+              <input type="checkbox" id="eansToggle">
+              <span>EANS UTM / Droonikaart</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- BASE LAYERS -->
+      <section class="ctrlSection">
+        <div class="sectionHeaderRow">
+          <button class="collapseBtn" data-target="body-base" title="Ahenda/laienda">▾</button>
+          <h2>Taustakaart
+            <button class="infoIconBtn small" data-info="baseInfo">ⓘ</button>
+          </h2>
+        </div>
+        <div class="sectionBody" id="body-base">
+          <div id="baseLayerList" class="layerList"></div>
+        </div>
+      </section>
+
+      <!-- PRIA WFS -->
+      <section class="ctrlSection">
+        <div class="sectionHeaderRow">
+          <button class="collapseBtn" data-target="body-pria" title="Ahenda/laienda">▾</button>
+          <h2>PRIA põllumassiivid
+            <button class="infoIconBtn small" data-info="priaInfo">ⓘ</button>
+          </h2>
+        </div>
+        <div class="sectionBody" id="body-pria">
+
+          <button id="priaLoadLayersBtn" class="wideBtn secondaryBtn">↻ Lae kihtide loend</button>
+
+          <div id="priaQuickButtons" class="presetQuickButtons hidden">
+            <button id="priaSelectMainBtn" class="smallBtn">⭐ Vali PRIA PÕLLUD (peamine)</button>
+            <button id="priaSelectAllPolludBtn" class="smallBtn">☑ Vali kõik "PÕLLUD" kihid</button>
+          </div>
+
+          <div id="priaMainGroupList" class="layerList"></div>
+
+          <button id="priaOtherToggleBtn" class="wideBtn secondaryBtn hidden">▸ Näita muid kihte</button>
+          <div id="priaOtherGroupList" class="layerList hidden"></div>
+
+          <div id="priaStatus" class="statusLine"></div>
+
+          <div class="presetBar">
+            <input type="text" id="priaPresetName" placeholder="Eelseadistuse nimi">
+            <button id="priaPresetSaveBtn" class="smallBtn">💾 Salvesta</button>
+          </div>
+          <div class="presetBar">
+            <select id="priaPresetSelect"><option value="">— vali salvestatud otsing —</option></select>
+            <button id="priaPresetLoadBtn" class="smallBtn">📂 Lae</button>
+            <button id="priaPresetDeleteBtn" class="smallBtn dangerBtn">🗑</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MINU KAARDID -->
+      <section class="ctrlSection">
+        <div class="sectionHeaderRow">
+          <button class="collapseBtn" data-target="body-mine" title="Ahenda/laienda">▾</button>
+          <h2>Minu kaardid
+            <button class="infoIconBtn small" data-info="myMapsInfo">ⓘ</button>
+          </h2>
+        </div>
+        <div class="sectionBody" id="body-mine">
+
+          <div class="layerRow">
+            <label for="fileInput" class="wideBtn fileBtn">＋ Lisa fail (KML / KMZ / SHP-zip)</label>
+            <input type="file" id="fileInput" accept=".kml,.kmz,.zip" multiple hidden>
+          </div>
+          <p class="smallNote">Üleslaetud failid salvestatakse serverisse ja laetakse
+          automaatselt iga kord, kui keegi lehte avab — kuni need kustutatakse.</p>
+
+          <button id="refreshMyFilesBtn" class="wideBtn secondaryBtn">↻ Uuenda MyFiles nimekirja</button>
+          <div id="myFilesStatus" class="statusLine"></div>
+          <div id="myFilesFileList" class="layerList"></div>
+
+          <div id="myLayersList" class="myLayersList"></div>
+
+          <!-- Search + directions for "Minu kaardid" layers -->
+          <div class="nestedDivider">Otsi objekti</div>
+          <label class="smallLabel" for="searchLayerSelect">Kiht:</label>
+          <select id="searchLayerSelect"></select>
+          <label class="smallLabel" for="searchFieldSelect">Väli (nt nimi või kood):</label>
+          <select id="searchFieldSelect"></select>
+          <input type="text" id="searchTextInput" placeholder="Otsi väärtust...">
+          <button id="searchGoBtn" class="wideBtn secondaryBtn">🔍 Otsi</button>
+          <div id="searchStatus" class="statusLine"></div>
+          <div id="searchResult" class="searchResultBox hidden"></div>
+
+        </div>
+      </section>
+
+      <!-- Live field-data join (Google Sheets or OneDrive Excel) -->
+      <section class="ctrlSection">
+        <div class="sectionHeaderRow">
+          <button class="collapseBtn" data-target="body-sheets" title="Ahenda/laienda">▾</button>
+          <h2>Väliandmed (Sheets / OneDrive)
+            <button class="infoIconBtn small" data-info="sheetsInfo">ⓘ</button>
+          </h2>
+        </div>
+        <div class="sectionBody" id="body-sheets">
+
+          <div class="sourceToggle">
+            <label><input type="radio" name="sheetSource" value="google" checked> Google Sheets</label>
+            <label><input type="radio" name="sheetSource" value="onedrive"> OneDrive / Excel</label>
+          </div>
+
+          <div id="googleSourceControls">
+            <label class="smallLabel" for="sheetUrlInput">Google Sheeti link või ID:</label>
+            <input type="text" id="sheetUrlInput" placeholder="https://docs.google.com/spreadsheets/d/...">
+            <button id="sheetLoadBtn" class="wideBtn secondaryBtn">↻ Loe Google Sheet</button>
+          </div>
+
+          <div id="onedriveSourceControls" class="hidden">
+            <label class="smallLabel" for="onedriveUrlInput">OneDrive/SharePoint jagamislink:</label>
+            <input type="text" id="onedriveUrlInput" placeholder="https://...sharepoint.com/... või https://1drv.ms/...">
+            <button id="onedriveLoadBtn" class="wideBtn secondaryBtn">↻ Loe OneDrive fail</button>
+            <div id="onedriveTabRow" class="hidden">
+              <label class="smallLabel" for="onedriveTabSelect">Tööleht (tab):</label>
+              <select id="onedriveTabSelect"></select>
+            </div>
+          </div>
+
+          <div id="sheetStatus" class="statusLine"></div>
+
+          <div id="sheetJoinControls" class="hidden">
+            <label class="smallLabel" for="sheetKeyColumnSelect">Objekti nime veerg:</label>
+            <select id="sheetKeyColumnSelect"></select>
+
+            <div class="rowWithBtn">
+              <div class="rowWithBtnField">
+                <label class="smallLabel" for="sheetTargetLayerSelect">Kaardikiht, millega siduda:</label>
+                <select id="sheetTargetLayerSelect"></select>
+              </div>
+              <button id="sheetRefreshTargetsBtn" class="smallIconBtn" title="Uuenda kihtide loendit">↻</button>
+            </div>
+
+            <label class="smallLabel" for="sheetTargetFieldSelect">Kihi väli, mis vastab objekti nimele:</label>
+            <select id="sheetTargetFieldSelect"></select>
+
+            <button id="sheetJoinBtn" class="wideBtn">🔗 Ühenda andmed</button>
+
+            <label class="smallLabel" for="sheetAutoRefreshSelect">Automaatne värskendus:</label>
+            <select id="sheetAutoRefreshSelect">
+              <option value="0">Väljas</option>
+              <option value="30000">30 sekundit</option>
+              <option value="60000">1 minut</option>
+              <option value="300000">5 minutit</option>
+            </select>
+
+            <div id="sheetJoinStatus" class="statusLine"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+  <button id="panelOpenerBtn" title="Näita kihtide paneeli">☰ Kihid</button>
+
+  <!-- RIGHT: map -->
+  <main id="mapPanel">
+    <div id="map"></div>
+    <button id="mapLocateBtn" class="mapLocateBtn" title="Minu asukoht">📍</button>
+    <div id="coordReadout" class="coordReadout"></div>
+  </main>
+
+</div>
+
+<!-- Generic modal used by all info (ⓘ) buttons -->
+<div id="modalOverlay" class="modalOverlay hidden">
+  <div class="modalBox">
+    <div class="modalHeader">
+      <span id="modalTitle"></span>
+      <button id="modalCloseBtn" class="closeIframeBtn">✕</button>
+    </div>
+    <div id="modalBody" class="modalBody"></div>
+  </div>
+</div>
+
+<!-- Hidden templates with help text for each info icon -->
+<template id="tpl-baseInfo"><h3>Taustakaart</h3>
+<p>Vali täpselt üks taustakaart: OpenStreetMap või Maa-ameti Eesti kaart / Hübriidkaart / Ortofoto / Valevärviortofoto.</p></template>
+
+<template id="tpl-eansInfo"><h3>EANS UTM / Droonikaart</h3>
+<p>utm.eans.ee on eraldi täisrakendus (lennuplaanide esitamiseks vajab sisselogimist).
+Sisselülitamisel avaneb see kaardi peale manusena ja proovib avaneda samale asukohale/suumile,
+mis on hetkel Taustakaardil (Taustakaart on "master" vaade). Vajadusel vajuta "🔄 Sünkrooni"
+nuppu manuse ribal või ava "Ava uues aknas" link.</p></template>
+
+<template id="tpl-priaInfo"><h3>PRIA põllumassiivid</h3>
+<p>Vajuta "↻ Lae kihtide loend", et tuua PRIA WFS-teenusest saadaolevad kihid.
+Kihid, mille nimi sisaldab "PÕLLUD" (nt PRIA_PÕLLUD), rühmitatakse ülemisse
+gruppi ja neid saab kiirelt valida nuppudega "⭐ Vali PRIA PÕLLUD (peamine)"
+(valib peamise/kõige tõenäolisema kihi) ja "☑ Vali kõik 'PÕLLUD' kihid"
+(valib kõik seotud kihid). Muud, harvem vajaminevad kihid on peidetud
+"▸ Näita muid kihte" nupu taha.</p>
+<p>Igal kihil on oma püsiv värv. Andmed laetakse alati ainult praeguse
+kaardivaate (BBOX) piires ja alles suumitasemest 14 alates. Sagedasi
+kihivalikuid saad salvestada nimega eelseadistusena.</p></template>
+
+<template id="tpl-myMapsInfo"><h3>Minu kaardid</h3>
+<p>Lisa oma KML/KMZ/SHP(zip) failid — need salvestatakse serverisse
+(MyFiles/uploads) ja laetakse automaatselt iga kord, kui keegi lehte
+avab, kuni need kustutatakse (🗑 nupp faili nimekirjas).</p>
+<p><strong>Suumitasemed:</strong> iga kihi juures saab määrata, millisest
+suumitasemest kiht ise ilmub (vaikimisi 13) ja millisest suumitasemest
+ilmuvad sildid (vaikimisi 15). Kiht kuvab alati ainult praeguses
+kaardivaates olevaid objekte, et hoida rakendus kiire ja kerge ka
+suurte failide korral.</p>
+<p><strong>Värvid:</strong> vali "Ühtne värv" (kogu kiht ühte värvi) või
+"Temaatiline" (värv vastavalt valitud andmevälja väärtusele — igale
+unikaalsele väärtusele oma värv, koos väikese legendiga).</p>
+<p><strong>Info ja sildid:</strong> klõpsa kaardil objektil, et näha kõiki
+selle andmevälju popup-aknas. Sildi väli valitakse kihi rea alt.</p>
+<p><strong>Otsing:</strong> vali kiht ja väli (nt nimi või kood), sisesta
+otsitav väärtus — leitud objektile suumitakse ja avaneb link Google
+Mapsi juhisteks ("Ava juhised") otse sellesse asukohta.</p></template>
+
+<template id="tpl-sheetsInfo"><h3>Väliandmed (Sheets / OneDrive)</h3>
+<p><strong>Andmeallikas ei pea sisaldama koordinaate.</strong> Selle asemel peab
+seal olema veerg, mis kordab sama objekti nime/identifikaatorit, mis on juba olemas
+mõne kaardil oleva kihi ühel andmeväljal. Rakendus otsib iga rea jaoks kaardilt
+vastava objekti nime järgi ja lisab kõik veerud selle objekti andmete külge.</p>
+
+<p><strong>Google Sheets:</strong></p>
+<ol>
+<li>Fail → Jaga → "Kõik, kellel link on" (vaataja).</li>
+<li>Kleebi link ja vajuta "↻ Loe Google Sheet".</li>
+</ol>
+<p class="smallNote">Sheeti loetakse serveri kaudu (mitte otse brauserist), et
+vältida CORS-piirangust tekkivat "Failed to fetch" viga.</p>
+
+<p><strong>OneDrive / Excel:</strong></p>
+<ol>
+<li>Jaga fail "Kõik, kellel link on" (vaataja õigustega).</li>
+<li>Kleebi jagamislink ja vajuta "↻ Loe OneDrive fail".</li>
+<li>Kui failis on mitu töölehte, vali sobiv "Tööleht" ripploendist.</li>
+</ol>
+<p class="smallNote">Kui lugemine ebaõnnestub, kontrolli jagamisõigusi ja proovi
+lisada lingi lõppu käsitsi <code>&amp;download=1</code>.</p></template>
+
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
