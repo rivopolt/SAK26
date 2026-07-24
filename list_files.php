@@ -1,66 +1,71 @@
 <?php
 /**
- * list_files.php
- * Returns the files currently sitting in ../MyFiles/uploads/ (whether they
- * arrived via the upload button or were dropped in directly via FTP).
+ * upload.php
+ * Accepts a single file (KML / KMZ / SHP-zip) via multipart/form-data
+ * (field name "file") and stores it in ../MyFiles/uploads/.
  *
- * Always responds with valid JSON: {"ok": true, "files": [...]} on success,
- * or {"ok": false, "error": "..."} on failure. This matters because a bare
- * PHP warning printed before our JSON (e.g. from a failed scandir() call)
- * would otherwise corrupt the response and make it unparsable on the
- * client — which is exactly what shows up in the browser as "MyFiles not
- * readable". Suppressing stray warnings and always emitting a clean JSON
- * body, with a specific reason when something's wrong, fixes that.
+ * This endpoint is open to anyone who has the link, matching the
+ * "open access" requirement of the application. If you want to restrict
+ * who can upload files, add an authentication check near the top of
+ * this file before it goes into production.
  */
-
-error_reporting(E_ALL);
-ini_set('display_errors', '0'); // never let a stray warning leak into the JSON body
 
 header('Content-Type: application/json; charset=utf-8');
 
-function respond($data) {
-    echo json_encode($data);
+$uploadDir = __DIR__ . '/../MyFiles/uploads/';
+$allowedExt = ['kml', 'kmz', 'zip'];
+$maxBytes = 50 * 1024 * 1024; // 50 MB safety cap, adjust as needed
+
+function fail($msg, $code = 400) {
+    http_response_code($code);
+    echo json_encode(['ok' => false, 'error' => $msg]);
     exit;
 }
 
-$uploadDir = __DIR__ . '/../MyFiles/uploads/';
-$allowedExt = ['kml', 'kmz', 'zip'];
-
-if (!file_exists($uploadDir)) {
-    respond([
-        'ok' => false,
-        'error' => "MyFiles/uploads kausta ei leitud serverist (oodatud asukoht: $uploadDir). " .
-                   "Kontrolli, et kaust MyFiles/uploads on üles laetud samasse kohta, kus on php/ kaust."
-    ]);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    fail('Only POST is allowed', 405);
 }
+
+if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+    fail('No valid file uploaded (field name must be "file")');
+}
+
+$file = $_FILES['file'];
+
+if ($file['size'] > $maxBytes) {
+    fail('File too large (limit is ' . ($maxBytes / 1024 / 1024) . ' MB)');
+}
+
+$origName = basename($file['name']);
+$ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+
+if (!in_array($ext, $allowedExt, true)) {
+    fail('Unsupported file type: .' . $ext . ' (allowed: ' . implode(', ', $allowedExt) . ')');
+}
+
+// Sanitize filename: keep letters, numbers, dot, dash, underscore
+$safeBase = preg_replace('/[^A-Za-z0-9._-]/', '_', pathinfo($origName, PATHINFO_FILENAME));
+$safeName = $safeBase . '.' . $ext;
 
 if (!is_dir($uploadDir)) {
-    respond(['ok' => false, 'error' => 'MyFiles/uploads on olemas, aga ei ole kaust.']);
-}
-
-if (!is_readable($uploadDir)) {
-    respond([
-        'ok' => false,
-        'error' => 'MyFiles/uploads kaust ei ole serverile loetav. Kontrolli kausta õigusi ' .
-                   '(tavaliselt piisab chmod 755, vahel 775 — sõltub hostist).'
-    ]);
-}
-
-$entries = @scandir($uploadDir);
-if ($entries === false) {
-    respond(['ok' => false, 'error' => 'Kausta sisu lugemine ebaõnnestus (scandir() ebaõnnestus).']);
-}
-
-$files = [];
-foreach ($entries as $entry) {
-    if ($entry === '.' || $entry === '..') continue;
-    $fullPath = $uploadDir . $entry;
-    if (!is_file($fullPath)) continue; // skip subfolders, symlinks, etc.
-    $ext = strtolower(pathinfo($entry, PATHINFO_EXTENSION));
-    if (in_array($ext, $allowedExt, true)) {
-        $files[] = $entry;
+    if (!mkdir($uploadDir, 0755, true)) {
+        fail('Could not create upload directory on server', 500);
     }
 }
 
-sort($files);
-respond(['ok' => true, 'files' => $files]);
+// Avoid overwriting: append a counter if the name already exists
+$target = $uploadDir . $safeName;
+$counter = 1;
+while (file_exists($target)) {
+    $target = $uploadDir . $safeBase . '_' . $counter . '.' . $ext;
+    $counter++;
+}
+
+if (!move_uploaded_file($file['tmp_name'], $target)) {
+    fail('Failed to move uploaded file into place', 500);
+}
+
+echo json_encode([
+    'ok' => true,
+    'filename' => basename($target),
+]);
