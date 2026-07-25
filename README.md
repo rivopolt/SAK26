@@ -8,6 +8,69 @@ brauseris ning DJI Matrice 4T RC Plus 2 Enterprise pульти brauseris.
 serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 (failihaldus, väliandmed), on ümber ehitatud git-põhiseks ja backend-vabaks.
 
+## Uusim muudatuste pakett
+
+### "Minu asukoht" ei olnud Android tahvlis nähtav — parandatud
+Leafleti vaikimisi `.leaflet-div-icon` stiil lisas meie sinisele täpile
+automaatselt valge tausta + raami, mis mõnel seadmel kattis selle
+peaaegu nähtamatuks. CSS reset lisatud.
+
+Lisaks: rakendus kasutas varem brauseri natiivseid `alert()`/`confirm()`
+dialooge, mida mitmed sisseehitatud Android WebView'd (nt RC-kontrollerite
+brauserid) vaikimisi tähelepanuta jätavad — vea korral ei juhtunud
+seetõttu justkui "mitte midagi". Kõik on nüüd asendatud rakenduse enda
+teavituste/kinnitusdialoogidega, mis töötavad usaldusväärselt kõikjal.
+
+### Kiirvalikud "Eesti kaart" ja "Ortofoto" otse kaardil
+Kaardi paremas ülanurgas (suumikontrolli all) on nüüd kaks nuppu
+taustakaardi kiireks vahetamiseks, ilma "Kihid" paneeli avamata.
+
+### Minu kaardid: Zoom min / Zoom max
+"Kiht alates suumist" on ümber nimetatud "Zoom min" + lisandus uus
+"Zoom max" väli — kiht kaob kaardilt, kui suum ületab selle väärtuse.
+Vaikeväärtused: Zoom min = 1, Zoom max = 19 (varem oli vaikimisi
+Zoom min = 13, mis tegi kihid vaikimisi liiga hilja nähtavaks).
+
+### Temaatiline värvimine: käsitsi ülekirjutamine + teadaolevad vaikeväärtused
+Legendis olevad värvitäpid on nüüd otse klõpsatavad värvivalijad — vali
+mistahes väärtusele oma värv. Lisaks on failile
+`PriaKaerNisuMaisHernes1Field_DISS.zip` (ja igale muule failile, kus
+esineb samad väärtused) sisse ehitatud vaikevärvid: hernes=roheline,
+kaer=helepunane, mais=tumekollane/pruunikas, nisu=helekollane. Käsitsi
+valitud värv (kui valid) võidab alati teadaoleva vaikeväärtuse üle.
+
+### "Minu asukoht" jälgimisrežiim
+Kui asukoha jälgimine on sisse lülitatud, jääb kaart nüüd sinu asukohta
+pidevalt kesksele kohale liikumise ajal (varem tsentreeriti ainult
+esimest korda, edasi liikus ainult sinine täpp, mitte kaardivaade ise).
+
+### EANS Droonikaart: täpsem asukoha sünkroonimine + eraldi lennuplaani link
+Avastasime, et avalik Droonikaart on tegelikult Esri ArcGIS rakendus,
+millel on Esri enda dokumentatsioonis kinnitatud `center=`/`level=`
+URL-parameetrid (varem kasutasime väljamõeldud `lat`/`lon`/`zoom`
+parameetreid, mis polnud kunagi õiged). Kasutame nüüd neid õigeid
+parameetreid. Esri dokumentatsioon märgib siiski, et tugi sõltub
+rakenduse malli tüübist — see rakendus kasutab "Portfolio" malli, mis
+pole puhas kaardivaade, mistõttu 100%-line sünkroonimine pole ikkagi
+garanteeritud. Manuse ribale lisandus ka eraldi "Lennuplaani esitamine ↗"
+link, mis avab sisselogimist vajava utm.eans.ee/avm/ tööriista uues aknas.
+
+### Väliandmed (Repo fail): selgem viga välise lingi sisestamisel
+See väli võtab vastu ainult faili tee sinu enda GitHub repositooriumis
+(nt `MyFiles/data/valiandmed.xlsx`) — mitte välist linki (Google Drive,
+OneDrive, SharePoint jms), kuna GitHub Pages ei saa CORS piirangute
+tõttu selliseid linke otse lugeda. Kui sisestad ikkagi `http://` või
+`https://` algava lingi, näitab rakendus nüüd selget selgitust selle
+asemel, et lihtsalt ebamääraselt ebaõnnestuda.
+
+### Popup-aknad: klõpsatavad telefoninumbrid + Google Mapsi juhised
+Kui objekti andmeväljas on telefoninumbrile viitav väljanimi (nt
+"Telefon") või väärtus näeb välja nagu telefoninumber, kuvatakse see
+nüüd klõpsatava `tel:` lingina — mobiilis käivitab see otse kõne.
+Lisaks on iga objekti popup-aknas nüüd "🚗 Google Maps juhised" link,
+mis avab suunad otse selle objekti tsentrisse (varem oli see nupp
+ainult eraldi otsingutulemuste kastis).
+
 ## Kiirpaigaldus (GitHub Pages)
 
 1. Lae kogu selle kausta sisu oma GitHub repositooriumisse (kõik peale

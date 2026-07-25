@@ -142,6 +142,7 @@ function setupBaseLayerUI() {
     radio.name = "baseLayer";
     radio.value = cfg.id;
     radio.checked = !!cfg.default;
+    radio.dataset.layerId = cfg.id;
     radio.addEventListener("change", () => switchBaseLayer(cfg.id));
     const span = document.createElement("span");
     span.textContent = cfg.name;
@@ -150,6 +151,12 @@ function setupBaseLayerUI() {
     row.appendChild(label);
     container.appendChild(row);
   });
+
+  // Small quick-access buttons directly on the map (no need to open the panel)
+  document.querySelectorAll(".mapQuickBtn").forEach(btn => {
+    btn.addEventListener("click", () => switchBaseLayer(btn.dataset.layerId));
+  });
+  updateBaseLayerUISync();
 }
 
 function switchBaseLayer(id) {
@@ -157,6 +164,17 @@ function switchBaseLayer(id) {
   currentBaseLayer = baseLayerObjects[id];
   currentBaseLayer.addTo(map);
   currentBaseLayer.bringToBack();
+  updateBaseLayerUISync(id);
+}
+
+function updateBaseLayerUISync(id) {
+  const activeId = id || (CONFIG.baseLayers.find(c => c.default) || {}).id;
+  document.querySelectorAll('input[name="baseLayer"]').forEach(radio => {
+    radio.checked = radio.dataset.layerId === activeId;
+  });
+  document.querySelectorAll(".mapQuickBtn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.layerId === activeId);
+  });
 }
 
 /* ---------------------------------------------------------------------- */
@@ -177,7 +195,9 @@ function currentMainViewParams() {
 function eansUrlForCurrentView() {
   const v = currentMainViewParams();
   const sep = CONFIG.eansUrl.includes("?") ? "&" : "?";
-  return `${CONFIG.eansUrl}${sep}lat=${v.lat}&lon=${v.lon}&zoom=${v.zoom}`;
+  // Esri ArcGIS Instant Apps documented URL params: center=<lon>,<lat> and level=<zoom>.
+  // Note the order is lon,lat (x,y), not lat,lon.
+  return `${CONFIG.eansUrl}${sep}center=${v.lon},${v.lat}&level=${v.zoom}`;
 }
 
 function openEansOverlay() {
@@ -190,6 +210,7 @@ function openEansOverlay() {
       <span>EANS Droonikaart</span>
       <button id="syncEansBtn" class="linkBtn">🔄 Sünkrooni Taustakaardiga</button>
       <a href="${CONFIG.eansUrl}" target="_blank" rel="noopener" class="openNewTabLink">Ava uues aknas ↗</a>
+      <a href="${CONFIG.eansFlightPlanningUrl}" target="_blank" rel="noopener" class="openNewTabLink">Lennuplaani esitamine ↗</a>
       <button id="closeEansBtn" class="closeIframeBtn">✕</button>
     </div>
     <iframe id="eansIframe" src="${eansUrlForCurrentView()}" title="EANS Droonikaart"></iframe>
@@ -414,9 +435,9 @@ function getPriaPresets() {
 function savePriaPreset() {
   const nameInput = document.getElementById("priaPresetName");
   const name = nameInput.value.trim();
-  if (!name) { alert("Sisesta eelseadistusele nimi."); return; }
+  if (!name) { notify("Sisesta eelseadistusele nimi."); return; }
   const enabledTypeNames = Object.keys(priaLayersState);
-  if (enabledTypeNames.length === 0) { alert("Vali enne vähemalt üks PRIA kiht."); return; }
+  if (enabledTypeNames.length === 0) { notify("Vali enne vähemalt üks PRIA kiht."); return; }
   const presets = getPriaPresets();
   presets[name] = { typeNames: enabledTypeNames };
   localStorage.setItem("pria_presets", JSON.stringify(presets));
@@ -453,11 +474,11 @@ function setPriaCheckbox(typeName, checked) {
   }
 }
 
-function deletePriaPreset() {
+async function deletePriaPreset() {
   const select = document.getElementById("priaPresetSelect");
   const name = select.value;
   if (!name) return;
-  if (!confirm(`Kustutada eelseadistus "${name}"?`)) return;
+  if (!(await showConfirm(`Kustutada eelseadistus "${name}"?`))) return;
   const presets = getPriaPresets();
   delete presets[name];
   localStorage.setItem("pria_presets", JSON.stringify(presets));
@@ -498,7 +519,7 @@ function toggleLiveLocation() {
     setLocateButtonsActive(false);
     return;
   }
-  if (!navigator.geolocation) { alert("Brauser ei toeta asukoha tuvastamist."); return; }
+  if (!navigator.geolocation) { notify("Brauser ei toeta asukoha tuvastamist."); return; }
 
   setLocateButtonsActive(true);
   let firstFix = true;
@@ -506,10 +527,17 @@ function toggleLiveLocation() {
     pos => {
       const { latitude, longitude, accuracy } = pos.coords;
       updateUserLocationMarker(latitude, longitude, accuracy);
-      if (firstFix) { map.setView([latitude, longitude], 16); firstFix = false; }
+      if (firstFix) {
+        map.setView([latitude, longitude], 16);
+        firstFix = false;
+      } else {
+        // "Follow me": keep the current position centered as it moves,
+        // without forcing the zoom level back to 16 each time.
+        map.panTo([latitude, longitude], { animate: true });
+      }
     },
     err => {
-      alert("Asukoha tuvastamine ebaõnnestus: " + err.message);
+      showBanner("Asukoha tuvastamine ebaõnnestus: " + err.message);
       setLocateButtonsActive(false);
       locationWatchId = null;
     },
@@ -606,6 +634,30 @@ function closeModal() {
   document.getElementById("modalOverlay").classList.add("hidden");
 }
 
+/* Replacement for native confirm() — some embedded Android WebViews
+   (e.g. RC-controller browsers) silently block window.confirm()/alert(),
+   which made destructive actions and error messages appear to do
+   nothing at all. This uses our own modal instead, which always works. */
+function showConfirm(message) {
+  return new Promise(resolve => {
+    openModal("Kinnita", `
+      <p>${escapeHtml(message)}</p>
+      <div class="confirmBtnRow">
+        <button id="confirmYesBtn" class="wideBtn dangerWideBtn">Jah</button>
+        <button id="confirmNoBtn" class="wideBtn secondaryBtn">Ei</button>
+      </div>
+    `);
+    document.getElementById("confirmYesBtn").addEventListener("click", () => { closeModal(); resolve(true); });
+    document.getElementById("confirmNoBtn").addEventListener("click", () => { closeModal(); resolve(false); });
+  });
+}
+
+/* Replacement for native alert() — same WebView reliability reasoning.
+   Shows a dismissable in-page notice instead of a blocking system dialog. */
+function notify(message) {
+  openModal("Teade", `<p>${escapeHtml(message)}</p>`);
+}
+
 /* ---------------------------------------------------------------------- */
 /* WARNING BANNER                                                           */
 /* ---------------------------------------------------------------------- */
@@ -632,7 +684,7 @@ function setupFileUpload() {
     const files = Array.from(e.target.files);
     for (const file of files) {
       try { await handleUploadedFile(file); }
-      catch (err) { alert(`Faili "${file.name}" töötlemine ebaõnnestus: ${err.message}`); }
+      catch (err) { notify(`Faili "${file.name}" töötlemine ebaõnnestus: ${err.message}`); }
     }
     e.target.value = "";
   });
@@ -680,11 +732,13 @@ function saveLayerPrefs(entry) {
   const all = JSON.parse(localStorage.getItem("myLayerPrefs") || "{}");
   all[entry.name] = {
     minZoom: entry.minZoom,
+    maxZoom: entry.maxZoom,
     labelMinZoom: entry.labelMinZoom,
     labelField: entry.labelField,
     colorMode: entry.colorMode,
     singleColor: entry.singleColor,
-    thematicField: entry.thematicField
+    thematicField: entry.thematicField,
+    thematicColorOverrides: entry.thematicColorOverrides
   };
   localStorage.setItem("myLayerPrefs", JSON.stringify(all));
 }
@@ -723,11 +777,13 @@ function addGeoJsonToMap(geojson, label, source) {
     fields: collectFieldNamesFromFeatures(features),
     labelField: saved ? saved.labelField : null,
     minZoom: saved ? saved.minZoom : CONFIG.myLayers.defaultMinZoom,
+    maxZoom: (saved && saved.maxZoom !== undefined) ? saved.maxZoom : CONFIG.myLayers.defaultMaxZoom,
     labelMinZoom: saved ? saved.labelMinZoom : CONFIG.myLayers.defaultLabelMinZoom,
     visible: true,
     colorMode: saved ? saved.colorMode : "single",
     singleColor: saved ? saved.singleColor : CONFIG.myLayers.colorPalette[Object.keys(myLayers).length % CONFIG.myLayers.colorPalette.length],
     thematicField: saved ? saved.thematicField : null,
+    thematicColorOverrides: (saved && saved.thematicColorOverrides) ? saved.thematicColorOverrides : {},
     thematicColorMap: null,
     thematicLegend: [],
     renderedLayer: null
@@ -760,8 +816,26 @@ function updateThematicColorMap(entry) {
   entry.rawFeatures.forEach(f => values.add(normalizeThematicValue(f.properties ? f.properties[entry.thematicField] : undefined)));
   const sorted = Array.from(values).sort();
   const palette = CONFIG.myLayers.colorPalette;
+  const knownColors = CONFIG.myLayers.knownThematicColors || {};
+  const overrides = entry.thematicColorOverrides || {};
+
+  let paletteIndex = 0;
   const map2 = new Map();
-  sorted.forEach((v, i) => map2.set(v, palette[i % palette.length]));
+  sorted.forEach(v => {
+    let color;
+    if (overrides[v]) {
+      color = overrides[v]; // 1. explicit per-layer manual override wins
+    } else {
+      const knownMatch = knownColors[v.toLowerCase()];
+      if (knownMatch) {
+        color = knownMatch; // 2. known dataset default (e.g. hernes/kaer/mais/nisu)
+      } else {
+        color = palette[paletteIndex % palette.length]; // 3. fallback auto-cycling palette
+        paletteIndex++;
+      }
+    }
+    map2.set(v, color);
+  });
   entry.thematicColorMap = map2;
   entry.thematicLegend = sorted.map(v => ({ value: v, color: map2.get(v) }));
 }
@@ -782,7 +856,7 @@ function renderMyLayerForCurrentView(entry) {
   if (!entry.visible) return;
 
   const zoom = map.getZoom();
-  if (zoom < entry.minZoom) return;
+  if (zoom < entry.minZoom || zoom > entry.maxZoom) return;
 
   const viewBounds = map.getBounds();
   const visibleFeatures = entry.rawFeatures.filter(f => f.__bounds && f.__bounds.isValid() && viewBounds.intersects(f.__bounds));
@@ -817,12 +891,68 @@ function refreshAllMyLayers() {
   Object.values(myLayers).forEach(renderMyLayerForCurrentView);
 }
 
+function isPhoneField(key, value) {
+  const keyNorm = normalizeEstonian(key);
+  if (/telefon|phone|gsm|\btel\b/.test(keyNorm)) return true;
+  const valStr = String(value).trim();
+  const digitsOnly = valStr.replace(/\D/g, "");
+  return /^[+]?[\d\s\-()]{6,16}$/.test(valStr) && digitsOnly.length >= 5;
+}
+
+function formatPhoneForTel(raw) {
+  let cleaned = String(raw).replace(/[^\d+]/g, "");
+  if (!cleaned) return null;
+  if (!cleaned.startsWith("+")) {
+    if (cleaned.startsWith("372")) {
+      cleaned = "+" + cleaned;
+    } else if (cleaned.length >= 7 && cleaned.length <= 8) {
+      cleaned = "+372" + cleaned; // bare Estonian local number
+    } else {
+      cleaned = "+" + cleaned;
+    }
+  }
+  return cleaned;
+}
+
+function getFeatureCenter(feature, layer) {
+  try {
+    if (layer.getBounds) {
+      const b = layer.getBounds();
+      if (b && b.isValid()) return b.getCenter();
+    }
+    if (layer.getLatLng) return layer.getLatLng();
+  } catch (e) { /* ignore */ }
+  if (feature.__bounds && feature.__bounds.isValid()) return feature.__bounds.getCenter();
+  return null;
+}
+
 function bindFeaturePopup(feature, layer) {
-  if (!feature.properties || Object.keys(feature.properties).length === 0) return;
-  const rows = Object.entries(feature.properties)
-    .map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(String(v))}</td></tr>`)
-    .join("");
-  layer.bindPopup(`<table class="popupTable">${rows}</table>`);
+  const props = feature.properties || {};
+  const keys = Object.keys(props);
+
+  const rows = keys.map(k => {
+    const v = props[k];
+    const vStr = String(v);
+    if (isPhoneField(k, v)) {
+      const telHref = formatPhoneForTel(vStr);
+      const valueHtml = telHref
+        ? `<a href="tel:${escapeHtml(telHref)}">${escapeHtml(vStr)}</a>`
+        : escapeHtml(vStr);
+      return `<tr><td>${escapeHtml(k)}</td><td>${valueHtml}</td></tr>`;
+    }
+    return `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(vStr)}</td></tr>`;
+  }).join("");
+
+  const center = getFeatureCenter(feature, layer);
+  const dirLinkHtml = center
+    ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}" ` +
+      `target="_blank" rel="noopener" class="popupDirLink">🚗 Google Maps juhised</a>`
+    : "";
+
+  const tableHtml = rows ? `<table class="popupTable">${rows}</table>` : "";
+  if (!tableHtml && !dirLinkHtml) return;
+
+  layer.bindPopup(`${tableHtml}${dirLinkHtml}`);
 }
 
 /* ---- Minu kaardid: list UI (zoom controls, colors, labels, remove/delete) ---- */
@@ -879,7 +1009,7 @@ function renderMyLayersList() {
 
     const minZoomLabel = document.createElement("label");
     minZoomLabel.className = "smallLabel";
-    minZoomLabel.textContent = "Kiht alates suumist:";
+    minZoomLabel.textContent = "Zoom min:";
     const minZoomInput = document.createElement("input");
     minZoomInput.type = "number";
     minZoomInput.min = "0"; minZoomInput.max = "19";
@@ -891,6 +1021,28 @@ function renderMyLayersList() {
       saveLayerPrefs(entry);
     });
 
+    const maxZoomLabel = document.createElement("label");
+    maxZoomLabel.className = "smallLabel";
+    maxZoomLabel.textContent = "Zoom max:";
+    const maxZoomInput = document.createElement("input");
+    maxZoomInput.type = "number";
+    maxZoomInput.min = "0"; maxZoomInput.max = "19";
+    maxZoomInput.className = "zoomNumberInput";
+    maxZoomInput.value = entry.maxZoom;
+    maxZoomInput.addEventListener("change", () => {
+      entry.maxZoom = parseInt(maxZoomInput.value, 10) || 19;
+      renderMyLayerForCurrentView(entry);
+      saveLayerPrefs(entry);
+    });
+
+    zoomRow.appendChild(minZoomLabel);
+    zoomRow.appendChild(minZoomInput);
+    zoomRow.appendChild(maxZoomLabel);
+    zoomRow.appendChild(maxZoomInput);
+    row.appendChild(zoomRow);
+
+    const labelZoomRow = document.createElement("div");
+    labelZoomRow.className = "myLayerZoomRow";
     const labelZoomLabel = document.createElement("label");
     labelZoomLabel.className = "smallLabel";
     labelZoomLabel.textContent = "Sildid alates suumist:";
@@ -904,12 +1056,9 @@ function renderMyLayersList() {
       renderMyLayerForCurrentView(entry);
       saveLayerPrefs(entry);
     });
-
-    zoomRow.appendChild(minZoomLabel);
-    zoomRow.appendChild(minZoomInput);
-    zoomRow.appendChild(labelZoomLabel);
-    zoomRow.appendChild(labelZoomInput);
-    row.appendChild(zoomRow);
+    labelZoomRow.appendChild(labelZoomLabel);
+    labelZoomRow.appendChild(labelZoomInput);
+    row.appendChild(labelZoomRow);
 
     /* label field picker */
     if (entry.fields.length > 0) {
@@ -1001,9 +1150,20 @@ function renderMyLayersList() {
         entry.thematicLegend.forEach(item => {
           const chip = document.createElement("span");
           chip.className = "legendChip";
-          const sw = document.createElement("span");
-          sw.className = "colorSwatch";
-          sw.style.background = item.color;
+
+          const sw = document.createElement("input");
+          sw.type = "color";
+          sw.className = "legendColorInput";
+          sw.value = item.color;
+          sw.title = `Vali "${item.value}" jaoks oma värv`;
+          sw.addEventListener("input", () => {
+            entry.thematicColorOverrides = entry.thematicColorOverrides || {};
+            entry.thematicColorOverrides[item.value] = sw.value;
+            updateThematicColorMap(entry);
+            renderMyLayerForCurrentView(entry);
+            saveLayerPrefs(entry);
+          });
+
           chip.appendChild(sw);
           chip.appendChild(document.createTextNode(" " + item.value));
           legendBox.appendChild(chip);
@@ -1046,10 +1206,10 @@ function showMyLayerInfo(id) {
   `);
 }
 
-function removeMyLayer(id) {
+async function removeMyLayer(id) {
   const entry = myLayers[id];
   if (!entry) return;
-  if (!confirm(`Eemaldada kiht "${entry.name}" praegusest vaatest? (Fail jääb serverisse alles.)`)) return;
+  if (!(await showConfirm(`Eemaldada kiht "${entry.name}" praegusest vaatest? (Fail jääb repositooriumis alles.)`))) return;
   if (entry.renderedLayer) map.removeLayer(entry.renderedLayer);
   delete myLayers[id];
   renderMyLayersList();
@@ -1219,7 +1379,15 @@ function performSearch() {
   resultBox.classList.remove("hidden");
   resultBox.innerHTML = "";
   const rows = Object.entries(feature.properties || {})
-    .map(([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(String(v))}</td></tr>`)
+    .map(([k, v]) => {
+      const vStr = String(v);
+      if (isPhoneField(k, v)) {
+        const telHref = formatPhoneForTel(vStr);
+        const valueHtml = telHref ? `<a href="tel:${escapeHtml(telHref)}">${escapeHtml(vStr)}</a>` : escapeHtml(vStr);
+        return `<tr><td>${escapeHtml(k)}</td><td>${valueHtml}</td></tr>`;
+      }
+      return `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(vStr)}</td></tr>`;
+    })
     .join("");
   resultBox.innerHTML = `<table class="popupTable">${rows}</table>`;
 
@@ -1324,7 +1492,7 @@ function gvizResponseToRows(response) {
 
 async function loadSheetData(silent) {
   const input = document.getElementById("sheetUrlInput").value.trim();
-  if (!input) { if (!silent) alert("Sisesta Google Sheeti link või ID."); return; }
+  if (!input) { if (!silent) notify("Sisesta Google Sheeti link või ID."); return; }
 
   const { id, gid } = parseGoogleSheetUrl(input);
   sheetState.id = id; sheetState.gid = gid; sheetState.source = "google";
@@ -1360,7 +1528,17 @@ async function loadSheetData(silent) {
    fetch: export your Excel/OneDrive data, commit the export, push. */
 async function loadRepoFileData(silent) {
   const input = document.getElementById("repoFileUrlInput").value.trim();
-  if (!input) { if (!silent) alert("Sisesta faili tee repositooriumis."); return; }
+  if (!input) { if (!silent) notify("Sisesta faili tee repositooriumis."); return; }
+
+  if (/^https?:\/\//i.test(input)) {
+    setStatus("sheetStatus",
+      "See väli võtab vastu ainult faili tee SINU GitHubi repositooriumis (nt " +
+      "\"MyFiles/data/valiandmed.xlsx\"), mitte välist linki. OneDrive/SharePoint/Google " +
+      "linki ei saa siia otse panna — CORS piirangute tõttu ei saa GitHub Pages seda " +
+      "otse lugeda. Ekspordi fail (CSV/XLSX), lisa see oma repositooriumisse ja sisesta " +
+      "siia selle tee (vt ⓘ info).");
+    return;
+  }
 
   if (!silent) setStatus("sheetStatus", "Loen repo faili...");
 

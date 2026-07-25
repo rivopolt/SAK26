@@ -46,7 +46,24 @@ const CONFIG = {
   /* ------------------------------------------------------------------
      EANS UTM / DROONIKAART
   ------------------------------------------------------------------- */
-  eansUrl: "https://utm.eans.ee/avm/",
+  /* ------------------------------------------------------------------
+     EANS UTM / DROONIKAART
+     ------------------------------------------------------------------
+     EANS has two separate tools:
+     1) The public "Droonikaart" (permanent restricted-zone viewer, no
+        login needed) — currently an Esri ArcGIS Instant Apps "Portfolio"
+        app. Esri's Instant Apps documentation confirms center=<lon>,<lat>
+        and level=<zoom> as real, supported URL parameters:
+        https://doc.arcgis.com/en/instant-apps/latest/customize/use-url-parameters.htm
+        — however Esri also notes support varies by app template, and
+        Portfolio apps are structured as multi-section pages rather than
+        a single dedicated map view, so syncing still isn't 100% guaranteed.
+     2) The flight-planning tool (utm.eans.ee/avm/), which requires login
+        to submit flight plans — kept as a separate "new tab" link since
+        it's a different tool for a different purpose.
+  ------------------------------------------------------------------- */
+  eansUrl: "https://eans.maps.arcgis.com/apps/instant/portfolio/index.html?appid=bd966e77560e42628d041733ef095cc0",
+  eansFlightPlanningUrl: "https://utm.eans.ee/avm/",
 
   /* ------------------------------------------------------------------
      PRIA WFS (põllumassiivid)
@@ -75,12 +92,23 @@ const CONFIG = {
      ülekuhjumist väiksemas suumis).
   ------------------------------------------------------------------- */
   myLayers: {
-    defaultMinZoom: 13,
+    defaultMinZoom: 1,
+    defaultMaxZoom: 19,
     defaultLabelMinZoom: 15,
     colorPalette: [
       "#8b00ff", "#ff8c00", "#009688", "#e91e63", "#3f51b5",
       "#795548", "#607d8b", "#cddc39", "#00bcd4", "#f44336"
-    ]
+    ],
+    // Fixed colors for specific thematic values, matched case-insensitively.
+    // Takes priority over the auto-cycling palette above whenever a
+    // thematic field's value matches one of these — e.g. for
+    // PriaKaerNisuMaisHernes1Field_DISS.zip's crop-type field.
+    knownThematicColors: {
+      "hernes": "#3aa655",   // green (pea)
+      "kaer": "#f28b82",     // light red/coral (oats)
+      "mais": "#8b6b1f",     // dark yellow/brownish (maize)
+      "nisu": "#fff2a8"      // light yellow (wheat)
+    }
   },
 
   /* ------------------------------------------------------------------

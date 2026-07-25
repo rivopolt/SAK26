@@ -166,7 +166,7 @@
           </div>
 
           <div id="repoFileSourceControls" class="hidden">
-            <label class="smallLabel" for="repoFileUrlInput">Faili tee repositooriumis:</label>
+            <label class="smallLabel" for="repoFileUrlInput">Faili tee SINU repositooriumis (mitte väline link!):</label>
             <input type="text" id="repoFileUrlInput" placeholder="MyFiles/data/valiandmed.xlsx">
             <button id="repoFileLoadBtn" class="wideBtn secondaryBtn">↻ Loe repo fail</button>
             <div id="repoFileTabRow" class="hidden">
@@ -215,6 +215,10 @@
   <!-- RIGHT: map -->
   <main id="mapPanel">
     <div id="map"></div>
+    <div class="mapQuickBaseButtons">
+      <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Eesti kaart</button>
+      <button id="quickFotoBtn" class="mapQuickBtn" data-layer-id="maaamet_foto">Ortofoto</button>
+    </div>
     <button id="mapLocateBtn" class="mapLocateBtn" title="Minu asukoht">📍</button>
     <div id="coordReadout" class="coordReadout"></div>
   </main>
@@ -237,10 +241,18 @@
 <p>Vali täpselt üks taustakaart: OpenStreetMap või Maa-ameti Eesti kaart / Hübriidkaart / Ortofoto / Valevärviortofoto.</p></template>
 
 <template id="tpl-eansInfo"><h3>EANS UTM / Droonikaart</h3>
-<p>utm.eans.ee on eraldi täisrakendus (lennuplaanide esitamiseks vajab sisselogimist).
-Sisselülitamisel avaneb see kaardi peale manusena ja proovib avaneda samale asukohale/suumile,
-mis on hetkel Taustakaardil (Taustakaart on "master" vaade). Vajadusel vajuta "🔄 Sünkrooni"
-nuppu manuse ribal või ava "Ava uues aknas" link.</p></template>
+<p>Avalik Droonikaart (püsivad lennupiirangute alad, sisselogimist ei vaja) on tegelikult
+Esri ArcGIS rakendus. Sisselülitamisel avaneb see kaardi peale manusena ja proovib avaneda
+samale asukohale/suumile, mis on hetkel Taustakaardil (Taustakaart on "master" vaade),
+kasutades Esri dokumenteeritud <code>center=</code>/<code>level=</code> URL-parameetreid.</p>
+<p class="smallNote">Esri enda dokumentatsioon märgib, et parameetrite toetus sõltub
+rakenduse malli tüübist — see konkreetne rakendus kasutab "Portfolio" malli, mis on
+üles ehitatud pigem mitme sektsiooniga lehena kui puhta kaardivaatena, mistõttu
+sünkroonimine ei pruugi alati täpselt toimida. Kui see ei tööta, vajuta "🔄 Sünkrooni"
+uuesti proovimiseks või "Ava uues aknas" linki.</p>
+<p><strong>Lennuplaani esitamine</strong> (nõuab sisselogimist) on eraldi tööriist —
+selle jaoks vajuta manuse ribal "Lennuplaani esitamine ↗", mis avab utm.eans.ee/avm/
+uues aknas.</p></template>
 
 <template id="tpl-priaInfo"><h3>PRIA põllumassiivid</h3>
 <p>Vajuta "↻ Lae kihtide loend", et tuua PRIA WFS-teenusest saadaolevad kihid.
