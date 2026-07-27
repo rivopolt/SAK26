@@ -195,9 +195,8 @@ function currentMainViewParams() {
 function eansUrlForCurrentView() {
   const v = currentMainViewParams();
   const sep = CONFIG.eansUrl.includes("?") ? "&" : "?";
-  // Esri ArcGIS Instant Apps documented URL params: center=<lon>,<lat> and level=<zoom>.
-  // Note the order is lon,lat (x,y), not lat,lon.
-  return `${CONFIG.eansUrl}${sep}center=${v.lon},${v.lat}&level=${v.zoom}`;
+  // Best-effort only — utm.eans.ee/avm/ has no published URL-parameter API.
+  return `${CONFIG.eansUrl}${sep}lat=${v.lat}&lon=${v.lon}&zoom=${v.zoom}`;
 }
 
 function openEansOverlay() {
@@ -210,7 +209,6 @@ function openEansOverlay() {
       <span>EANS Droonikaart</span>
       <button id="syncEansBtn" class="linkBtn">🔄 Sünkrooni Taustakaardiga</button>
       <a href="${CONFIG.eansUrl}" target="_blank" rel="noopener" class="openNewTabLink">Ava uues aknas ↗</a>
-      <a href="${CONFIG.eansFlightPlanningUrl}" target="_blank" rel="noopener" class="openNewTabLink">Lennuplaani esitamine ↗</a>
       <button id="closeEansBtn" class="closeIframeBtn">✕</button>
     </div>
     <iframe id="eansIframe" src="${eansUrlForCurrentView()}" title="EANS Droonikaart"></iframe>
@@ -736,7 +734,8 @@ function saveLayerPrefs(entry) {
     labelMinZoom: entry.labelMinZoom,
     labelField: entry.labelField,
     colorMode: entry.colorMode,
-    singleColor: entry.singleColor,
+    fillColor: entry.fillColor,
+    outlineColor: entry.outlineColor,
     thematicField: entry.thematicField,
     thematicColorOverrides: entry.thematicColorOverrides
   };
@@ -771,6 +770,8 @@ function addGeoJsonToMap(geojson, label, source) {
 
   const saved = getSavedLayerPrefs(label);
 
+  const defaultFillColor = CONFIG.myLayers.colorPalette[Object.keys(myLayers).length % CONFIG.myLayers.colorPalette.length];
+
   const entry = {
     id, name: label, source,
     rawFeatures: features,
@@ -781,12 +782,16 @@ function addGeoJsonToMap(geojson, label, source) {
     labelMinZoom: saved ? saved.labelMinZoom : CONFIG.myLayers.defaultLabelMinZoom,
     visible: true,
     colorMode: saved ? saved.colorMode : "single",
-    singleColor: saved ? saved.singleColor : CONFIG.myLayers.colorPalette[Object.keys(myLayers).length % CONFIG.myLayers.colorPalette.length],
+    // fillColor replaces the old singleColor key; fall back to it if present
+    // (older saved preferences from before Fill/Outline were split apart).
+    fillColor: saved ? (saved.fillColor || saved.singleColor || defaultFillColor) : defaultFillColor,
+    outlineColor: (saved && saved.outlineColor) ? saved.outlineColor : "#333333",
     thematicField: saved ? saved.thematicField : null,
     thematicColorOverrides: (saved && saved.thematicColorOverrides) ? saved.thematicColorOverrides : {},
     thematicColorMap: null,
     thematicLegend: [],
-    renderedLayer: null
+    renderedLayer: null,
+    uiCollapsed: false
   };
   updateThematicColorMap(entry);
 
@@ -840,12 +845,12 @@ function updateThematicColorMap(entry) {
   entry.thematicLegend = sorted.map(v => ({ value: v, color: map2.get(v) }));
 }
 
-function colorForFeature(entry, feature) {
+function fillColorForFeature(entry, feature) {
   if (entry.colorMode === "thematic" && entry.thematicColorMap) {
     const v = normalizeThematicValue(feature.properties ? feature.properties[entry.thematicField] : undefined);
     return entry.thematicColorMap.get(v) || "#999999";
   }
-  return entry.singleColor;
+  return entry.fillColor;
 }
 
 function renderMyLayerForCurrentView(entry) {
@@ -866,12 +871,12 @@ function renderMyLayerForCurrentView(entry) {
 
   const geoLayer = L.geoJSON({ type: "FeatureCollection", features: visibleFeatures }, {
     style: (feature) => {
-      const c = colorForFeature(entry, feature);
-      return { color: c, weight: 3, fillColor: c, fillOpacity: 0.2 };
+      const fill = fillColorForFeature(entry, feature);
+      return { color: entry.outlineColor, weight: 3, fillColor: fill, fillOpacity: 0.2 };
     },
     pointToLayer: (feature, latlng) => {
-      const c = colorForFeature(entry, feature);
-      return L.circleMarker(latlng, { radius: 7, color: c, fillColor: c, fillOpacity: 0.7 });
+      const fill = fillColorForFeature(entry, feature);
+      return L.circleMarker(latlng, { radius: 7, color: entry.outlineColor, fillColor: fill, fillOpacity: 0.7 });
     },
     onEachFeature: (feature, layer) => {
       bindFeaturePopup(feature, layer);
@@ -986,6 +991,11 @@ function renderMyLayersList() {
     const btnGroup = document.createElement("span");
     btnGroup.className = "myLayerBtnGroup";
 
+    const collapseToggleBtn = document.createElement("button");
+    collapseToggleBtn.className = "smallIconBtn";
+    collapseToggleBtn.title = "Ahenda/laienda kihi seaded";
+    collapseToggleBtn.textContent = entry.uiCollapsed ? "▸" : "▾";
+
     const infoBtn = document.createElement("button");
     infoBtn.className = "smallIconBtn";
     infoBtn.title = "Kihi info";
@@ -998,10 +1008,23 @@ function renderMyLayersList() {
     removeBtn.textContent = "✕";
     removeBtn.addEventListener("click", () => removeMyLayer(entry.id));
 
+    btnGroup.appendChild(collapseToggleBtn);
     btnGroup.appendChild(infoBtn);
     btnGroup.appendChild(removeBtn);
     topLine.appendChild(btnGroup);
     row.appendChild(topLine);
+
+    /* Everything below the top line is collapsible per layer, to keep
+       the list manageable once several layers are loaded. */
+    const detailsWrapper = document.createElement("div");
+    detailsWrapper.className = "myLayerDetails";
+    if (entry.uiCollapsed) detailsWrapper.classList.add("collapsed");
+
+    collapseToggleBtn.addEventListener("click", () => {
+      entry.uiCollapsed = !entry.uiCollapsed;
+      detailsWrapper.classList.toggle("collapsed", entry.uiCollapsed);
+      collapseToggleBtn.textContent = entry.uiCollapsed ? "▸" : "▾";
+    });
 
     /* zoom-level controls */
     const zoomRow = document.createElement("div");
@@ -1039,7 +1062,7 @@ function renderMyLayersList() {
     zoomRow.appendChild(minZoomInput);
     zoomRow.appendChild(maxZoomLabel);
     zoomRow.appendChild(maxZoomInput);
-    row.appendChild(zoomRow);
+    detailsWrapper.appendChild(zoomRow);
 
     const labelZoomRow = document.createElement("div");
     labelZoomRow.className = "myLayerZoomRow";
@@ -1058,7 +1081,7 @@ function renderMyLayersList() {
     });
     labelZoomRow.appendChild(labelZoomLabel);
     labelZoomRow.appendChild(labelZoomInput);
-    row.appendChild(labelZoomRow);
+    detailsWrapper.appendChild(labelZoomRow);
 
     /* label field picker */
     if (entry.fields.length > 0) {
@@ -1084,7 +1107,7 @@ function renderMyLayersList() {
       });
       labelRow.appendChild(labelText);
       labelRow.appendChild(select);
-      row.appendChild(labelRow);
+      detailsWrapper.appendChild(labelRow);
 
       /* color mode: single vs thematic */
       const colorRow = document.createElement("div");
@@ -1102,23 +1125,28 @@ function renderMyLayersList() {
       });
       colorRow.appendChild(colorLabelText);
       colorRow.appendChild(modeSelect);
-      row.appendChild(colorRow);
+      detailsWrapper.appendChild(colorRow);
 
       const colorSubRow = document.createElement("div");
       colorSubRow.className = "myLayerLabelRow";
 
       function renderColorSubControls() {
         colorSubRow.innerHTML = "";
+
         if (entry.colorMode === "single") {
-          const colorInput = document.createElement("input");
-          colorInput.type = "color";
-          colorInput.value = entry.singleColor;
-          colorInput.addEventListener("input", () => {
-            entry.singleColor = colorInput.value;
+          const fillLabel = document.createElement("span");
+          fillLabel.className = "smallLabel colorFieldLabel";
+          fillLabel.textContent = "Täitevärv:";
+          const fillInput = document.createElement("input");
+          fillInput.type = "color";
+          fillInput.value = entry.fillColor;
+          fillInput.addEventListener("input", () => {
+            entry.fillColor = fillInput.value;
             renderMyLayerForCurrentView(entry);
             saveLayerPrefs(entry);
           });
-          colorSubRow.appendChild(colorInput);
+          colorSubRow.appendChild(fillLabel);
+          colorSubRow.appendChild(fillInput);
         } else {
           const fieldSelect = document.createElement("select");
           const noneOpt2 = document.createElement("option");
@@ -1139,6 +1167,22 @@ function renderMyLayersList() {
           });
           colorSubRow.appendChild(fieldSelect);
         }
+
+        // Outline color applies regardless of fill mode (single or thematic) —
+        // keeps borders consistent even when fill varies by category.
+        const outlineLabel = document.createElement("span");
+        outlineLabel.className = "smallLabel colorFieldLabel";
+        outlineLabel.textContent = "Äärise värv:";
+        const outlineInput = document.createElement("input");
+        outlineInput.type = "color";
+        outlineInput.value = entry.outlineColor;
+        outlineInput.addEventListener("input", () => {
+          entry.outlineColor = outlineInput.value;
+          renderMyLayerForCurrentView(entry);
+          saveLayerPrefs(entry);
+        });
+        colorSubRow.appendChild(outlineLabel);
+        colorSubRow.appendChild(outlineInput);
       }
 
       const legendBox = document.createElement("div");
@@ -1181,10 +1225,11 @@ function renderMyLayersList() {
 
       renderColorSubControls();
       renderLegend();
-      row.appendChild(colorSubRow);
-      row.appendChild(legendBox);
+      detailsWrapper.appendChild(colorSubRow);
+      detailsWrapper.appendChild(legendBox);
     }
 
+    row.appendChild(detailsWrapper);
     container.appendChild(row);
   });
 }
@@ -1297,6 +1342,11 @@ async function loadMyFilesEntry(fname) {
 function setupSearch() {
   document.getElementById("searchLayerSelect").addEventListener("change", refreshSearchFieldOptions);
   document.getElementById("searchGoBtn").addEventListener("click", performSearch);
+  document.getElementById("mapSearchToggleBtn").addEventListener("click", () => {
+    const widget = document.getElementById("mapSearchWidget");
+    const nowHidden = widget.classList.toggle("hidden");
+    document.getElementById("mapSearchToggleBtn").classList.toggle("active", !nowHidden);
+  });
   refreshSearchLayerOptions();
 }
 

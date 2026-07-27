@@ -17,6 +17,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <link rel="stylesheet" href="css/style.css">
+
+<!--
+  GoatCounter — cookie-free, GDPR-friendly, no consent banner needed.
+  Works directly on github.io (unlike Cloudflare Web Analytics, which
+  rejects shared/multi-tenant domains like *.github.io — see README.md
+  "Külastuste statistika" for the full explanation).
+  REPLACE "YOUR-CODE" below with your own GoatCounter site code.
+  Until you replace it, this line does nothing harmful — it just points
+  at a dashboard that doesn't exist yet, so nothing gets recorded.
+-->
+<script data-goatcounter="https://sak26.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<!--
+  Cloudflare Web Analytics — kept here, inactive, for later use once
+  this site has a custom domain (Cloudflare Web Analytics does not
+  accept *.github.io as a site). Uncomment and fill in your token
+  once that's in place; see README.md for the sign-up steps.
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "YOUR_CLOUDFLARE_ANALYTICS_TOKEN"}'></script>
+-->
 </head>
 <body>
 
@@ -130,17 +151,6 @@
 
           <div id="myLayersList" class="myLayersList"></div>
 
-          <!-- Search + directions for "Minu kaardid" layers -->
-          <div class="nestedDivider">Otsi objekti</div>
-          <label class="smallLabel" for="searchLayerSelect">Kiht:</label>
-          <select id="searchLayerSelect"></select>
-          <label class="smallLabel" for="searchFieldSelect">Väli (nt nimi või kood):</label>
-          <select id="searchFieldSelect"></select>
-          <input type="text" id="searchTextInput" placeholder="Otsi väärtust...">
-          <button id="searchGoBtn" class="wideBtn secondaryBtn">🔍 Otsi</button>
-          <div id="searchStatus" class="statusLine"></div>
-          <div id="searchResult" class="searchResultBox hidden"></div>
-
         </div>
       </section>
 
@@ -215,10 +225,25 @@
   <!-- RIGHT: map -->
   <main id="mapPanel">
     <div id="map"></div>
-    <div class="mapQuickBaseButtons">
-      <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Eesti kaart</button>
-      <button id="quickFotoBtn" class="mapQuickBtn" data-layer-id="maaamet_foto">Ortofoto</button>
+    <div class="mapTopRightControls">
+      <div class="mapQuickBaseButtons">
+        <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Eesti kaart</button>
+        <button id="quickFotoBtn" class="mapQuickBtn" data-layer-id="maaamet_foto">Ortofoto</button>
+        <button id="mapSearchToggleBtn" class="mapQuickBtn">🔍 Otsi objekti</button>
+      </div>
+
+      <div id="mapSearchWidget" class="mapSearchWidget hidden">
+        <label class="smallLabel" for="searchLayerSelect">Kiht:</label>
+        <select id="searchLayerSelect"></select>
+        <label class="smallLabel" for="searchFieldSelect">Väli (nt nimi või kood):</label>
+        <select id="searchFieldSelect"></select>
+        <input type="text" id="searchTextInput" placeholder="Otsi väärtust...">
+        <button id="searchGoBtn" class="wideBtn secondaryBtn">🔍 Otsi</button>
+        <div id="searchStatus" class="statusLine"></div>
+        <div id="searchResult" class="searchResultBox hidden"></div>
+      </div>
     </div>
+
     <button id="mapLocateBtn" class="mapLocateBtn" title="Minu asukoht">📍</button>
     <div id="coordReadout" class="coordReadout"></div>
   </main>
@@ -241,18 +266,18 @@
 <p>Vali täpselt üks taustakaart: OpenStreetMap või Maa-ameti Eesti kaart / Hübriidkaart / Ortofoto / Valevärviortofoto.</p></template>
 
 <template id="tpl-eansInfo"><h3>EANS UTM / Droonikaart</h3>
-<p>Avalik Droonikaart (püsivad lennupiirangute alad, sisselogimist ei vaja) on tegelikult
-Esri ArcGIS rakendus. Sisselülitamisel avaneb see kaardi peale manusena ja proovib avaneda
-samale asukohale/suumile, mis on hetkel Taustakaardil (Taustakaart on "master" vaade),
-kasutades Esri dokumenteeritud <code>center=</code>/<code>level=</code> URL-parameetreid.</p>
-<p class="smallNote">Esri enda dokumentatsioon märgib, et parameetrite toetus sõltub
-rakenduse malli tüübist — see konkreetne rakendus kasutab "Portfolio" malli, mis on
-üles ehitatud pigem mitme sektsiooniga lehena kui puhta kaardivaatena, mistõttu
-sünkroonimine ei pruugi alati täpselt toimida. Kui see ei tööta, vajuta "🔄 Sünkrooni"
-uuesti proovimiseks või "Ava uues aknas" linki.</p>
-<p><strong>Lennuplaani esitamine</strong> (nõuab sisselogimist) on eraldi tööriist —
-selle jaoks vajuta manuse ribal "Lennuplaani esitamine ↗", mis avab utm.eans.ee/avm/
-uues aknas.</p></template>
+<p>utm.eans.ee/avm/ ei nõua sisselogimist kaardi <em>vaatamiseks</em> — ainult lennuplaani
+esitamiseks ja profiili muutmiseks. Sisselülitamisel avaneb see kaardi peale manusena ja
+proovib avaneda samale asukohale/suumile, mis on hetkel Taustakaardil (Taustakaart on
+"master" vaade).</p>
+<p class="smallNote">See on Frequentise ehitatud rakendus ilma avaldatud URL-parameetrite
+dokumentatsioonita, seega asukoha/suumi sünkroonimine on parim võimalik katse (mitte
+kinnitatud API) — kui see ei tööta, vajuta "🔄 Sünkrooni" uuesti proovimiseks või
+"Ava uues aknas" linki ja navigeeri seal käsitsi.</p>
+<p class="smallNote"><strong>NB!</strong> Varem proovisime siin Esri ArcGIS-põhist
+"Droonikaardi" versiooni, aga see nõudis kaardi nägemiseks ArcGIS Online kontosse
+sisselogimist — ei sobinud avatud, autentimiseta ligipääsu nõudele, seega on tagasi
+pöördutud utm.eans.ee/avm/ juurde.</p></template>
 
 <template id="tpl-priaInfo"><h3>PRIA põllumassiivid</h3>
 <p>Vajuta "↻ Lae kihtide loend", et tuua PRIA WFS-teenusest saadaolevad kihid.
@@ -292,9 +317,10 @@ suurte failide korral.</p>
 unikaalsele väärtusele oma värv, koos väikese legendiga).</p>
 <p><strong>Info ja sildid:</strong> klõpsa kaardil objektil, et näha kõiki
 selle andmevälju popup-aknas. Sildi väli valitakse kihi rea alt.</p>
-<p><strong>Otsing:</strong> vali kiht ja väli (nt nimi või kood), sisesta
-otsitav väärtus — leitud objektile suumitakse ja avaneb link Google
-Mapsi juhisteks ("Ava juhised") otse sellesse asukohta.</p></template>
+<p><strong>Otsing:</strong> otsingu leiad nüüd kaardi enda pealt, "🔍 Otsi objekti"
+nupu alt (paremal üleval, koos "Eesti kaart"/"Ortofoto" kiirnuppudega) — vali kiht
+ja väli (nt nimi või kood), sisesta otsitav väärtus, ja leitud objektile suumitakse
+koos lingiga Google Mapsi juhisteks otse sellesse asukohta.</p></template>
 
 <template id="tpl-sheetsInfo"><h3>Väliandmed (Sheets / repo-fail)</h3>
 <p><strong>Andmeallikas ei pea sisaldama koordinaate.</strong> Selle asemel peab

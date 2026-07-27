@@ -45,25 +45,18 @@ const CONFIG = {
 
   /* ------------------------------------------------------------------
      EANS UTM / DROONIKAART
-  ------------------------------------------------------------------- */
-  /* ------------------------------------------------------------------
-     EANS UTM / DROONIKAART
      ------------------------------------------------------------------
-     EANS has two separate tools:
-     1) The public "Droonikaart" (permanent restricted-zone viewer, no
-        login needed) — currently an Esri ArcGIS Instant Apps "Portfolio"
-        app. Esri's Instant Apps documentation confirms center=<lon>,<lat>
-        and level=<zoom> as real, supported URL parameters:
-        https://doc.arcgis.com/en/instant-apps/latest/customize/use-url-parameters.htm
-        — however Esri also notes support varies by app template, and
-        Portfolio apps are structured as multi-section pages rather than
-        a single dedicated map view, so syncing still isn't 100% guaranteed.
-     2) The flight-planning tool (utm.eans.ee/avm/), which requires login
-        to submit flight plans — kept as a separate "new tab" link since
-        it's a different tool for a different purpose.
+     Reverted: the Esri ArcGIS "Droonikaart" (eans.maps.arcgis.com) turned
+     out to require signing in to ArcGIS Online to view at all — not
+     usable for open public access. Back to utm.eans.ee/avm/, which
+     EANS's own documentation confirms does NOT require login just to
+     view the map (only for submitting flight plans).
+
+     URL-parameter sync (best-effort only): utm.eans.ee/avm/ is a
+     Frequentis-built app with no published URL-parameter documentation,
+     so lat/lon/zoom query params are a guess, not a confirmed API.
   ------------------------------------------------------------------- */
-  eansUrl: "https://eans.maps.arcgis.com/apps/instant/portfolio/index.html?appid=bd966e77560e42628d041733ef095cc0",
-  eansFlightPlanningUrl: "https://utm.eans.ee/avm/",
+  eansUrl: "https://utm.eans.ee/avm/",
 
   /* ------------------------------------------------------------------
      PRIA WFS (põllumassiivid)
