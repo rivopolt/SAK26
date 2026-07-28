@@ -102,12 +102,7 @@ function setupCollapseToggles() {
 function buildBaseLayers() {
   CONFIG.baseLayers.forEach(cfg => {
     let layer;
-    if (cfg.type === "osm") {
-      layer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: cfg.attribution
-      });
-    } else if (cfg.type === "maaamet-wms") {
+    if (cfg.type === "maaamet-wms") {
       layer = L.tileLayer.wms(CONFIG.maaametWmsUrl, {
         layers: cfg.layer,
         format: cfg.format,
@@ -115,7 +110,13 @@ function buildBaseLayers() {
         transparent: false,
         uppercase: true,
         crs: L.CRS.EPSG3857,
-        maxZoom: 18,
+        // Maa-amet has no native imagery past zoom 18, but the map itself
+        // (and features like search) can reach zoom 19 — maxNativeZoom
+        // makes Leaflet upscale the zoom-18 tiles instead of just showing
+        // a blank background once you go past 18 (this was the "background
+        // map disappears" bug).
+        maxNativeZoom: 18,
+        maxZoom: CONFIG.mapMaxZoom,
         minZoom: 3,
         attribution: cfg.attribution
       });
@@ -132,19 +133,10 @@ function buildBaseLayers() {
 }
 
 function setupBaseLayerUI() {
-  // Base layer switching now lives entirely as quick buttons on the map
-  // itself (Taustakaart section removed from the Kihid panel).
+  // Base layer switching lives entirely as quick buttons on the map itself.
   document.querySelectorAll(".mapQuickBtn[data-layer-id]").forEach(btn => {
     btn.addEventListener("click", () => switchBaseLayer(btn.dataset.layerId));
   });
-
-  document.getElementById("quickOtherBaseToggleBtn").addEventListener("click", () => {
-    const list = document.getElementById("quickOtherBaseList");
-    const nowHidden = list.classList.toggle("hidden");
-    document.getElementById("quickOtherBaseToggleBtn").textContent =
-      (nowHidden ? "▾" : "▴") + " Muud taustakaardid";
-  });
-
   updateBaseLayerUISync();
 }
 
@@ -842,7 +834,8 @@ function fillColorForFeature(entry, feature) {
 }
 
 function fillOpacityForEntry(entry) {
-  // fillTransparencyPercent: 0 = fully solid, 100 = fully invisible fill (outline only)
+  // fillTransparencyPercent (UI label: "Transp.") drives both fill and
+  // outline opacity together: 0 = fully solid, 100 = fully invisible.
   const pct = (entry.fillTransparencyPercent !== undefined) ? entry.fillTransparencyPercent : 80;
   return 1 - (pct / 100);
 }
@@ -862,16 +855,16 @@ function renderMyLayerForCurrentView(entry) {
   if (visibleFeatures.length === 0) return;
 
   const showLabels = zoom >= entry.labelMinZoom && !!entry.labelField;
-  const fillOpacity = fillOpacityForEntry(entry);
+  const opacityValue = fillOpacityForEntry(entry);
 
   const geoLayer = L.geoJSON({ type: "FeatureCollection", features: visibleFeatures }, {
     style: (feature) => {
       const fill = fillColorForFeature(entry, feature);
-      return { color: entry.outlineColor, weight: 3, fillColor: fill, fillOpacity };
+      return { color: entry.outlineColor, weight: 3, opacity: opacityValue, fillColor: fill, fillOpacity: opacityValue };
     },
     pointToLayer: (feature, latlng) => {
       const fill = fillColorForFeature(entry, feature);
-      return L.circleMarker(latlng, { radius: 7, color: entry.outlineColor, fillColor: fill, fillOpacity });
+      return L.circleMarker(latlng, { radius: 7, color: entry.outlineColor, opacity: opacityValue, fillColor: fill, fillOpacity: opacityValue });
     },
     onEachFeature: (feature, layer) => {
       bindFeaturePopup(feature, layer);
@@ -1131,9 +1124,10 @@ function renderMyLayersList() {
         if (entry.colorMode === "single") {
           const fillLabel = document.createElement("span");
           fillLabel.className = "smallLabel colorFieldLabel";
-          fillLabel.textContent = "Täitevärv:";
+          fillLabel.textContent = "Värv:";
           const fillInput = document.createElement("input");
           fillInput.type = "color";
+          fillInput.className = "colorSwatchInput";
           fillInput.value = entry.fillColor;
           fillInput.addEventListener("input", () => {
             entry.fillColor = fillInput.value;
@@ -1167,9 +1161,10 @@ function renderMyLayersList() {
         // keeps borders consistent even when fill varies by category.
         const outlineLabel = document.createElement("span");
         outlineLabel.className = "smallLabel colorFieldLabel";
-        outlineLabel.textContent = "Äärise värv:";
+        outlineLabel.textContent = "Joon:";
         const outlineInput = document.createElement("input");
         outlineInput.type = "color";
+        outlineInput.className = "colorSwatchInput";
         outlineInput.value = entry.outlineColor;
         outlineInput.addEventListener("input", () => {
           entry.outlineColor = outlineInput.value;
@@ -1179,11 +1174,11 @@ function renderMyLayersList() {
         colorSubRow.appendChild(outlineLabel);
         colorSubRow.appendChild(outlineInput);
 
-        // Fill transparency applies regardless of mode too (0% = solid,
-        // 100% = fully see-through, outline only).
+        // Transparency applies to both fill and outline together (0% = solid,
+        // 100% = fully see-through).
         const transparencyLabel = document.createElement("span");
         transparencyLabel.className = "smallLabel colorFieldLabel";
-        transparencyLabel.textContent = "Täite läbipaistvus (%):";
+        transparencyLabel.textContent = "Transp.:";
         const transparencyInput = document.createElement("input");
         transparencyInput.type = "number";
         transparencyInput.min = "0"; transparencyInput.max = "100"; transparencyInput.step = "5";
@@ -1446,6 +1441,7 @@ function performSearch() {
   if (center) {
     const targetZoom = Math.max(map.getZoom(), entry.minZoom, entry.labelMinZoom, 16);
     map.setView(center, targetZoom);
+    if (currentBaseLayer) currentBaseLayer.bringToBack(); // defensive: keep base map behind everything
     searchHighlightMarker = L.circleMarker(center, {
       radius: 12, color: "#ff0000", weight: 3, fillOpacity: 0
     }).addTo(map);

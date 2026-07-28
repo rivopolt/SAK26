@@ -255,14 +255,6 @@ html, body {
 .mapQuickBtn:hover { background: #eef4ff; }
 .mapQuickBtn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-.mapQuickOtherList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-left: 10px;
-  border-left: 2px solid var(--border);
-}
-
 .mapSearchWidget {
   width: 240px;
   background: #fff;
@@ -690,6 +682,23 @@ html, body {
   margin-left: 6px;
 }
 .colorFieldLabel:first-child { margin-left: 0; }
+
+/* Bigger, cube-like color swatches for "Värv"/"Joon" — the native
+   <input type="color"> is quite small by default and its current
+   color can be hard to see; this makes the selected color the clear
+   focal point of the control. */
+.colorSwatchInput {
+  width: 34px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.colorSwatchInput::-webkit-color-swatch-wrapper { padding: 2px; }
+.colorSwatchInput::-webkit-color-swatch { border: none; border-radius: 2px; }
+.colorSwatchInput::-moz-color-swatch { border: none; border-radius: 2px; }
 
 .myLayerLabelRow {
   display: flex;

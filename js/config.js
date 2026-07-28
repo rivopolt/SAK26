@@ -30,17 +30,10 @@ const CONFIG = {
   maaametWmsUrl: "https://tiles.maaamet.ee/tm/",
 
   baseLayers: [
-    { id: "osm", name: "OpenStreetMap", type: "osm",
-      attribution: "&copy; OpenStreetMap contributors" },
     { id: "maaamet_kaart", name: "Põhikaart (Maa-amet)", type: "maaamet-wms",
       layer: "kaart", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0", default: true },
-    { id: "maaamet_hybriid", name: "Hübriidkaart (Maa-amet)", type: "maaamet-wms",
-      layer: "hybriid", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0" },
     { id: "maaamet_foto", name: "Ortofoto (Maa-amet)", type: "maaamet-wms",
-      layer: "foto", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0" },
-    { id: "maaamet_foto_inf", name: "Valevärviortofoto / CIR (Maa-amet)", type: "maaamet-wms",
-      // KONTROLLI! kihi masinnimi ei olnud avalikust dokumentatsioonist 100% kinnitatav.
-      layer: "fotoinfra", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0" }
+      layer: "foto", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0" }
   ],
 
   /* ------------------------------------------------------------------

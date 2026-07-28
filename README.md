@@ -10,6 +10,36 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### "Muud taustakaardid" eemaldatud
+OpenStreetMap, Hübriidkaart ja Valevärviortofoto (CIR) on rakendusest
+täielikult eemaldatud — jäid ainult Põhikaart ja Ortofoto, mõlemad
+kaardi enda kiirnuppudena.
+
+### Parandatud: taustakaart kadus otsimisel (ja muul suumimisel)
+Põhjus: Maa-ameti WMS-kihtidel pole originaalpilti suumitasemest 18
+kaugemale, aga kaart ise (ja otsing) võib jõuda tasemeni 19 — ilma
+`maxNativeZoom` seadistuseta näitas Leaflet lihtsalt tühja tausta, kui
+suum jõudis üle 18. Nüüd suurendab Leaflet 18. taseme pilte automaatselt
+(veidi udusemalt) taseme 19 jaoks, selle asemel et tausta kaotada. See
+parandab probleemi mitte ainult otsingu puhul, vaid ka tavalisel
+suumimisel, mis iganes selleni viib.
+
+### Läbipaistvus kehtib nüüd nii Värvile kui Joonele
+Varem mõjutas "Transp." (endine "Täite läbipaistvus %") ainult täidet —
+nüüd mõjutab see korraga nii täidet ("Värv") kui äärisjoont ("Joon").
+
+### Väljade nimed lühemaks
+- "Täitevärv" → **"Värv"**
+- "Äärise värv" → **"Joon"**
+- "Täite läbipaistvus (%)" → **"Transp."**
+
+### "Värv" ja "Joon" värvivalija on nüüd suurem
+Värvinupud on nüüd selgemini nähtavad "kuubikud" (34×28px, vähem
+sisemist marginaali), mitte brauseri vaikimisi pisike värvinupp —
+valitud värv paistab palju paremini.
+
+## Varasem muudatuste pakett
+
 ### Otsingu sulgemisnupp
 "Otsi objekti" vidinal on nüüd oma "✕" nupp päises, et otsingut saaks
 kiirelt sulgeda ilma "🔍 Otsi objekti" nuppu uuesti otsimata.
@@ -48,7 +78,7 @@ ei väida, et see sünkroonib asukohta (mida see ei tee).
 Iga "Minu kaardid" kihi real on ▾/▸ nupp nüüd kõige esimene element (enne
 nähtavuse linnukest), mitte info/eemalda nuppude kõrval real paremal.
 
-## Varasem muudatuste pakett
+## Varasemad muudatused (2)
 
 ### Külastuste statistika (GoatCounter — vahetatud Cloudflare Web Analytics'e asemel)
 Esialgu lisati Cloudflare Web Analytics, aga selgus, et **Cloudflare ei
