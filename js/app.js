@@ -132,30 +132,19 @@ function buildBaseLayers() {
 }
 
 function setupBaseLayerUI() {
-  const container = document.getElementById("baseLayerList");
-  CONFIG.baseLayers.forEach(cfg => {
-    const row = document.createElement("div");
-    row.className = "layerRow";
-    const label = document.createElement("label");
-    const radio = document.createElement("input");
-    radio.type = "radio";
-    radio.name = "baseLayer";
-    radio.value = cfg.id;
-    radio.checked = !!cfg.default;
-    radio.dataset.layerId = cfg.id;
-    radio.addEventListener("change", () => switchBaseLayer(cfg.id));
-    const span = document.createElement("span");
-    span.textContent = cfg.name;
-    label.appendChild(radio);
-    label.appendChild(span);
-    row.appendChild(label);
-    container.appendChild(row);
-  });
-
-  // Small quick-access buttons directly on the map (no need to open the panel)
-  document.querySelectorAll(".mapQuickBtn").forEach(btn => {
+  // Base layer switching now lives entirely as quick buttons on the map
+  // itself (Taustakaart section removed from the Kihid panel).
+  document.querySelectorAll(".mapQuickBtn[data-layer-id]").forEach(btn => {
     btn.addEventListener("click", () => switchBaseLayer(btn.dataset.layerId));
   });
+
+  document.getElementById("quickOtherBaseToggleBtn").addEventListener("click", () => {
+    const list = document.getElementById("quickOtherBaseList");
+    const nowHidden = list.classList.toggle("hidden");
+    document.getElementById("quickOtherBaseToggleBtn").textContent =
+      (nowHidden ? "▾" : "▴") + " Muud taustakaardid";
+  });
+
   updateBaseLayerUISync();
 }
 
@@ -169,10 +158,7 @@ function switchBaseLayer(id) {
 
 function updateBaseLayerUISync(id) {
   const activeId = id || (CONFIG.baseLayers.find(c => c.default) || {}).id;
-  document.querySelectorAll('input[name="baseLayer"]').forEach(radio => {
-    radio.checked = radio.dataset.layerId === activeId;
-  });
-  document.querySelectorAll(".mapQuickBtn").forEach(btn => {
+  document.querySelectorAll(".mapQuickBtn[data-layer-id]").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.layerId === activeId);
   });
 }
@@ -187,16 +173,13 @@ function setupEans() {
   });
 }
 
-function currentMainViewParams() {
-  const c = map.getCenter();
-  return { lat: c.lat.toFixed(6), lon: c.lng.toFixed(6), zoom: map.getZoom() };
-}
-
 function eansUrlForCurrentView() {
-  const v = currentMainViewParams();
-  const sep = CONFIG.eansUrl.includes("?") ? "&" : "?";
-  // Best-effort only — utm.eans.ee/avm/ has no published URL-parameter API.
-  return `${CONFIG.eansUrl}${sep}lat=${v.lat}&lon=${v.lon}&zoom=${v.zoom}`;
+  // Confirmed (twice) that utm.eans.ee/avm/ ignores lat/lon/zoom-style query
+  // params — it has no published URL API, so we stopped guessing at
+  // parameter names that don't do anything. The iframe just opens at
+  // whatever view utm.eans.ee itself defaults to; use "Ava uues aknas"
+  // and navigate manually within their tool if you need a specific spot.
+  return CONFIG.eansUrl;
 }
 
 function openEansOverlay() {
@@ -207,7 +190,7 @@ function openEansOverlay() {
   overlay.innerHTML = `
     <div class="iframeOverlayBar">
       <span>EANS Droonikaart</span>
-      <button id="syncEansBtn" class="linkBtn">🔄 Sünkrooni Taustakaardiga</button>
+      <button id="syncEansBtn" class="linkBtn">🔄 Lae algusesse</button>
       <a href="${CONFIG.eansUrl}" target="_blank" rel="noopener" class="openNewTabLink">Ava uues aknas ↗</a>
       <button id="closeEansBtn" class="closeIframeBtn">✕</button>
     </div>
@@ -736,6 +719,7 @@ function saveLayerPrefs(entry) {
     colorMode: entry.colorMode,
     fillColor: entry.fillColor,
     outlineColor: entry.outlineColor,
+    fillTransparencyPercent: entry.fillTransparencyPercent,
     thematicField: entry.thematicField,
     thematicColorOverrides: entry.thematicColorOverrides
   };
@@ -785,7 +769,11 @@ function addGeoJsonToMap(geojson, label, source) {
     // fillColor replaces the old singleColor key; fall back to it if present
     // (older saved preferences from before Fill/Outline were split apart).
     fillColor: saved ? (saved.fillColor || saved.singleColor || defaultFillColor) : defaultFillColor,
-    outlineColor: (saved && saved.outlineColor) ? saved.outlineColor : "#333333",
+    // Outline defaults to match the fill color (so a fresh layer looks like
+    // one solid color until the user deliberately picks a different outline).
+    outlineColor: (saved && saved.outlineColor) ? saved.outlineColor
+      : (saved ? (saved.fillColor || saved.singleColor || defaultFillColor) : defaultFillColor),
+    fillTransparencyPercent: (saved && saved.fillTransparencyPercent !== undefined) ? saved.fillTransparencyPercent : 80,
     thematicField: saved ? saved.thematicField : null,
     thematicColorOverrides: (saved && saved.thematicColorOverrides) ? saved.thematicColorOverrides : {},
     thematicColorMap: null,
@@ -853,6 +841,12 @@ function fillColorForFeature(entry, feature) {
   return entry.fillColor;
 }
 
+function fillOpacityForEntry(entry) {
+  // fillTransparencyPercent: 0 = fully solid, 100 = fully invisible fill (outline only)
+  const pct = (entry.fillTransparencyPercent !== undefined) ? entry.fillTransparencyPercent : 80;
+  return 1 - (pct / 100);
+}
+
 function renderMyLayerForCurrentView(entry) {
   if (entry.renderedLayer) {
     map.removeLayer(entry.renderedLayer);
@@ -868,15 +862,16 @@ function renderMyLayerForCurrentView(entry) {
   if (visibleFeatures.length === 0) return;
 
   const showLabels = zoom >= entry.labelMinZoom && !!entry.labelField;
+  const fillOpacity = fillOpacityForEntry(entry);
 
   const geoLayer = L.geoJSON({ type: "FeatureCollection", features: visibleFeatures }, {
     style: (feature) => {
       const fill = fillColorForFeature(entry, feature);
-      return { color: entry.outlineColor, weight: 3, fillColor: fill, fillOpacity: 0.2 };
+      return { color: entry.outlineColor, weight: 3, fillColor: fill, fillOpacity };
     },
     pointToLayer: (feature, latlng) => {
       const fill = fillColorForFeature(entry, feature);
-      return L.circleMarker(latlng, { radius: 7, color: entry.outlineColor, fillColor: fill, fillOpacity: 0.7 });
+      return L.circleMarker(latlng, { radius: 7, color: entry.outlineColor, fillColor: fill, fillOpacity });
     },
     onEachFeature: (feature, layer) => {
       bindFeaturePopup(feature, layer);
@@ -969,9 +964,15 @@ function renderMyLayersList() {
     const row = document.createElement("div");
     row.className = "myLayerRow";
 
-    /* top line: visibility + name + info/remove/delete buttons */
+    /* top line: collapse toggle (first) + visibility + name + info/remove */
     const topLine = document.createElement("div");
     topLine.className = "myLayerTopLine";
+
+    const collapseToggleBtn = document.createElement("button");
+    collapseToggleBtn.className = "smallIconBtn";
+    collapseToggleBtn.title = "Ahenda/laienda kihi seaded";
+    collapseToggleBtn.textContent = entry.uiCollapsed ? "▸" : "▾";
+    topLine.appendChild(collapseToggleBtn);
 
     const visLabel = document.createElement("label");
     const visCb = document.createElement("input");
@@ -991,11 +992,6 @@ function renderMyLayersList() {
     const btnGroup = document.createElement("span");
     btnGroup.className = "myLayerBtnGroup";
 
-    const collapseToggleBtn = document.createElement("button");
-    collapseToggleBtn.className = "smallIconBtn";
-    collapseToggleBtn.title = "Ahenda/laienda kihi seaded";
-    collapseToggleBtn.textContent = entry.uiCollapsed ? "▸" : "▾";
-
     const infoBtn = document.createElement("button");
     infoBtn.className = "smallIconBtn";
     infoBtn.title = "Kihi info";
@@ -1008,7 +1004,6 @@ function renderMyLayersList() {
     removeBtn.textContent = "✕";
     removeBtn.addEventListener("click", () => removeMyLayer(entry.id));
 
-    btnGroup.appendChild(collapseToggleBtn);
     btnGroup.appendChild(infoBtn);
     btnGroup.appendChild(removeBtn);
     topLine.appendChild(btnGroup);
@@ -1183,6 +1178,28 @@ function renderMyLayersList() {
         });
         colorSubRow.appendChild(outlineLabel);
         colorSubRow.appendChild(outlineInput);
+
+        // Fill transparency applies regardless of mode too (0% = solid,
+        // 100% = fully see-through, outline only).
+        const transparencyLabel = document.createElement("span");
+        transparencyLabel.className = "smallLabel colorFieldLabel";
+        transparencyLabel.textContent = "Täite läbipaistvus (%):";
+        const transparencyInput = document.createElement("input");
+        transparencyInput.type = "number";
+        transparencyInput.min = "0"; transparencyInput.max = "100"; transparencyInput.step = "5";
+        transparencyInput.className = "zoomNumberInput";
+        transparencyInput.value = entry.fillTransparencyPercent;
+        transparencyInput.addEventListener("change", () => {
+          let pct = parseInt(transparencyInput.value, 10);
+          if (isNaN(pct)) pct = 80;
+          pct = Math.max(0, Math.min(100, pct));
+          transparencyInput.value = pct;
+          entry.fillTransparencyPercent = pct;
+          renderMyLayerForCurrentView(entry);
+          saveLayerPrefs(entry);
+        });
+        colorSubRow.appendChild(transparencyLabel);
+        colorSubRow.appendChild(transparencyInput);
       }
 
       const legendBox = document.createElement("div");
@@ -1342,12 +1359,20 @@ async function loadMyFilesEntry(fname) {
 function setupSearch() {
   document.getElementById("searchLayerSelect").addEventListener("change", refreshSearchFieldOptions);
   document.getElementById("searchGoBtn").addEventListener("click", performSearch);
-  document.getElementById("mapSearchToggleBtn").addEventListener("click", () => {
-    const widget = document.getElementById("mapSearchWidget");
-    const nowHidden = widget.classList.toggle("hidden");
-    document.getElementById("mapSearchToggleBtn").classList.toggle("active", !nowHidden);
-  });
+  document.getElementById("mapSearchToggleBtn").addEventListener("click", toggleSearchWidget);
+  document.getElementById("searchCloseBtn").addEventListener("click", () => closeSearchWidget());
   refreshSearchLayerOptions();
+}
+
+function toggleSearchWidget() {
+  const widget = document.getElementById("mapSearchWidget");
+  const nowHidden = widget.classList.toggle("hidden");
+  document.getElementById("mapSearchToggleBtn").classList.toggle("active", !nowHidden);
+}
+
+function closeSearchWidget() {
+  document.getElementById("mapSearchWidget").classList.add("hidden");
+  document.getElementById("mapSearchToggleBtn").classList.remove("active");
 }
 
 function refreshSearchLayerOptions() {

@@ -27,8 +27,9 @@
   Until you replace it, this line does nothing harmful — it just points
   at a dashboard that doesn't exist yet, so nothing gets recorded.
 -->
-<script data-goatcounter="https://sak26.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+<script data-goatcounter="https://YOUR-CODE.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>
+
 <!--
   Cloudflare Web Analytics — kept here, inactive, for later use once
   this site has a custom domain (Cloudflare Web Analytics does not
@@ -74,19 +75,6 @@
               <span>EANS UTM / Droonikaart</span>
             </label>
           </div>
-        </div>
-      </section>
-
-      <!-- BASE LAYERS -->
-      <section class="ctrlSection">
-        <div class="sectionHeaderRow">
-          <button class="collapseBtn" data-target="body-base" title="Ahenda/laienda">▾</button>
-          <h2>Taustakaart
-            <button class="infoIconBtn small" data-info="baseInfo">ⓘ</button>
-          </h2>
-        </div>
-        <div class="sectionBody" id="body-base">
-          <div id="baseLayerList" class="layerList"></div>
         </div>
       </section>
 
@@ -227,12 +215,22 @@
     <div id="map"></div>
     <div class="mapTopRightControls">
       <div class="mapQuickBaseButtons">
-        <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Eesti kaart</button>
+        <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Põhikaart</button>
         <button id="quickFotoBtn" class="mapQuickBtn" data-layer-id="maaamet_foto">Ortofoto</button>
+        <button id="quickOtherBaseToggleBtn" class="mapQuickBtn">▾ Muud taustakaardid</button>
+        <div id="quickOtherBaseList" class="mapQuickOtherList hidden">
+          <button class="mapQuickBtn" data-layer-id="osm">OpenStreetMap</button>
+          <button class="mapQuickBtn" data-layer-id="maaamet_hybriid">Hübriidkaart</button>
+          <button class="mapQuickBtn" data-layer-id="maaamet_foto_inf">Valevärviortofoto / CIR</button>
+        </div>
         <button id="mapSearchToggleBtn" class="mapQuickBtn">🔍 Otsi objekti</button>
       </div>
 
       <div id="mapSearchWidget" class="mapSearchWidget hidden">
+        <div class="mapSearchWidgetHeader">
+          <span>Otsi objekti</span>
+          <button id="searchCloseBtn" class="smallIconBtn" title="Sulge otsing">✕</button>
+        </div>
         <label class="smallLabel" for="searchLayerSelect">Kiht:</label>
         <select id="searchLayerSelect"></select>
         <label class="smallLabel" for="searchFieldSelect">Väli (nt nimi või kood):</label>
@@ -262,19 +260,16 @@
 </div>
 
 <!-- Hidden templates with help text for each info icon -->
-<template id="tpl-baseInfo"><h3>Taustakaart</h3>
-<p>Vali täpselt üks taustakaart: OpenStreetMap või Maa-ameti Eesti kaart / Hübriidkaart / Ortofoto / Valevärviortofoto.</p></template>
-
 <template id="tpl-eansInfo"><h3>EANS UTM / Droonikaart</h3>
 <p>utm.eans.ee/avm/ ei nõua sisselogimist kaardi <em>vaatamiseks</em> — ainult lennuplaani
-esitamiseks ja profiili muutmiseks. Sisselülitamisel avaneb see kaardi peale manusena ja
-proovib avaneda samale asukohale/suumile, mis on hetkel Taustakaardil (Taustakaart on
-"master" vaade).</p>
-<p class="smallNote">See on Frequentise ehitatud rakendus ilma avaldatud URL-parameetrite
-dokumentatsioonita, seega asukoha/suumi sünkroonimine on parim võimalik katse (mitte
-kinnitatud API) — kui see ei tööta, vajuta "🔄 Sünkrooni" uuesti proovimiseks või
-"Ava uues aknas" linki ja navigeeri seal käsitsi.</p>
-<p class="smallNote"><strong>NB!</strong> Varem proovisime siin Esri ArcGIS-põhist
+esitamiseks ja profiili muutmiseks. Sisselülitamisel avaneb see kaardi peale manusena.</p>
+<p class="smallNote"><strong>Asukoha/suumi automaatne sünkroonimine Taustakaardiga ei ole
+võimalik.</strong> Proovisime seda kahel korral erinevate URL-parameetritega — utm.eans.ee/avm/
+on Frequentise ehitatud rakendus ilma avaldatud URL-API-ta ja eirab neid parameetreid
+täielikult. Selle asemel navigeeri Droonikaardil käsitsi, või vajuta "Ava uues aknas" linki
+suuremas aknas töötamiseks. "🔄 Lae algusesse" nupp laeb manuse lihtsalt uuesti algvaatesse,
+kui oled sealt kaugele navigeerinud.</p>
+<p class="smallNote"><strong>NB!</strong> Varem proovisime siin ka Esri ArcGIS-põhist
 "Droonikaardi" versiooni, aga see nõudis kaardi nägemiseks ArcGIS Online kontosse
 sisselogimist — ei sobinud avatud, autentimiseta ligipääsu nõudele, seega on tagasi
 pöördutud utm.eans.ee/avm/ juurde.</p></template>
@@ -312,13 +307,17 @@ suumitasemest kiht ise ilmub (vaikimisi 13) ja millisest suumitasemest
 ilmuvad sildid (vaikimisi 15). Kiht kuvab alati ainult praeguses
 kaardivaates olevaid objekte, et hoida rakendus kiire ja kerge ka
 suurte failide korral.</p>
-<p><strong>Värvid:</strong> vali "Ühtne värv" (kogu kiht ühte värvi) või
-"Temaatiline" (värv vastavalt valitud andmevälja väärtusele — igale
-unikaalsele väärtusele oma värv, koos väikese legendiga).</p>
+<p><strong>Värvid:</strong> vali "Ühtne värv" (kogu täide üht värvi) või
+"Temaatiline" (täitevärv vastavalt valitud andmevälja väärtusele — igale
+unikaalsele väärtusele oma värv, koos väikese legendiga, legendis saab
+värve ka käsitsi ümber määrata). Täitevärv ja äärise värv on eraldi
+valikud — vaikimisi on need sama värvi, kuni muudad kumbagi eraldi.
+Lisaks saab reguleerida täite läbipaistvust protsentides (0% = täiesti
+täidetud, 100% = ainult äärisjoon, täide läbipaistev).</p>
 <p><strong>Info ja sildid:</strong> klõpsa kaardil objektil, et näha kõiki
 selle andmevälju popup-aknas. Sildi väli valitakse kihi rea alt.</p>
 <p><strong>Otsing:</strong> otsingu leiad nüüd kaardi enda pealt, "🔍 Otsi objekti"
-nupu alt (paremal üleval, koos "Eesti kaart"/"Ortofoto" kiirnuppudega) — vali kiht
+nupu alt (paremal üleval, koos "Põhikaart"/"Ortofoto" kiirnuppudega) — vali kiht
 ja väli (nt nimi või kood), sisesta otsitav väärtus, ja leitud objektile suumitakse
 koos lingiga Google Mapsi juhisteks otse sellesse asukohta.</p></template>
 

@@ -31,9 +31,9 @@ const CONFIG = {
 
   baseLayers: [
     { id: "osm", name: "OpenStreetMap", type: "osm",
-      attribution: "&copy; OpenStreetMap contributors", default: true },
-    { id: "maaamet_kaart", name: "Eesti kaart (Maa-amet)", type: "maaamet-wms",
-      layer: "kaart", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0" },
+      attribution: "&copy; OpenStreetMap contributors" },
+    { id: "maaamet_kaart", name: "Põhikaart (Maa-amet)", type: "maaamet-wms",
+      layer: "kaart", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0", default: true },
     { id: "maaamet_hybriid", name: "Hübriidkaart (Maa-amet)", type: "maaamet-wms",
       layer: "hybriid", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0" },
     { id: "maaamet_foto", name: "Ortofoto (Maa-amet)", type: "maaamet-wms",

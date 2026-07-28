@@ -255,6 +255,14 @@ html, body {
 .mapQuickBtn:hover { background: #eef4ff; }
 .mapQuickBtn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+.mapQuickOtherList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 10px;
+  border-left: 2px solid var(--border);
+}
+
 .mapSearchWidget {
   width: 240px;
   background: #fff;
@@ -262,6 +270,14 @@ html, body {
   border-radius: 8px;
   padding: 10px 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.mapSearchWidgetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 .mapSearchWidget select,
 .mapSearchWidget input[type="text"] {

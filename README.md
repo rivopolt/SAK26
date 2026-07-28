@@ -10,6 +10,141 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Otsingu sulgemisnupp
+"Otsi objekti" vidinal on nüüd oma "✕" nupp päises, et otsingut saaks
+kiirelt sulgeda ilma "🔍 Otsi objekti" nuppu uuesti otsimata.
+
+### Täite läbipaistvus (%)
+Iga "Minu kaardid" kihi juures saab nüüd määrata täitevärvi läbipaistvuse
+protsentides (0% = täiesti täidetud, 100% = ainult äärisjoon, täide
+nähtamatu). Kehtib nii ühtse värvi kui temaatilise värvimise puhul.
+
+### Äärise värv = vaikimisi sama, mis täitevärv
+Uue kihi lisamisel on äärise värv nüüd vaikimisi sama, mis täitevärv
+(varem oli see fikseeritud tumehall) — kiht näeb vaikimisi välja ühtlase
+värviga, kuni muudad kumbagi eraldi.
+
+### "Eesti kaart" → "Põhikaart", uus vaikimisi taustakaart
+Nimi muudetud selgemaks. Vaikimisi taustakaardiks on nüüd Põhikaart
+(varem OpenStreetMap).
+
+### Taustakaart eemaldatud "Kihid" paneelist
+Taustakaardi valik käib nüüd täielikult kaardi enda kiirnuppude kaudu:
+"Põhikaart" ja "Ortofoto" on alati nähtaval, "▾ Muud taustakaardid" nupp
+avab ülejäänud valikud (OpenStreetMap, Hübriidkaart, Valevärviortofoto).
+See ei kaota ühtegi varasemat võimalust — kõik viis taustakaarti on
+endiselt valitavad, lihtsalt kaardi pealt, mitte paneelist.
+
+### EANS Droonikaart: aus tagasiside sünkroonimise kohta
+Kaks järjestikust katset (erinevate URL-parameetritega) kinnitasid, et
+utm.eans.ee/avm/ ignoreerib täielikult meie saadetud asukoha/suumi
+parameetreid — sellel rakendusel pole avaldatud URL-API-t. Selle asemel
+kui jätkata toimimatute parameetrite saatmist, on see nüüd ausalt
+dokumenteeritud (info nupu all) ja "🔄 Sünkrooni" nupp on ümber nimetatud
+"🔄 Lae algusesse" — see lihtsalt laeb manuse uuesti algvaatesse, mitte
+ei väida, et see sünkroonib asukohta (mida see ei tee).
+
+### Kihi ahenda/laienda nupp — liigutatud esimeseks
+Iga "Minu kaardid" kihi real on ▾/▸ nupp nüüd kõige esimene element (enne
+nähtavuse linnukest), mitte info/eemalda nuppude kõrval real paremal.
+
+## Varasem muudatuste pakett
+
+### Külastuste statistika (GoatCounter — vahetatud Cloudflare Web Analytics'e asemel)
+Esialgu lisati Cloudflare Web Analytics, aga selgus, et **Cloudflare ei
+aktsepteeri `*.github.io` aadresse üldse** ("Invalid Domain" viga) —
+see pole seadistusviga, vaid teadlik piirang. `github.io` on nn "Public
+Suffix List"'is (nagu ka `blogspot.com`, `vercel.app` jms) — domeen,
+mille all jagavad paljud omavahel mitteseotud kasutajad alamdomeene, ja
+Cloudflare (nagu enamik domeeni-kinnitamist nõudvaid teenuseid) ei luba
+sellist jagatud domeeni "saidina" registreerida, kuna see võimaldaks
+kellelgi teiste kasutajate `.github.io` lehtede analüütikat "üle võtta".
+
+Seetõttu on aktiivne mõõtmisskript nüüd **GoatCounter**, mis töötab otse
+`github.io` aadressidel probleemideta, kuna see ei nõua saidi domeeni
+kinnitamist üldse — sa lood lihtsalt oma GoatCounteri konto/dashboardi
+ja suunad skripti sinna. GoatCounter on:
+- **Tasuta** (mitteäriliseks kasutuseks).
+- **Küpsisteta (cookie-free)** ja GDPR-sõbralik — ei vaja nõusolekubännerit.
+- **Töötab otse praeguse `github.io` aadressiga**, ei vaja kohandatud domeeni.
+
+**Seadistamine (vajalik ainult üks kord, ~2 minutit):**
+
+1. Loo tasuta konto: [goatcounter.com/signup](https://www.goatcounter.com/signup)
+   — sisesta e-post ja vali endale sobiv **kood** (nt `sak26`) — see saab
+   sinu dashboardi aadressiks: `https://sak26.goatcounter.com`.
+2. Pärast konto loomist näed juhiseid koos JavaScripti koodilõiguga:
+   ```html
+   <script data-goatcounter="https://sinu-kood.goatcounter.com/count"
+           async src="https://gc.zgo.at/count.js"></script>
+   ```
+3. Ava `index.html` selles projektis, leia rida:
+   ```html
+   <script data-goatcounter="https://YOUR-CODE.goatcounter.com/count"
+   ```
+   ja asenda `YOUR-CODE` oma valitud koodiga (samm 1).
+4. Salvesta, tee `git push`.
+5. Mõne minuti pärast hakkavad külastused ilmuma sinu GoatCounteri
+   dashboardile (`https://sinu-kood.goatcounter.com`) — külastajate arv,
+   lehevaatamised, viitajad (referrers), riigid, brauserid jms.
+
+**Cloudflare Web Analytics jääb `index.html` faili sisse kommenteerituna**
+— kui saad tulevikus kohandatud domeeni (nt `sak26.ejs.ee` või uus
+väike domeen, vt eespool autentimise arutelu), saab selle uuesti
+kasutusele võtta: eemalda kommentaarid ja täida oma Cloudflare'i token
+samamoodi nagu ülalpool kirjeldatud.
+
+**Enne tokeni lisamist** ei juhtu skriptiga midagi kahjulikku — see lihtsalt
+ei saada kuskile mitte midagi, kuni õige token on sisestatud.
+
+### Minu kaardid: iga kihi seaded on nüüd ahendatavad
+Iga kihi rea juures on ▾/▸ nupp, mis ahendab kihi seaded (suumipiirid,
+sildi väli, värvivalikud) ainult nime ja linnukesega reaks — kasulik,
+kui kaardil on mitu kihti korraga. Värskelt lisatud kiht on vaikimisi
+laiendatud, et seaded oleks kohe näha.
+
+### EANS Droonikaart — tagasi pöördutud utm.eans.ee/avm/ juurde
+Eelmises versioonis vahetasime Droonikaardi Esri ArcGIS-põhise versiooni
+vastu, lootuses paremat asukoha sünkroonimist saada — aga selgus, et see
+nõuab kaardi *vaatamiseks* ArcGIS Online kontosse sisselogimist, mis ei
+sobinud avatud, autentimiseta ligipääsu nõudega. Tagasi on
+utm.eans.ee/avm/ juures (ei nõua sisselogimist vaatamiseks, ainult
+lennuplaani esitamiseks), koos varasema `lat`/`lon`/`zoom` (parim katse,
+mitte kinnitatud API) sünkroonimisviisiga.
+
+### Kaks eraldi värvivalikut: täitevärv ja äärise värv
+Varasem "Ühtne värv" valik jagunes kaheks: **Täitevärv** (polügoni
+sisemus — temaatilise värvimise puhul muutub see kategooria järgi) ja
+**Äärise värv** (kontuur/piirjoon — jääb ühtlaseks olenemata
+värvimisviisist, tagamaks selge piiritluse ka siis, kui täitevärv
+kategooriati erineb).
+
+### Otsi objekti — liigutatud kaardi peale
+Otsing ei ole enam "Minu kaardid" paneeli sees, vaid otse kaardi peal,
+"🔍 Otsi objekti" nupu taga (paremal üleval, koos "Põhikaart" ja
+"Ortofoto" kiirnuppudega) — nii saab otsida ka siis, kui "Kihid" paneel
+on peidus.
+
+### Kus salvestuvad viimased seaded — ja kas neid saab IP/seadme järgi salvestada?
+Praegu salvestuvad kaardi viimane asukoht/suum ning iga "Minu kaardid"
+kihi suumipiirid/sildi väli/värvivalikud brauseri **`localStorage`-sse**
+(vt `js/app.js` võtmed: `myLayerPrefs`, `lastMapView`, `pria_layer_colors`,
+`pria_presets`). See on juba automaatselt "seadmepõhine" — iga
+brauser/seade säilitab oma seadeid eraldi.
+
+**IP-aadressi põhine salvestus ei sobiks siia hästi:** IP-aadressid on
+sageli jagatud paljude inimeste vahel samas võrgus (nt kontori WiFi) ja
+muutuvad tihti (mobiilne internet, dünaamilised IP-d) — see ei vasta
+usaldusväärselt ühele konkreetsele kasutajale.
+
+**Piirang:** seaded ei liigu seadmete vahel (nt tahvel → telefon) ega
+brauserite vahel samas seadmes. Kui sama seadet/brauserit kasutab mitu
+inimest (nt jagatud RC-kontroller), näevad kõik samu salvestatud
+seadeid. Päris seadmeülene sünkroonimine sama inimese jaoks nõuaks
+kasutajakontosid/sisselogimist, mis läheks vastuollu nii "avatud
+ligipääs kõigile, kellel link on" nõudega kui ka praeguse backend-vaba
+GitHub Pages arhitektuuriga.
+
 ### "Minu asukoht" ei olnud Android tahvlis nähtav — parandatud
 Leafleti vaikimisi `.leaflet-div-icon` stiil lisas meie sinisele täpile
 automaatselt valge tausta + raami, mis mõnel seadmel kattis selle
@@ -21,7 +156,7 @@ brauserid) vaikimisi tähelepanuta jätavad — vea korral ei juhtunud
 seetõttu justkui "mitte midagi". Kõik on nüüd asendatud rakenduse enda
 teavituste/kinnitusdialoogidega, mis töötavad usaldusväärselt kõikjal.
 
-### Kiirvalikud "Eesti kaart" ja "Ortofoto" otse kaardil
+### Kiirvalikud "Põhikaart" ja "Ortofoto" otse kaardil
 Kaardi paremas ülanurgas (suumikontrolli all) on nüüd kaks nuppu
 taustakaardi kiireks vahetamiseks, ilma "Kihid" paneeli avamata.
 
@@ -163,7 +298,7 @@ piirangute tõttu (CORS) võimalik ilma eraldi backendita.
 
 ## Muud funktsioonid
 
-- **Taustakaardid:** OpenStreetMap + Maa-ameti Eesti kaart / Hübriidkaart /
+- **Taustakaardid:** OpenStreetMap + Maa-ameti Põhikaart / Hübriidkaart /
   Ortofoto / Valevärviortofoto (WMS, `js/config.js` failis seadistatav).
 - **EANS UTM / Droonikaart:** `utm.eans.ee` avaneb kaardi peale manusena,
   proovides sünkroonida Taustakaardi asukoha/suumiga.
