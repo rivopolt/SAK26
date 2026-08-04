@@ -47,9 +47,10 @@ function init() {
     savedView ? savedView.zoom : CONFIG.initialView.zoom
   );
 
-  // Zoom control lives top-right so it never overlaps the "☰ Kihid"
-  // opener button (top-left) on narrow/mobile screens.
-  L.control.zoom({ position: "topright" }).addTo(map);
+  // Zoom control lives bottom-right, stacked just above the "📍 Minu
+  // asukoht" button — puts both within easy thumb-reach on mobile,
+  // instead of making people reach to the top of the screen.
+  L.control.zoom({ position: "bottomright" }).addTo(map);
 
   buildBaseLayers();
   setupBaseLayerUI();
