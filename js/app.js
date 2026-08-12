@@ -940,7 +940,7 @@ function bindFeaturePopup(feature, layer) {
   const center = getFeatureCenter(feature, layer);
   const dirLinkHtml = center
     ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}" ` +
-      `target="_blank" rel="noopener" class="popupDirLink">🚗 Google Maps juhised</a>`
+      `target="_blank" rel="noopener" class="popupDirLink">🚗 Navigeeri</a>`
     : "";
 
   const tableHtml = rows ? `<table class="popupTable">${rows}</table>` : "";
@@ -1469,7 +1469,7 @@ function performSearch() {
     dirLink.target = "_blank";
     dirLink.rel = "noopener";
     dirLink.className = "wideBtn directionsLink";
-    dirLink.textContent = "🚗 Ava Google Mapsi juhised";
+    dirLink.textContent = "🚗 Navigeeri";
     resultBox.appendChild(dirLink);
   }
 }

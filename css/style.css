@@ -286,7 +286,7 @@ html, body {
    directly above it — both reachable with a thumb on mobile. */
 .mapLocateBtn {
   position: absolute;
-  bottom: 36px;
+  bottom: 60px;
   right: 10px;
   z-index: 800;
   width: 40px;
@@ -303,9 +303,11 @@ html, body {
 
 /* Leaflet's own zoom +/- control, moved to bottom-right and pushed up
    so it sits just above the "📍 Minu asukoht" button (40px tall,
-   bottom: 36px) instead of overlapping it. */
+   bottom: 60px) instead of overlapping it. Both are raised further off
+   the bottom edge than a first pass, since some Android devices' own
+   on-screen nav bar/gesture area was covering them. */
 .leaflet-bottom.leaflet-right .leaflet-control-zoom {
-  margin: 0 10px 86px 0;
+  margin: 0 10px 110px 0;
 }
 
 /* -------- User location "blue dot" (Google-Maps style) -------- */
