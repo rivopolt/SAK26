@@ -10,6 +10,62 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Lehe avamisel kasutatakse asukohta, mitte kogu Eesti vaadet
+Lehe laadimisel käivitub nüüd automaatselt asukoha jälgimine (sama, mis
+"📍 Minu asukoht" nupp) — kaart tsentreerub kohe sinu praegusele
+asukohale, selle asemel et näidata vaikimisi kogu Eesti ülevaadet.
+Kui asukoha luba puudub/keeldutakse, jääb kaart ilusti tagavaravaatele
+(viimane salvestatud asukoht või Eesti ülevaade).
+
+### Asukoha vaikimisi suum: 15
+Nii lehe avamisel kui "📍 Minu asukoht" nupu vajutamisel kasutatav
+suumitase on nüüd 15 (varem 16).
+
+### Kolmele failile eelseadistatud suumipiirid ja väljad
+Uute kihtide (esmakordsel laadimisel, kui pole veel isiklikke salvestatud
+seadeid) vaikeväärtused:
+- **PriaKaerNisuMaisHernes...zip**: Zoom min 13, Zoom max 19, sildid
+  alates suumist 15, sildi väli "ViljadNimi", ning värvimine automaatselt
+  "Temaatiline" väljal "ViljadNimi" (kasutab juba varem seadistatud
+  hernes/kaer/mais/nisu vaikevärve).
+- **Sigalad_puhverala**: Zoom min 8, Zoom max 14.
+- **Jahipiirkond**: Zoom min 9, Zoom max 13.
+
+Kui oled mõnda neist kihtidest juba ise käsitsi kohandanud, jäävad sinu
+enda salvestatud seaded prioriteetseks — need eelseadistused kehtivad
+ainult esmakordsel laadimisel.
+
+### Skaalariba lisatud
+Kaardi paremal üleval, "🔍 Otsi objekti" nupu all, on nüüd väike
+skaalariba koos meetrites näidatava vahemaaga — sama laiune, mis nupud
+selle kohal. Uueneb automaatselt suumi/asukoha muutudes.
+
+## Varasem muudatuste pakett
+
+### "Google Maps juhis" → "Navigeeri"
+Nupu tekst lühemaks ja selgemaks — nii popup-akendes kui otsingutulemustes.
+
+### Suumi +/- ja asukoha nupp tõstetud kõrgemale
+Mõnel Android-seadmel jäi asukoha nupp ("📍") ekraani enda navigeerimisriba
+(gesture-riba) alla peaaegu nähtamatuks. Mõlemad nupud (suum + asukoht) on
+nüüd rohkem ekraani serva kohal — asukoha nupp `bottom: 60px` (varem 36px),
+suumikontroll vastavalt kõrgemal, jäädes endiselt üksteise kohale
+virnastatuna.
+
+## Varasemad muudatused (-1)
+
+### Suumi +/- nupud liigutatud paremale alla, asukoha nupu kohale
+Mobiilis on pöialega ligipääsetavus parem, kui juhtnupud on ekraani alumises
+osas, mitte üleval. Suumikontroll on nüüd otse "📍 Minu asukoht" nupu kohal,
+mõlemad paremas allnurgas, koos kergesti käega ulatuvad.
+
+### Põhikaart / Ortofoto / Otsi objekti nupud liikusid paremasse ülanurka
+Kuna suumikontroll ei ole enam ülal paremal, said kiirnupud selle koha
+enda kasutusse — varasem 56px vaba ruum (suumikontrolli jaoks) pole enam
+vajalik.
+
+## Varasemad muudatused (0)
+
 ### "Muud taustakaardid" eemaldatud
 OpenStreetMap, Hübriidkaart ja Valevärviortofoto (CIR) on rakendusest
 täielikult eemaldatud — jäid ainult Põhikaart ja Ortofoto, mõlemad
@@ -38,7 +94,7 @@ Värvinupud on nüüd selgemini nähtavad "kuubikud" (34×28px, vähem
 sisemist marginaali), mitte brauseri vaikimisi pisike värvinupp —
 valitud värv paistab palju paremini.
 
-## Varasem muudatuste pakett
+## Varasemad muudatused (1)
 
 ### Otsingu sulgemisnupp
 "Otsi objekti" vidinal on nüüd oma "✕" nupp päises, et otsingut saaks
@@ -232,7 +288,7 @@ asemel, et lihtsalt ebamääraselt ebaõnnestuda.
 Kui objekti andmeväljas on telefoninumbrile viitav väljanimi (nt
 "Telefon") või väärtus näeb välja nagu telefoninumber, kuvatakse see
 nüüd klõpsatava `tel:` lingina — mobiilis käivitab see otse kõne.
-Lisaks on iga objekti popup-aknas nüüd "🚗 Google Maps juhised" link,
+Lisaks on iga objekti popup-aknas nüüd "🚗 Navigeeri" link,
 mis avab suunad otse selle objekti tsentrisse (varem oli see nupp
 ainult eraldi otsingutulemuste kastis).
 

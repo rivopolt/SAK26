@@ -255,6 +255,28 @@ html, body {
 .mapQuickBtn:hover { background: #eef4ff; }
 .mapQuickBtn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+.mapScaleBar {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 8px 6px 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+.mapScaleBarLabel {
+  font-size: 11px;
+  text-align: center;
+  color: var(--text-main);
+  margin-bottom: 2px;
+  line-height: 1;
+}
+.mapScaleBarLine {
+  height: 6px;
+  border-left: 2px solid var(--text-main);
+  border-right: 2px solid var(--text-main);
+  border-bottom: 2px solid var(--text-main);
+}
+
 .mapSearchWidget {
   width: 240px;
   background: #fff;

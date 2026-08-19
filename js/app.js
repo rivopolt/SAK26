@@ -65,12 +65,19 @@ function init() {
   setupCoordReadout();
   setupPanelToggle();
   setupModals();
+  setupScaleBar();
 
   map.on("moveend", debounce(() => {
     refreshAllEnabledPriaLayers();
     refreshAllMyLayers();
     saveMapView();
   }, 400));
+
+  // Auto-start live location on page load rather than sitting on the
+  // full-Estonia overview — if geolocation is denied/unavailable this
+  // fails quietly (via the banner already wired into toggleLiveLocation)
+  // and the map just stays on the saved/default view as a fallback.
+  toggleLiveLocation();
 }
 
 function getSavedMapView() {
@@ -502,7 +509,7 @@ function toggleLiveLocation() {
       const { latitude, longitude, accuracy } = pos.coords;
       updateUserLocationMarker(latitude, longitude, accuracy);
       if (firstFix) {
-        map.setView([latitude, longitude], 16);
+        map.setView([latitude, longitude], CONFIG.locationDefaultZoom);
         firstFix = false;
       } else {
         // "Follow me": keep the current position centered as it moves,
@@ -548,6 +555,45 @@ function setupCoordReadout() {
   const el = document.getElementById("coordReadout");
   map.on("mousemove", e => { el.textContent = `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}`; });
   map.on("click", e => { el.textContent = `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)} (klikitud)`; });
+}
+
+/* ---------------------------------------------------------------------- */
+/* SCALE BAR — deliberately custom rather than Leaflet's built-in         */
+/* L.control.scale, so its width always matches the quick-button stack    */
+/* above it (Leaflet's own scale control picks its own "nice number"      */
+/* width instead of a fixed one).                                         */
+/* ---------------------------------------------------------------------- */
+function setupScaleBar() {
+  updateScaleBar();
+  setTimeout(updateScaleBar, 300); // defensive: catch any late layout settling on first paint
+  map.on("zoomend", updateScaleBar);
+  map.on("moveend", updateScaleBar);
+  window.addEventListener("resize", debounce(updateScaleBar, 200));
+}
+
+function updateScaleBar() {
+  const lineEl = document.querySelector("#mapScaleBar .mapScaleBarLine");
+  const labelEl = document.getElementById("mapScaleBarLabel");
+  if (!lineEl || !labelEl || !map) return;
+
+  const widthPx = lineEl.getBoundingClientRect().width;
+  if (!widthPx) return;
+
+  const centerY = map.getSize().y / 2;
+  const p1 = map.containerPointToLatLng([0, centerY]);
+  const p2 = map.containerPointToLatLng([widthPx, centerY]);
+  const meters = map.distance(p1, p2);
+
+  labelEl.textContent = formatScaleMeters(meters);
+}
+
+function formatScaleMeters(meters) {
+  let rounded;
+  if (meters < 20) rounded = Math.round(meters);
+  else if (meters < 200) rounded = Math.round(meters / 5) * 5;
+  else if (meters < 2000) rounded = Math.round(meters / 50) * 50;
+  else rounded = Math.round(meters / 500) * 500;
+  return `${rounded} m`;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -702,6 +748,11 @@ function getSavedLayerPrefs(name) {
   } catch (e) { return null; }
 }
 
+function getNamePreset(name) {
+  const presets = CONFIG.myLayers.namePresets || [];
+  return presets.find(p => p.match.test(name)) || null;
+}
+
 function saveLayerPrefs(entry) {
   const all = JSON.parse(localStorage.getItem("myLayerPrefs") || "{}");
   all[entry.name] = {
@@ -746,6 +797,7 @@ function addGeoJsonToMap(geojson, label, source) {
   features.forEach(f => { f.__bounds = computeFeatureBounds(f); });
 
   const saved = getSavedLayerPrefs(label);
+  const preset = getNamePreset(label);
 
   const defaultFillColor = CONFIG.myLayers.colorPalette[Object.keys(myLayers).length % CONFIG.myLayers.colorPalette.length];
 
@@ -753,12 +805,13 @@ function addGeoJsonToMap(geojson, label, source) {
     id, name: label, source,
     rawFeatures: features,
     fields: collectFieldNamesFromFeatures(features),
-    labelField: saved ? saved.labelField : null,
-    minZoom: saved ? saved.minZoom : CONFIG.myLayers.defaultMinZoom,
-    maxZoom: (saved && saved.maxZoom !== undefined) ? saved.maxZoom : CONFIG.myLayers.defaultMaxZoom,
-    labelMinZoom: saved ? saved.labelMinZoom : CONFIG.myLayers.defaultLabelMinZoom,
+    labelField: saved ? saved.labelField : (preset && preset.labelField !== undefined ? preset.labelField : null),
+    minZoom: saved ? saved.minZoom : (preset && preset.minZoom !== undefined ? preset.minZoom : CONFIG.myLayers.defaultMinZoom),
+    maxZoom: (saved && saved.maxZoom !== undefined) ? saved.maxZoom
+      : (preset && preset.maxZoom !== undefined ? preset.maxZoom : CONFIG.myLayers.defaultMaxZoom),
+    labelMinZoom: saved ? saved.labelMinZoom : (preset && preset.labelMinZoom !== undefined ? preset.labelMinZoom : CONFIG.myLayers.defaultLabelMinZoom),
     visible: true,
-    colorMode: saved ? saved.colorMode : "single",
+    colorMode: saved ? saved.colorMode : (preset && preset.colorMode !== undefined ? preset.colorMode : "single"),
     // fillColor replaces the old singleColor key; fall back to it if present
     // (older saved preferences from before Fill/Outline were split apart).
     fillColor: saved ? (saved.fillColor || saved.singleColor || defaultFillColor) : defaultFillColor,
@@ -767,7 +820,7 @@ function addGeoJsonToMap(geojson, label, source) {
     outlineColor: (saved && saved.outlineColor) ? saved.outlineColor
       : (saved ? (saved.fillColor || saved.singleColor || defaultFillColor) : defaultFillColor),
     fillTransparencyPercent: (saved && saved.fillTransparencyPercent !== undefined) ? saved.fillTransparencyPercent : 80,
-    thematicField: saved ? saved.thematicField : null,
+    thematicField: saved ? saved.thematicField : (preset && preset.thematicField !== undefined ? preset.thematicField : null),
     thematicColorOverrides: (saved && saved.thematicColorOverrides) ? saved.thematicColorOverrides : {},
     thematicColorMap: null,
     thematicLegend: [],

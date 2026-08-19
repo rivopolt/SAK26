@@ -16,6 +16,10 @@ const CONFIG = {
   mapMinZoom: 3,
   mapMaxZoom: 19,
 
+  // Zoom level used when centering on the user's live location (both on
+  // page load and when tapping "📍 Minu asukoht" manually).
+  locationDefaultZoom: 15,
+
   estoniaBounds: [
     [57.5, 21.7],
     [59.7, 28.2]
@@ -94,7 +98,22 @@ const CONFIG = {
       "kaer": "#f28b82",     // light red/coral (oats)
       "mais": "#8b6b1f",     // dark yellow/brownish (maize)
       "nisu": "#fff2a8"      // light yellow (wheat)
-    }
+    },
+    // Per-file default zoom/label/color settings for specific known
+    // layers, applied the first time that file is loaded (matched by
+    // filename, case-insensitive substring). A person's own saved
+    // preferences (localStorage, once they've customized a layer) always
+    // take priority over these — this only sets the starting point.
+    namePresets: [
+      {
+        match: /kaernisumaishernes/i,
+        minZoom: 13, maxZoom: 19, labelMinZoom: 15,
+        labelField: "ViljadNimi",
+        colorMode: "thematic", thematicField: "ViljadNimi"
+      },
+      { match: /sigalad_puhverala/i, minZoom: 8, maxZoom: 14 },
+      { match: /jahipiirkond/i, minZoom: 9, maxZoom: 13 }
+    ]
   },
 
   /* ------------------------------------------------------------------
