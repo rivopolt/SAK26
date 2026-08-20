@@ -1,0 +1,5 @@
+{
+  "type": "FeatureCollection",
+  "features": [],
+  "_note": "Placeholder — populated automatically by .github/workflows/update-notam.yml (daily). Trigger it manually via the Actions tab (workflow_dispatch) to fill this immediately after first deploying, rather than waiting for the next scheduled run."
+}

@@ -63,12 +63,12 @@
       <!-- LENNULIIKLUS (moved to top of layer sections) -->
       <section class="ctrlSection">
         <div class="sectionHeaderRow">
-          <button class="collapseBtn" data-target="body-eans" title="Ahenda/laienda">▾</button>
+          <button class="collapseBtn" data-target="body-eans" title="Ahenda/laienda">▸</button>
           <h2>Lennuliiklus
             <button class="infoIconBtn small" data-info="eansInfo">ⓘ</button>
           </h2>
         </div>
-        <div class="sectionBody" id="body-eans">
+        <div class="sectionBody collapsed" id="body-eans">
           <div class="layerRow">
             <label>
               <input type="checkbox" id="eansToggle">
@@ -81,12 +81,12 @@
       <!-- PRIA WFS -->
       <section class="ctrlSection">
         <div class="sectionHeaderRow">
-          <button class="collapseBtn" data-target="body-pria" title="Ahenda/laienda">▾</button>
+          <button class="collapseBtn" data-target="body-pria" title="Ahenda/laienda">▸</button>
           <h2>PRIA põllumassiivid
             <button class="infoIconBtn small" data-info="priaInfo">ⓘ</button>
           </h2>
         </div>
-        <div class="sectionBody" id="body-pria">
+        <div class="sectionBody collapsed" id="body-pria">
 
           <button id="priaLoadLayersBtn" class="wideBtn secondaryBtn">↻ Lae kihtide loend</button>
 
@@ -117,12 +117,12 @@
       <!-- MINU KAARDID -->
       <section class="ctrlSection">
         <div class="sectionHeaderRow">
-          <button class="collapseBtn" data-target="body-mine" title="Ahenda/laienda">▾</button>
+          <button class="collapseBtn" data-target="body-mine" title="Ahenda/laienda">▸</button>
           <h2>Minu kaardid
             <button class="infoIconBtn small" data-info="myMapsInfo">ⓘ</button>
           </h2>
         </div>
-        <div class="sectionBody" id="body-mine">
+        <div class="sectionBody collapsed" id="body-mine">
 
           <div class="layerRow">
             <label for="fileInput" class="wideBtn fileBtn">＋ Lisa fail (eelvaade ainult minu brauseris)</label>
@@ -145,12 +145,12 @@
       <!-- Live field-data join (Google Sheets or a repo-committed CSV/XLSX) -->
       <section class="ctrlSection">
         <div class="sectionHeaderRow">
-          <button class="collapseBtn" data-target="body-sheets" title="Ahenda/laienda">▾</button>
+          <button class="collapseBtn" data-target="body-sheets" title="Ahenda/laienda">▸</button>
           <h2>Väliandmed (Sheets / repo-fail)
             <button class="infoIconBtn small" data-info="sheetsInfo">ⓘ</button>
           </h2>
         </div>
-        <div class="sectionBody" id="body-sheets">
+        <div class="sectionBody collapsed" id="body-sheets">
 
           <div class="sourceToggle">
             <label><input type="radio" name="sheetSource" value="google" checked> Google Sheets</label>
@@ -217,6 +217,7 @@
       <div class="mapQuickBaseButtons">
         <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Põhikaart</button>
         <button id="quickFotoBtn" class="mapQuickBtn" data-layer-id="maaamet_foto">Ortofoto</button>
+        <button id="notamToggleBtn" class="mapQuickBtn">NOTAM GEO</button>
         <button id="mapSearchToggleBtn" class="mapQuickBtn">🔍 Otsi objekti</button>
         <div id="mapScaleBar" class="mapScaleBar">
           <div class="mapScaleBarLine"></div>

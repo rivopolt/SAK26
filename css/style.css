@@ -256,25 +256,24 @@ html, body {
 .mapQuickBtn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 .mapScaleBar {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 4px 8px 6px 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  padding: 2px 2px 4px 2px;
   box-sizing: border-box;
 }
 .mapScaleBarLabel {
   font-size: 11px;
+  font-weight: 600;
   text-align: center;
-  color: var(--text-main);
+  color: #1b1f23;
+  text-shadow: 0 0 3px rgba(255,255,255,0.65), 0 0 3px rgba(255,255,255,0.65);
   margin-bottom: 2px;
   line-height: 1;
 }
 .mapScaleBarLine {
   height: 6px;
-  border-left: 2px solid var(--text-main);
-  border-right: 2px solid var(--text-main);
-  border-bottom: 2px solid var(--text-main);
+  border-left: 2px solid #1b1f23;
+  border-right: 2px solid #1b1f23;
+  border-bottom: 2px solid #1b1f23;
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.65));
 }
 
 .mapSearchWidget {
@@ -308,7 +307,7 @@ html, body {
    directly above it — both reachable with a thumb on mobile. */
 .mapLocateBtn {
   position: absolute;
-  bottom: 60px;
+  bottom: 66px;
   right: 10px;
   z-index: 800;
   width: 40px;
@@ -323,13 +322,19 @@ html, body {
 .mapLocateBtn:hover { background: #eef4ff; }
 .mapLocateBtn.active { background: var(--accent); filter: brightness(1.1); }
 
-/* Leaflet's own zoom +/- control, moved to bottom-right and pushed up
-   so it sits just above the "📍 Minu asukoht" button (40px tall,
-   bottom: 60px) instead of overlapping it. Both are raised further off
-   the bottom edge than a first pass, since some Android devices' own
-   on-screen nav bar/gesture area was covering them. */
+/* Leaflet's own zoom +/- control, moved to bottom-right, enlarged to
+   match the "📍" button's 40px width (Leaflet's default 26px buttons
+   were noticeably smaller/harder to tap), and pulled in tight (~6px
+   gap) just above the location button so the whole cluster reads as
+   one connected set of controls. */
 .leaflet-bottom.leaflet-right .leaflet-control-zoom {
-  margin: 0 10px 110px 0;
+  margin: 0 10px 112px 0;
+}
+.leaflet-bottom.leaflet-right .leaflet-control-zoom a {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 20px;
 }
 
 /* -------- User location "blue dot" (Google-Maps style) -------- */
@@ -360,6 +365,13 @@ html, body {
 .popupTable { font-size: 12px; border-collapse: collapse; }
 .popupTable td { padding: 2px 6px; border-bottom: 1px solid #eee; vertical-align: top; }
 .popupTable td:first-child { font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+
+.notamSourceNote {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin: 4px 0;
+}
 
 /* -------- EANS iframe overlay -------- */
 .iframeOverlay {

@@ -56,6 +56,37 @@ const CONFIG = {
   eansUrl: "https://utm.eans.ee/avm/",
 
   /* ------------------------------------------------------------------
+     NOTAM GEO (UAS geographical zones)
+     ------------------------------------------------------------------
+     Confirmed live and reachable: https://utm.eans.ee/avm/utm/uas.geojson
+     — real NOTAM/geofencing data (danger areas, restricted zones,
+     Tallinn CTR sub-zones etc.), updated by EANS same-day per the
+     feed's own metaData.updateDateTime timestamps.
+
+     STRATEGY: try the live URL first (freshest possible data — this
+     matters, since restricted/danger areas can appear or disappear
+     within hours). If the live fetch fails (e.g. CORS), fall back to
+     a same-origin mirror copy that a daily GitHub Action keeps
+     refreshed (see .github/workflows/update-notam.yml). The UI always
+     shows which source is currently in use.
+
+     Many features in the feed carry their own color (either a hex+alpha
+     "color.fill"/"color.stroke" pair, or ready-to-use "fillColor"/
+     "strokeColor" rgba() strings) — those are used as-is when present,
+     since they encode real meaning (e.g. fully-transparent = an
+     unrestricted zone). These defaults only apply when a feature has
+     no color of its own.
+  ------------------------------------------------------------------- */
+  notam: {
+    liveUrl: "https://utm.eans.ee/avm/utm/uas.geojson",
+    mirrorUrl: "MyFiles/data/notam_geo.geojson",
+    defaultFillColor: "#fce300",
+    defaultStrokeColor: "#002cff",
+    defaultFillOpacity: 0.3,
+    defaultStrokeOpacity: 0.7
+  },
+
+  /* ------------------------------------------------------------------
      PRIA WFS (põllumassiivid)
      ------------------------------------------------------------------
      Kihtide loend tuuakse dünaamiliselt WFS GetCapabilities päringust.
@@ -111,7 +142,13 @@ const CONFIG = {
         labelField: "ViljadNimi",
         colorMode: "thematic", thematicField: "ViljadNimi"
       },
-      { match: /sigalad_puhverala/i, minZoom: 8, maxZoom: 14 },
+      {
+        // KML styling metadata (styleUrl, fill-opacity, stroke-width, etc.)
+        // leaks into properties via togeojson conversion and isn't useful
+        // to show — restrict the popup to just the name.
+        match: /sigalad_puhverala/i, minZoom: 8, maxZoom: 14,
+        popupFields: ["name"]
+      },
       { match: /jahipiirkond/i, minZoom: 9, maxZoom: 13 }
     ]
   },

@@ -9,6 +9,10 @@ let userLocationMarker = null;
 let userAccuracyCircle = null;
 let locationWatchId = null;
 
+/* ---- NOTAM GEO ---- */
+let notamLayerGroup = null;
+let notamDataSource = null; // "live" | "mirror" | null
+
 /* ---- PRIA ---- */
 let priaLayersMeta = [];        // [{name, title}] from GetCapabilities
 const priaLayersState = {};     // typeName -> { color, geo, loading }
@@ -56,6 +60,7 @@ function init() {
   setupBaseLayerUI();
   setupCollapseToggles();
   setupEans();
+  setupNotam();
   setupPria();
   setupFileUpload();
   setupMyFilesBrowser();
@@ -209,6 +214,151 @@ function openEansOverlay() {
 function closeEansOverlay() {
   const overlay = document.getElementById("eansOverlay");
   if (overlay) overlay.remove();
+}
+
+/* ---------------------------------------------------------------------- */
+/* NOTAM GEO — live UAS geofencing zones from EANS, with a same-origin      */
+/* mirror fallback (see .github/workflows/update-notam.yml) in case the    */
+/* live endpoint ever blocks direct browser fetch (CORS).                  */
+/* ---------------------------------------------------------------------- */
+function setupNotam() {
+  document.getElementById("notamToggleBtn").addEventListener("click", toggleNotamLayer);
+}
+
+async function toggleNotamLayer() {
+  const btn = document.getElementById("notamToggleBtn");
+
+  if (notamLayerGroup) {
+    map.removeLayer(notamLayerGroup);
+    notamLayerGroup = null;
+    notamDataSource = null;
+    btn.classList.remove("active");
+    return;
+  }
+
+  btn.classList.add("active");
+  showBanner("Laen NOTAM GEO andmeid...");
+
+  const geojson = await loadNotamData();
+  if (!geojson) {
+    btn.classList.remove("active");
+    showBanner("NOTAM GEO andmete laadimine ebaõnnestus (nii otseühendus kui peegeldatud koopia ei toiminud).");
+    return;
+  }
+
+  notamLayerGroup = L.geoJSON(geojson, {
+    style: notamFeatureStyle,
+    onEachFeature: bindNotamPopup
+  }).addTo(map);
+
+  const sourceLabel = notamDataSource === "live"
+    ? "otseühendusest EANS-ist"
+    : "peegeldatud koopiast (võib olla kuni ~24h vana — vt README)";
+  showBanner(`NOTAM GEO laetud ${sourceLabel}.`);
+}
+
+async function loadNotamData() {
+  // Primary: live fetch, for the freshest possible data.
+  try {
+    const resp = await fetch(CONFIG.notam.liveUrl);
+    if (resp.ok) {
+      const geojson = await resp.json();
+      notamDataSource = "live";
+      return geojson;
+    }
+  } catch (e) {
+    console.warn("NOTAM live fetch failed, trying mirror:", e);
+  }
+
+  // Fallback: same-origin mirror, refreshed daily by a GitHub Action.
+  try {
+    const resp = await fetch(`${CONFIG.notam.mirrorUrl}?t=${Date.now()}`);
+    if (resp.ok) {
+      const geojson = await resp.json();
+      notamDataSource = "mirror";
+      return geojson;
+    }
+  } catch (e) {
+    console.warn("NOTAM mirror fetch also failed:", e);
+  }
+
+  notamDataSource = null;
+  return null;
+}
+
+function hex8ToRgbaParts(hex8) {
+  const clean = String(hex8).replace("#", "");
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+  const aRaw = clean.length >= 8 ? parseInt(clean.substring(6, 8), 16) / 255 : 1;
+  return { rgb: `rgb(${r},${g},${b})`, alpha: isNaN(aRaw) ? 1 : aRaw };
+}
+
+function notamFeatureStyle(feature) {
+  const props = feature.properties || {};
+
+  // Some features already carry ready-to-use rgba() strings.
+  if (props.fillColor && props.strokeColor) {
+    return { fillColor: props.fillColor, color: props.strokeColor, fillOpacity: 1, opacity: 1, weight: 2 };
+  }
+
+  // Others carry an 8-digit hex (#RRGGBBAA) pair instead — parse out the
+  // alpha channel explicitly rather than relying on 8-digit-hex CSS
+  // support, since this app also targets older embedded WebViews.
+  if (props.color && props.color.fill && props.color.stroke) {
+    const fill = hex8ToRgbaParts(props.color.fill);
+    const stroke = hex8ToRgbaParts(props.color.stroke);
+    return { fillColor: fill.rgb, color: stroke.rgb, fillOpacity: fill.alpha, opacity: stroke.alpha, weight: 2 };
+  }
+
+  // Fallback: the same yellow-fill/blue-outline convention used by the
+  // features that do specify their own color (matches NOTAM Droonikaart).
+  return {
+    fillColor: CONFIG.notam.defaultFillColor,
+    color: CONFIG.notam.defaultStrokeColor,
+    fillOpacity: CONFIG.notam.defaultFillOpacity,
+    opacity: CONFIG.notam.defaultStrokeOpacity,
+    weight: 2
+  };
+}
+
+function bindNotamPopup(feature, layer) {
+  const props = feature.properties || {};
+  const rows = [];
+
+  const addRow = (label, value) => {
+    if (value === undefined || value === null || value === "") return;
+    rows.push(`<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(String(value))}</td></tr>`);
+  };
+
+  addRow("Nimi", props.name || props.identifier);
+  addRow("Piirang", props.restriction);
+  addRow("Põhjus", props.reason);
+  if (props.lower && props.upper) addRow("Kõrgus", `${props.lower} – ${props.upper}`);
+  addRow("Teade", props.message);
+
+  const etMsg = props.extendedProperties && Array.isArray(props.extendedProperties.localizedMessages)
+    ? props.extendedProperties.localizedMessages.find(m => m.language === "et-EE")
+    : null;
+  if (etMsg) addRow("Teade (ET)", etMsg.message);
+
+  const app = Array.isArray(props.applicability) ? props.applicability[0] : null;
+  if (app && app.permanent === "NO" && app.startDateTime && app.endDateTime) {
+    const fmt = iso => new Date(iso).toLocaleString("et-EE");
+    addRow("Kehtiv", `${fmt(app.startDateTime)} – ${fmt(app.endDateTime)}`);
+  }
+
+  const center = getFeatureCenter(feature, layer);
+  const dirLinkHtml = center
+    ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}" ` +
+      `target="_blank" rel="noopener" class="popupDirLink">🚗 Navigeeri</a>`
+    : "";
+
+  const sourceText = notamDataSource === "live" ? "otseühendus (EANS)" : "peegeldatud koopia";
+  const sourceNote = `<p class="notamSourceNote">Andmed: ${escapeHtml(sourceText)}</p>`;
+
+  layer.bindPopup(`<table class="popupTable">${rows.join("")}</table>${sourceNote}${dirLinkHtml}`);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -825,7 +975,10 @@ function addGeoJsonToMap(geojson, label, source) {
     thematicColorMap: null,
     thematicLegend: [],
     renderedLayer: null,
-    uiCollapsed: false
+    uiCollapsed: false,
+    // Optional whitelist of property keys to show in the popup (in order);
+    // null means "show everything" (the default, generic behavior).
+    popupFields: (preset && preset.popupFields) ? preset.popupFields : null
   };
   updateThematicColorMap(entry);
 
@@ -921,7 +1074,7 @@ function renderMyLayerForCurrentView(entry) {
       return L.circleMarker(latlng, { radius: 7, color: entry.outlineColor, opacity: opacityValue, fillColor: fill, fillOpacity: opacityValue });
     },
     onEachFeature: (feature, layer) => {
-      bindFeaturePopup(feature, layer);
+      bindFeaturePopup(feature, layer, entry.popupFields);
       if (showLabels) {
         const val = feature.properties ? feature.properties[entry.labelField] : undefined;
         if (val !== undefined && val !== "") {
@@ -973,9 +1126,9 @@ function getFeatureCenter(feature, layer) {
   return null;
 }
 
-function bindFeaturePopup(feature, layer) {
+function bindFeaturePopup(feature, layer, popupFields) {
   const props = feature.properties || {};
-  const keys = Object.keys(props);
+  const keys = popupFields ? popupFields.filter(k => k in props) : Object.keys(props);
 
   const rows = keys.map(k => {
     const v = props[k];
@@ -1503,8 +1656,11 @@ function performSearch() {
 
   resultBox.classList.remove("hidden");
   resultBox.innerHTML = "";
-  const rows = Object.entries(feature.properties || {})
-    .map(([k, v]) => {
+  const allProps = feature.properties || {};
+  const propKeys = entry.popupFields ? entry.popupFields.filter(k => k in allProps) : Object.keys(allProps);
+  const rows = propKeys
+    .map(k => {
+      const v = allProps[k];
       const vStr = String(v);
       if (isPhoneField(k, v)) {
         const telHref = formatPhoneForTel(vStr);
