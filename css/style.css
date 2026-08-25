@@ -313,7 +313,7 @@ html, body {
    directly above it — both reachable with a thumb on mobile. */
 .mapLocateBtn {
   position: absolute;
-  bottom: 70px;
+  bottom: 72px;
   right: 10px;
   z-index: 800;
   width: 40px;

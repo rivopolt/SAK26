@@ -368,10 +368,6 @@ function linkifyPhoneNumbers(text) {
   return result;
 }
 
-function isSafeHttpUrl(url) {
-  return typeof url === "string" && /^https?:\/\//i.test(url);
-}
-
 function isSafeEmail(email) {
   return typeof email === "string" && /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(email);
 }
@@ -405,18 +401,16 @@ function notamCuratedRows(props) {
   }
 
   // Contact info from zoneAuthority — email/website as direct clickable
-  // links, when present and well-formed (defense in depth: only linkify
-  // values that actually look like a URL/email, even though this comes
-  // from a trusted government feed).
+  // Contact info from zoneAuthority — email as a direct clickable link,
+  // when present and well-formed (defense in depth: only linkify values
+  // that actually look like an email, even though this comes from a
+  // trusted government feed).
   const authority = Array.isArray(props.zoneAuthority) ? props.zoneAuthority[0] : null;
   if (authority) {
     const parts = [];
     if (authority.contactName) parts.push(escapeHtml(authority.contactName));
     if (isSafeEmail(authority.email)) {
       parts.push(`<a href="mailto:${escapeHtml(authority.email)}">${escapeHtml(authority.email)}</a>`);
-    }
-    if (isSafeHttpUrl(authority.siteURL)) {
-      parts.push(`<a href="${escapeHtml(authority.siteURL)}" target="_blank" rel="noopener">Rohkem infot ↗</a>`);
     }
     if (parts.length > 0) addRawHtmlRow("Kontakt", parts.join(" — "));
   }

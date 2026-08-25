@@ -10,6 +10,30 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Debug: telefon puudu (EER2615 / A1794/26) — andmeallika lünk, mitte viga
+Kontrollisin päris elavat NOTAM GEO andmevoogu kahel korral ja otsisin
+läbi kõik selles oleva tsoonid — EER2615/A1794/26 pole selles konkreetses
+andmeallikas (utm.eans.ee/avm/utm/uas.geojson) olemas, kuigi see on
+päris, praegu aktiivne NOTAM. Põhjus: EANS-il on kaks eraldi süsteemi —
+meie kasutatav UAS geopiirete GeoJSON (püsivad/pooleldi püsivad tsoonid)
+ja eraldi üldine NOTAM/PIB teenus (aim.eans.ee), kust see konkreetne
+ajutine piirangala pärineb. Telefonilingi loogika ise on kinnitatud
+korrektne (testitud otse sinu antud teksti peal) — probleem on selles,
+et see konkreetne tsoon ei jõua meie kasutatava andmeallika kaudu
+rakendusse üldse. Täieliku NOTAM-katvuse jaoks (sh ajutised piirangualad)
+oleks vaja eraldi projekti aim.eans.ee toorest NOTAM-tekstivormingust
+lugemiseks — sarnase suurusega ettevõtmine nagu DJI/Remote ID
+integratsioonid.
+
+### "Rohkem infot" link eemaldatud NOTAM Kontakt realt
+Kontakt rida näitab nüüd ainult asutuse nime ja klõpsatavat e-maili
+(kui olemas), ilma veebilehe lingita.
+
+### Asukoha nupp veel lähemale ZoomOUT nupule
+Vahe on nüüd 0px (varem ~2px) — nupud on visuaalselt otse koos.
+
+## Varasem muudatuste pakett
+
 ### NOTAM: telefoninumbrid ja kontaktid klõpsatavaks
 Kontrollisin päris NOTAM andmeid — struktureeritud "phone" välja seal
 pole, aga telefoninumbrid võivad esineda vabatekstis (nt "...ON TEL
@@ -23,7 +47,7 @@ Lisaks lisandus "Kontakt" rida, mis näitab tsooni eest vastutava asutuse
 nime, klõpsatavat e-maili (kui olemas) ja veebilehe linki (kui olemas) —
 see info oli andmetes juba olemas, aga polnud varem üldse kuvatud.
 
-## Varasem muudatuste pakett
+## Varasemad muudatused (-10)
 
 ### NOTAM GEO: puhas info tagasi, kattuvad tsoonid nüüd tabidena
 Eemaldasin "laen andmeid"/"laetud" teavitusteksti täielikult (vaikne
