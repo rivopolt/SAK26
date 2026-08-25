@@ -313,12 +313,12 @@ html, body {
    directly above it — both reachable with a thumb on mobile. */
 .mapLocateBtn {
   position: absolute;
-  bottom: 66px;
+  bottom: 70px;
   right: 10px;
   z-index: 800;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 4px;
   border: 1px solid var(--border);
   background: #fff;
   font-size: 18px;
@@ -379,20 +379,33 @@ html, body {
   margin: 4px 0;
 }
 
-.notamPopupScroll {
-  max-height: 320px;
-  overflow-y: auto;
-}
 .notamZoneTitle {
   font-size: 13px;
   margin: 8px 0 4px 0;
 }
 .notamZoneTitle:first-child { margin-top: 0; }
-.notamPopupScroll hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 8px 0;
+
+.notamTabButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
 }
+.notamTabBtn {
+  background: #f2f2f2;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.notamTabBtn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.notamTabPane { display: none; }
+.notamTabPane.active { display: block; }
 
 .droneTelemetryIconInner {
   width: 30px;

@@ -10,6 +10,28 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### NOTAM GEO: puhas info tagasi, kattuvad tsoonid nüüd tabidena
+Eemaldasin "laen andmeid"/"laetud" teavitusteksti täielikult (vaikne
+laadimine). Popup-info on tagasi puhtal, valitud väljade kujul (Nimi,
+Piirang, Põhjus, Kõrgus, Teade, Teade (ET), Kehtiv) — mitte enam kõik
+toored väljad (sh pesastatud "extendedProperties"/"geometry" jms, mis
+lõi segase pika loetelu). Kui klõps tabab mitut kattuvat tsooni, näidatakse
+neid nüüd eraldi **tabidena** (üks tsoon korraga, klõpsatavad
+pealkirjad), mitte kõiki üksteise alla virnastatuna.
+
+### "Drooni asukoht" ja "Teised droonid" peidetud (mitte kustutatud)
+Kuna riistvara (DJI Cloud API + ESP32/Sky-Spy) pole veel kasutusele
+võetud, on need kaks nuppu praegu peidetud — kogu JS-funktsionaalsus
+jääb täielikult alles. Kui riistvara on valmis, eemalda `index.html`
+failist nende nuppude "hidden" klass, ja kõik töötab kohe.
+
+### Asukoha nupp: lähemale ZoomOUT nupule, ruudukujuline
+"📍" nupp on nüüd tihedamalt suumikontrolli all (~2px vahe, varem ~6px)
+ja ruudukujuline (4px ümardus, sama mis suumi +/- nupud), mitte enam
+ümmargune.
+
+## Varasem muudatuste pakett
+
 ### 🛸 Teised droonid (Remote ID — muude droonide tuvastamine)
 Uus nupp kaardil ("🛸 Teised droonid") näitab teiste läheduses olevate
 (ASTM F3411/ASD-STAN Remote ID standardit järgivate) droonide asukohti —
@@ -50,7 +72,7 @@ Remote ID signaal on ka autentimata/krüpteerimata (avaliku uurimistöö
 põhjal on teadaolevalt võimalik võltssignaale saata), nii et tuvastusi
 tasub käsitleda informatiivse, mitte garanteeritud teabena.
 
-## Varasem muudatuste pakett
+## Varasemad muudatused (-8)
 
 ### 🛰️ Drooni asukoht (Matrice 4T live telemetria)
 Uus nupp kaardil ("🛰️ Drooni asukoht", NOTAM GEO ja Otsi objekti vahel)

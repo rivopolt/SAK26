@@ -190,8 +190,11 @@
         <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Põhikaart</button>
         <button id="quickFotoBtn" class="mapQuickBtn" data-layer-id="maaamet_foto">Ortofoto</button>
         <button id="notamToggleBtn" class="mapQuickBtn">NOTAM GEO</button>
-        <button id="droneTelemetryToggleBtn" class="mapQuickBtn">🛰️ Drooni asukoht</button>
-        <button id="remoteIdToggleBtn" class="mapQuickBtn">🛸 Teised droonid</button>
+        <!-- Hidden for now (DJI/ESP32 field hardware not deployed yet) —
+             all JS functionality stays fully wired; just remove "hidden"
+             from these two once the receiver is up and running. -->
+        <button id="droneTelemetryToggleBtn" class="mapQuickBtn hidden">🛰️ Drooni asukoht</button>
+        <button id="remoteIdToggleBtn" class="mapQuickBtn hidden">🛸 Teised droonid</button>
         <button id="mapSearchToggleBtn" class="mapQuickBtn">🔍 Otsi objekti</button>
         <div id="mapScaleBar" class="mapScaleBar">
           <div class="mapScaleBarLine"></div>

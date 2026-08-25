@@ -202,12 +202,10 @@ async function toggleNotamLayer() {
   }
 
   btn.classList.add("active");
-  showBanner("Laen NOTAM GEO andmeid...");
 
   const geojson = await loadNotamData();
   if (!geojson) {
     btn.classList.remove("active");
-    showBanner("NOTAM GEO andmete laadimine ebaõnnestus (nii otseühendus kui peegeldatud koopia ei toiminud).");
     return;
   }
 
@@ -218,11 +216,6 @@ async function toggleNotamLayer() {
     // showing info for (potentially several, overlapping) zones at once.
   }).addTo(map);
   notamLayerGroup.bringToFront(); // NOTAM is safety info — always render on top of other overlays
-
-  const sourceLabel = notamDataSource === "live"
-    ? "otseühendusest EANS-ist"
-    : "peegeldatud koopiast (võib olla kuni ~24h vana — vt README)";
-  showBanner(`NOTAM GEO laetud ${sourceLabel}.`);
 }
 
 async function loadNotamData() {
@@ -353,27 +346,85 @@ function renderDeepRows(obj, prefix) {
   return html;
 }
 
+function notamCuratedRows(props) {
+  const rows = [];
+  const addRow = (label, value) => {
+    if (value === undefined || value === null || value === "") return;
+    rows.push(`<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(String(value))}</td></tr>`);
+  };
+
+  addRow("Nimi", props.name || props.identifier);
+  addRow("Piirang", props.restriction);
+  addRow("Põhjus", props.reason);
+  if (props.lower && props.upper) addRow("Kõrgus", `${props.lower} – ${props.upper}`);
+  addRow("Teade", props.message);
+
+  const etMsg = props.extendedProperties && Array.isArray(props.extendedProperties.localizedMessages)
+    ? props.extendedProperties.localizedMessages.find(m => m.language === "et-EE")
+    : null;
+  if (etMsg) addRow("Teade (ET)", etMsg.message);
+
+  const app = Array.isArray(props.applicability) ? props.applicability[0] : null;
+  if (app && app.permanent === "NO" && app.startDateTime && app.endDateTime) {
+    const fmt = iso => new Date(iso).toLocaleString("et-EE");
+    addRow("Kehtiv", `${fmt(app.startDateTime)} – ${fmt(app.endDateTime)}`);
+  }
+
+  return rows.join("");
+}
+
 function handleNotamMapClick(e) {
   if (!notamLayerGroup || !notamFeaturesRaw) return;
 
   const matches = notamFeaturesRaw.filter(f => pointInGeometry(e.latlng, f.geometry));
   if (matches.length === 0) return;
 
-  const sections = matches.map((f, i) => {
-    const props = f.properties || {};
-    const title = props.name || props.identifier || `Tsoon ${i + 1}`;
-    const rows = renderDeepRows(props, "");
-    return `<h4 class="notamZoneTitle">${escapeHtml(title)}</h4><table class="popupTable">${rows}</table>`;
-  }).join("<hr>");
-
   const sourceText = notamDataSource === "live" ? "otseühendus (EANS)" : "peegeldatud koopia";
   const countNote = matches.length > 1 ? ` — ${matches.length} kattuvat tsooni` : "";
   const sourceNote = `<p class="notamSourceNote">Andmed: ${escapeHtml(sourceText)}${countNote}</p>`;
 
-  L.popup({ maxWidth: 340, maxHeight: 400 })
+  let contentHtml;
+  if (matches.length === 1) {
+    // Single zone — same simple layout as before, no tabs needed.
+    const props = matches[0].properties || {};
+    const title = props.name || props.identifier || "Tsoon";
+    contentHtml =
+      `<h4 class="notamZoneTitle">${escapeHtml(title)}</h4>` +
+      `<table class="popupTable">${notamCuratedRows(props)}</table>${sourceNote}`;
+  } else {
+    // Multiple overlapping zones — one tab per zone instead of one long
+    // stacked list, so each zone's info stays clearly separated.
+    const tabButtons = matches.map((f, i) => {
+      const props = f.properties || {};
+      const title = props.name || props.identifier || `Tsoon ${i + 1}`;
+      return `<button class="notamTabBtn${i === 0 ? " active" : ""}" data-tab="${i}">${escapeHtml(title)}</button>`;
+    }).join("");
+    const tabPanes = matches.map((f, i) => {
+      const props = f.properties || {};
+      return `<div class="notamTabPane${i === 0 ? " active" : ""}" data-pane="${i}">` +
+        `<table class="popupTable">${notamCuratedRows(props)}</table></div>`;
+    }).join("");
+    contentHtml =
+      `<div class="notamTabButtons">${tabButtons}</div>` +
+      `<div class="notamTabPanes">${tabPanes}</div>${sourceNote}`;
+  }
+
+  const popup = L.popup({ maxWidth: 340 })
     .setLatLng(e.latlng)
-    .setContent(`<div class="notamPopupScroll">${sections}${sourceNote}</div>`)
+    .setContent(contentHtml)
     .openOn(map);
+
+  if (matches.length > 1) {
+    const container = popup.getElement();
+    if (container) {
+      container.querySelectorAll(".notamTabBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          container.querySelectorAll(".notamTabBtn").forEach(b => b.classList.toggle("active", b === btn));
+          container.querySelectorAll(".notamTabPane").forEach(p => p.classList.toggle("active", p.dataset.pane === btn.dataset.tab));
+        });
+      });
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------- */
