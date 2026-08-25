@@ -8,7 +8,7 @@ const CONFIG = {
 
   initialView: {
     center: [58.65, 25.0],
-    zoom: 7
+    zoom: 15
   },
 
   // Overall map zoom bounds. minZoom stops people zooming out past a
@@ -41,21 +41,6 @@ const CONFIG = {
   ],
 
   /* ------------------------------------------------------------------
-     EANS UTM / DROONIKAART
-     ------------------------------------------------------------------
-     Reverted: the Esri ArcGIS "Droonikaart" (eans.maps.arcgis.com) turned
-     out to require signing in to ArcGIS Online to view at all — not
-     usable for open public access. Back to utm.eans.ee/avm/, which
-     EANS's own documentation confirms does NOT require login just to
-     view the map (only for submitting flight plans).
-
-     URL-parameter sync (best-effort only): utm.eans.ee/avm/ is a
-     Frequentis-built app with no published URL-parameter documentation,
-     so lat/lon/zoom query params are a guess, not a confirmed API.
-  ------------------------------------------------------------------- */
-  eansUrl: "https://utm.eans.ee/avm/",
-
-  /* ------------------------------------------------------------------
      NOTAM GEO (UAS geographical zones)
      ------------------------------------------------------------------
      Confirmed live and reachable: https://utm.eans.ee/avm/utm/uas.geojson
@@ -84,6 +69,34 @@ const CONFIG = {
     defaultStrokeColor: "#002cff",
     defaultFillOpacity: 0.3,
     defaultStrokeOpacity: 0.7
+  },
+
+  /* ------------------------------------------------------------------
+     DRONE TELEMETRY (Matrice 4T live position via DJI Cloud API)
+     ------------------------------------------------------------------
+     Set receiverUrl to your deployed telemetry receiver's base URL
+     (see dji-telemetry-receiver/README.md for the full setup — it is a
+     separate small service, not part of this static site, since it
+     needs to stay running continuously to receive MQTT telemetry).
+     Leave receiverUrl empty to keep the feature disabled/hidden from
+     causing failed requests before you've deployed anything.
+  ------------------------------------------------------------------- */
+  droneTelemetry: {
+    receiverUrl: "",           // e.g. "https://sak26-dji-receiver.fly.dev"
+    pollIntervalMs: 4000
+  },
+
+  /* ------------------------------------------------------------------
+     REMOTE ID — other nearby drones (via ESP32 + Sky-Spy firmware)
+     ------------------------------------------------------------------
+     Uses the SAME receiver service as droneTelemetry above (it exposes
+     both /telemetry/latest and /remoteid/latest) — just set this to the
+     same receiverUrl once the ESP32 is plugged into your Pi and
+     ESP32_SERIAL_PORT is configured on the receiver side.
+  ------------------------------------------------------------------- */
+  remoteId: {
+    receiverUrl: "",           // same as droneTelemetry.receiverUrl once both are set up
+    pollIntervalMs: 3000       // Remote ID broadcasts repeat ~1x/sec, so this can poll a bit faster
   },
 
   /* ------------------------------------------------------------------

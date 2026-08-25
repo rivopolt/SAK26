@@ -1,0 +1,23 @@
+# Fly.io config for the SAK26 DJI telemetry receiver.
+# Deploy with: fly launch (first time) / fly deploy (updates)
+# See README.md in this folder for the full step-by-step, including the
+# separate EMQX broker app this depends on.
+
+app = "sak26-dji-receiver"  # change if this name is taken — must be globally unique on Fly.io
+primary_region = "arn"       # Stockholm — closest Fly.io region to Estonia; change if you prefer another
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false   # keep it running — Pilot 2 needs to reach it any time you fly
+  auto_start_machines = true
+  min_machines_running = 1
+
+[env]
+  # MQTT_BROKER_HOST gets set via `fly secrets set` (or here, if you don't
+  # mind it being non-secret) once you know your EMQX app's hostname —
+  # e.g. sak26-emqx.fly.dev
+  MQTT_BROKER_PORT = "1883"
+  ALLOWED_ORIGIN = "*"  # tighten this to your actual SAK26 URL once deployed

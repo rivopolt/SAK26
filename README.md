@@ -10,6 +10,214 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### 🛸 Teised droonid (Remote ID — muude droonide tuvastamine)
+Uus nupp kaardil ("🛸 Teised droonid") näitab teiste läheduses olevate
+(ASTM F3411/ASD-STAN Remote ID standardit järgivate) droonide asukohti —
+mitte ainult sinu enda Matrice 4T-d. Iga tuvastuse kohta kuvatakse KAKS
+punkti (droon 🛸 ja piloot/operaator 🧍, ühendatud punktiirjoonega), kuna
+Remote ID standard nõuab mõlema asukoha edastamist.
+
+**Kasutab sama vastuvõtjateenust**, mis droonitelemeetria (DJI Cloud
+API) — laiendasin `dji-telemetry-receiver/server.py` faili, et see
+loeks lisaks ka ESP32-le (Sky-Spy püsivara) ühendatud USB-seeriaporti
+kaudu. Testisin uut `/remoteid/latest` otspunkti reaalse, kinnitatud
+Sky-Spy JSON-formaadiga (nii korrektsete tuvastuste kui ka rikutud/
+"heartbeat" ridade õige käsitlemisega).
+
+**Riistvara soovitus:** Seeed XIAO ESP32-S3 (~10-15 €) + Sky-Spy
+püsivara (github.com/colonelpanichacks/Sky-Spy). Täielik seadistus:
+`dji-telemetry-receiver/README.md`.
+
+**Vastuvõtja Raspberry Pi soovitus — muudetud: Pi 3B+ (~35 €), mitte
+Pi Zero 2 W.** Põhjus on turvalisusega seotud, mitte lihtsalt spekk:
+DJI enda dokumentatsiooni järgi kasutab Matrice 4T juhtlink (OcuSync/O3)
+tegelikult NII 2,4 GHz KUI KA 5,8 GHz sagedust, lülitudes automaatselt
+sinna, mis parasjagu selgem on — see pole ainult 5,8 GHz süsteem. Pi
+Zero 2 W WiFi toetab AINULT 2,4 GHz — kui see vastuvõtja majutab kohalikku
+WiFi võrku välitingimustes ja asub füüsiliselt aktiivselt lendava
+juhtseadme kõrval, on see reaalne, mitte teoreetiline sagedusekonflikti
+oht. Pi 3B+ kahesageduslik WiFi (2,4/5 GHz) võimaldab kohaliku võrgu
+panna spetsiaalselt 5 GHz peale, vältides kattumist täielikult. Lisaboonus:
+Pi 3B+-l on täissuurused USB-A pordid (ESP32 jaoks pole OTG adapterit vaja).
+Mõlemal juhul soovitan EMQX asemel kergemat Mosquitto MQTT brokerit —
+see sobib ühe-lennuki-ühe-operaatori mahule paremini, olenemata valitud
+Pi mudelist.
+
+**Aus piirang:** Remote ID levik on umbes tavalise WiFi ulatuses (mitte
+droonide endi mitme kilomeetrise juhtlingi ulatuses) — see annab
+teadlikkust droonidest SINU enda asukoha lähedal, mitte kogu piirkonnas.
+Remote ID signaal on ka autentimata/krüpteerimata (avaliku uurimistöö
+põhjal on teadaolevalt võimalik võltssignaale saata), nii et tuvastusi
+tasub käsitleda informatiivse, mitte garanteeritud teabena.
+
+## Varasem muudatuste pakett
+
+### 🛰️ Drooni asukoht (Matrice 4T live telemetria)
+Uus nupp kaardil ("🛰️ Drooni asukoht", NOTAM GEO ja Otsi objekti vahel)
+kuvab sinu Matrice 4T ja RC Plus 2 Enterprise kontrolleri **live asukoha**
+kaardil — droonile ja kontrollerile eraldi märgistus (🛸 droon, 🎮
+kontroller), popup-aknas kogu saadaolev telemeetria.
+
+**See EI ole RID-põhine skannimine** (see osutus liiga ebausaldusväärseks
+— vt eelmine arutelu) **vaid DJI enda ametlik Cloud API**: DJI Pilot 2
+rakenduses on "Cloud Service → Open Platform" funktsioon, mis saadab
+elava telemeetria otse sinu enda serverisse.
+
+**See vajab eraldi, pidevalt töötavat vastuvõtjateenust** —
+`dji-telemetry-receiver/` kaustas on täielik, testitud (FastAPI käivitub,
+JSON otspunkt tagastab õiget infot, paho-mqtt API kasutus kontrollitud
+otse teegi lähtekoodi vastu, Fly.io piirkonnakood kinnitatud) valmis
+kood + samm-sammuline juhend Fly.io peale paigaldamiseks (~5 $/kuu).
+Raspberry Pi peale kolimine on samuti dokumenteeritud (tulevikuplaan).
+
+**Mida ma EI saanud testida** ilma päris riistvarata: kas DJI Pilot 2
+tegelikult lõpetab sisselogimise täpselt selle H5-lehega ja ühendub —
+see vajab testimist sinu päris Matrice 4T/RC Plus 2 Enterprise'iga.
+Kui see kohe ei tööta, on DJI enda Cloud API dokumentatsioon
+(github.com/dji-sdk/Cloud-API-Doc) tõeallikas, mitte see README.
+
+Seadistamine: vt `dji-telemetry-receiver/README.md` täielikuks juhendiks;
+kui vastuvõtja on üleval, sisesta selle aadress `js/config.js` faili
+(`CONFIG.droneTelemetry.receiverUrl`).
+
+## Varasemad muudatused (-7)
+
+### NOTAM GEO: kõik andmed, ka kattuvate tsoonide puhul
+Varem näitas klõps ainult selle tsooni valitud infot, mis parasjagu
+"peal" oli (kui mitu NOTAM ala kattuvad, nagu päris lennuruumis sageli
+juhtub). Nüüd kontrollitakse klõpsamisel KÕIKI NOTAM tsoone (mitte ainult
+pealmist) ja kuvatakse popup-aknas iga kattuva tsooni kohta täielikud
+andmed (kõik väljad, sh varem peidetud pesastatud info nagu kehtivusaeg,
+ingliskeelne/eestikeelne teade jms — mitte enam valitud väljade
+kokkuvõte). Testisin punkti-hulknurgas testi ja andmete lahtivoltimist
+otse päris NOTAM andmete struktuuri põhjal.
+
+### Lennuliiklus, "Minu asukoht" ja "Kogu Eesti" eemaldatud "Kihid" paneelist
+"Minu asukoht" jääb kättesaadavaks kaardi enda 📍 nupu kaudu. "Kogu Eesti"
+funktsiooni paneelist enam ei ole (kaardi asemel kasutati seda harva).
+
+### Eemaldatud lõplikult: "Minu kaardid" hoiatusetekst
+Tekst faili eelvaate/salvestamise kohta on paneelist eemaldatud.
+
+### Topeltpuudutus (double-tap) suumib sisse
+Selgesõnaliselt lubatud (`doubleClickZoom: true`) — Leafleti vaikeseade,
+aga nüüd kindlalt tagatud ka mobiilis.
+
+### "Tühista" nupp otsingusse
+"Otsi objekti" vidinasse lisandus "Tühista" nupp "Otsi" nupu kõrvale —
+tühjendab otsinguvälja, tulemused ja kaardil oleva esiletõstu, ilma
+vidinat sulgemata (erinevalt olemasolevast "✕" nupust, mis sulgeb kogu
+vidina).
+
+## Varasemad muudatused (-6)
+
+### Käivitussuum 15-le
+Nii asukohapõhine kui tagavaravaate (kui asukohta ei õnnestu tuvastada)
+suum on nüüd mõlemad 15 — varem oli tagavaravaade terve Eesti ülevaade
+(suum 7).
+
+### NOTAM GEO on nüüd alati pealmine kiht
+Sisselülitamisel tõstetakse NOTAM GEO automaatselt teiste kihtide
+kohale (`bringToFront()`), ja jääb sinna ka kaardi liigutamisel/suumimisel
+(kui PRIA/Minu kaardid kihid end vahepeal uuesti joonistavad).
+
+### "Navigeeri" eemaldatud NOTAM GEO popup-akendest
+NOTAM tsoonid on alad, mitte sihtkohad — Google Mapsi juhiste link ei
+sobinud sinna loogiliselt (ja võinuks eksitavalt viidata, et piiratud
+alasse "navigeerimine" on soovitatav).
+
+### Lennuliiklus eemaldatud "Kihid" paneelist
+Kogu "Lennuliiklus" jaotus (EANS UTM/Droonikaart manus/iframe) on
+eemaldatud — nii kasutajaliidesest kui koodist (dead code puhastatud).
+Droonidega seotud lennuohutuse info on nüüd "NOTAM GEO" kihi kaudu
+(vt eespool).
+
+### Kadunud fail: PriaKaerNisuMaisHernes1Field_DISS.zip
+**Ausalt: ma ei saa seda faili "taastada", kuna mul pole selle sisu
+kunagi olemas olnud.** See fail on `js/config.js` failis mainitud
+(temaatilised värvid, suumipiirid, sildi väli "ViljadNimi") kuna
+arutasime selle SEADEID varem, aga faili ennast ei ole mulle kunagi
+üles laetud — erinevalt `Sigalad_puhverala.kmz` ja `Jahipiirkond.zip`
+failidest, mis ON minu juures olemas ja iga paketiga kaasas.
+
+**Kõige tõenäolisem põhjus, miks see "kadus":** kui lisasid selle faili
+otse oma GitHub repositooriumisse (git push kaudu, ilma minu kaudu
+käimata) ja hiljem asendasid kogu repositooriumi sisu minu antud
+zip-failiga (nagu olen varem soovitanud "kui pole kindel, asenda kõik"),
+kustutas see asenduse käigus ka faili, millest mina ei teadnud.
+
+**Lahendus:** palun laadi see fail mulle uuesti üles (samamoodi nagu
+`Sigalad_puhverala.kmz` ja `Jahipiirkond.zip` tegid) — siis lisan selle
+oma järgmisesse paketti ja see jääb sealt edaspidi püsivalt alles.
+Tulevikus, kui lisad faile otse oma repositooriumisse minust mööda
+minnes, anna palun teada, et saaksin need ka oma "baaspaketti" lisada —
+nii ei kao need enam järgmisel täisasendusel.
+
+## Varasemad muudatused (-5)
+
+### Sigalad_puhverala popup: ainult nimi + Navigeeri
+KML-i stiilimetaandmed (styleUrl, fill-opacity, stroke-width jms, mis
+togeojson teisendusel "properties" hulka lekivad) on nüüd sellel kihil
+popup-aknast peidetud — näidatakse ainult objekti nime.
+
+### Skaalariba: valge halo läbipaistvaks
+Teksti/joone ümber olev valge "halo" (loetavuse jaoks) on nüüd
+poolläbipaistev (65% opacity) täiesti opaakse valge asemel — vähem
+"valge kastina" paistev efekt.
+
+### "Kihid" avanedes on kõik sektsioonid vaikimisi ahendatud
+Lennuliiklus, PRIA põllumassiivid, Minu kaardid ja Väliandmed algavad
+nüüd kõik ahendatuna, kui paneel avatakse — kompaktsem esmamulje.
+
+### NOTAM GEO — uus kiht (UAS geograafilised tsoonid)
+Uus nupp "NOTAM GEO" kaardi peal (Ortofoto ja "Otsi objekti" vahel,
+sama suurus/stiil), mis lülitab sisse/välja EANS-i NOTAM/geopiirete
+andmed (ohualad, piirangualad, Tallinna CTR alatsoonid jms).
+
+**Värvid:** enamik objekte kannab andmetes endas juba oma värvi (kollane
+täide + sinine joon, poolläbipaistev — täpselt "NOTAM Droonikaardi"
+tava, mida kirjeldasid) — neid kasutatakse alati, kui olemas. Kui
+objektil oma värvi pole, kasutatakse sama kollast/sinist vaikimisi.
+Mõni tsoon (nt "avatud kategooria, piiranguteta") on andmetes endas
+100% läbipaistev — see on tahtlik, tähistab piiranguteta ala.
+
+**Live vs. peegeldatud koopia — minu soovitus:**
+Rakendus proovib **alati kõigepealt otseühendust** EANS-i serveriga
+(`https://utm.eans.ee/avm/utm/uas.geojson`) ja kasutab
+`MyFiles/data/notam_geo.geojson` peegeldatud koopiat ainult siis, kui
+otseühendus ebaõnnestub (nt CORS piirang). Peegeldatud koopiat
+uuendatakse automaatselt üks kord päevas (`.github/workflows/update-notam.yml`,
+kell 04:00 UTC, käivitatav ka käsitsi "Actions" vahekaardilt).
+
+Põhjus, miks eelistada otseühendust: andmete enda `metaData.updateDateTime`
+väljad näitasid samal päeval tehtud uuendusi — EANS uuendab neid andmeid
+tihedamini kui kord päevas. Kuna tegu on lennuohutusega seotud andmetega
+(ajutised ohu-/piirangualad), võib isegi 24-tunnine viivitus tähendada,
+et äsja lisatud piirang ei kajastu veel kaardil. Seetõttu on peegeldatud
+koopia mõeldud rangelt **varulahendusena**, mitte peamise allikana —
+rakendus näitab popup-aknas alati, kummast allikast andmed pärinevad
+("otseühendus (EANS)" vs "peegeldatud koopia").
+
+**NB!** See kiht ei asenda ametlikku EANS Droonikaarti lennu planeerimisel
+— kontrolli alati otse utm.eans.ee/avm/ enne lendu, eriti kui rakendus
+näitab, et kasutusel on peegeldatud (mitte otseühenduse) andmed.
+
+## Varasemad muudatused (-4)
+
+### Skaalariba: valge taust eemaldatud
+Skaalariba istub nüüd otse kaardi peal ilma valge kastita — loetavus on
+tagatud valge "halo" varjuga teksti/joone ümber, mitte taustakastiga.
+
+### Asukoha nupp tõstetud kõrgemale, lähemale suumi miinusnupule
+Nupurühm (suum + asukoht) on nüüd tihedamalt koos — ainult ~6px vahe
+suumikontrolli ja "📍" nupu vahel (varem ~10px).
+
+### Suumi +/- nupud suuremaks
+Nupud on nüüd 40×40px (Leafleti vaikimisi 26×26px asemel) — sama laiused,
+mis "📍" nupp, ja lihtsamini puudutatavad.
+
+## Varasemad muudatused (-3)
+
 ### Lehe avamisel kasutatakse asukohta, mitte kogu Eesti vaadet
 Lehe laadimisel käivitub nüüd automaatselt asukoha jälgimine (sama, mis
 "📍 Minu asukoht" nupp) — kaart tsentreerub kohe sinu praegusele
@@ -40,7 +248,7 @@ Kaardi paremal üleval, "🔍 Otsi objekti" nupu all, on nüüd väike
 skaalariba koos meetrites näidatava vahemaaga — sama laiune, mis nupud
 selle kohal. Uueneb automaatselt suumi/asukoha muutudes.
 
-## Varasem muudatuste pakett
+## Varasemad muudatused (-2)
 
 ### "Google Maps juhis" → "Navigeeri"
 Nupu tekst lühemaks ja selgemaks — nii popup-akendes kui otsingutulemustes.

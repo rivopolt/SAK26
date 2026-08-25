@@ -54,30 +54,6 @@
 
     <div class="panelBody">
 
-      <!-- SEARCH / LOCATE (not a layer section, stays above everything) -->
-      <section class="ctrlSection noCollapse">
-        <button id="locateBtn" class="wideBtn">📍 Minu asukoht</button>
-        <button id="fitEstoniaBtn" class="wideBtn">🇪🇪 Kogu Eesti</button>
-      </section>
-
-      <!-- LENNULIIKLUS (moved to top of layer sections) -->
-      <section class="ctrlSection">
-        <div class="sectionHeaderRow">
-          <button class="collapseBtn" data-target="body-eans" title="Ahenda/laienda">▸</button>
-          <h2>Lennuliiklus
-            <button class="infoIconBtn small" data-info="eansInfo">ⓘ</button>
-          </h2>
-        </div>
-        <div class="sectionBody collapsed" id="body-eans">
-          <div class="layerRow">
-            <label>
-              <input type="checkbox" id="eansToggle">
-              <span>EANS UTM / Droonikaart</span>
-            </label>
-          </div>
-        </div>
-      </section>
-
       <!-- PRIA WFS -->
       <section class="ctrlSection">
         <div class="sectionHeaderRow">
@@ -128,10 +104,6 @@
             <label for="fileInput" class="wideBtn fileBtn">＋ Lisa fail (eelvaade ainult minu brauseris)</label>
             <input type="file" id="fileInput" accept=".kml,.kmz,.zip" multiple hidden>
           </div>
-          <p class="smallNote">See nupp näitab faili kaardil ainult sinu enda praeguses
-          brauseris/seansis. Et fail oleks <strong>jäädavalt kõigile</strong> lingi kaudu
-          nähtav, lisa see fail GitHubi repositooriumis kausta <code>MyFiles/uploads/</code>
-          ja tee <code>git push</code> — nimekiri uueneb automaatselt (vt ⓘ).</p>
 
           <button id="refreshMyFilesBtn" class="wideBtn secondaryBtn">↻ Uuenda MyFiles nimekirja</button>
           <div id="myFilesStatus" class="statusLine"></div>
@@ -218,6 +190,8 @@
         <button id="quickKaartBtn" class="mapQuickBtn" data-layer-id="maaamet_kaart">Põhikaart</button>
         <button id="quickFotoBtn" class="mapQuickBtn" data-layer-id="maaamet_foto">Ortofoto</button>
         <button id="notamToggleBtn" class="mapQuickBtn">NOTAM GEO</button>
+        <button id="droneTelemetryToggleBtn" class="mapQuickBtn">🛰️ Drooni asukoht</button>
+        <button id="remoteIdToggleBtn" class="mapQuickBtn">🛸 Teised droonid</button>
         <button id="mapSearchToggleBtn" class="mapQuickBtn">🔍 Otsi objekti</button>
         <div id="mapScaleBar" class="mapScaleBar">
           <div class="mapScaleBarLine"></div>
@@ -235,7 +209,10 @@
         <label class="smallLabel" for="searchFieldSelect">Väli (nt nimi või kood):</label>
         <select id="searchFieldSelect"></select>
         <input type="text" id="searchTextInput" placeholder="Otsi väärtust...">
-        <button id="searchGoBtn" class="wideBtn secondaryBtn">🔍 Otsi</button>
+        <div class="searchBtnRow">
+          <button id="searchGoBtn" class="wideBtn secondaryBtn">🔍 Otsi</button>
+          <button id="searchCancelBtn" class="wideBtn secondaryBtn">Tühista</button>
+        </div>
         <div id="searchStatus" class="statusLine"></div>
         <div id="searchResult" class="searchResultBox hidden"></div>
       </div>
@@ -259,20 +236,6 @@
 </div>
 
 <!-- Hidden templates with help text for each info icon -->
-<template id="tpl-eansInfo"><h3>EANS UTM / Droonikaart</h3>
-<p>utm.eans.ee/avm/ ei nõua sisselogimist kaardi <em>vaatamiseks</em> — ainult lennuplaani
-esitamiseks ja profiili muutmiseks. Sisselülitamisel avaneb see kaardi peale manusena.</p>
-<p class="smallNote"><strong>Asukoha/suumi automaatne sünkroonimine Taustakaardiga ei ole
-võimalik.</strong> Proovisime seda kahel korral erinevate URL-parameetritega — utm.eans.ee/avm/
-on Frequentise ehitatud rakendus ilma avaldatud URL-API-ta ja eirab neid parameetreid
-täielikult. Selle asemel navigeeri Droonikaardil käsitsi, või vajuta "Ava uues aknas" linki
-suuremas aknas töötamiseks. "🔄 Lae algusesse" nupp laeb manuse lihtsalt uuesti algvaatesse,
-kui oled sealt kaugele navigeerinud.</p>
-<p class="smallNote"><strong>NB!</strong> Varem proovisime siin ka Esri ArcGIS-põhist
-"Droonikaardi" versiooni, aga see nõudis kaardi nägemiseks ArcGIS Online kontosse
-sisselogimist — ei sobinud avatud, autentimiseta ligipääsu nõudele, seega on tagasi
-pöördutud utm.eans.ee/avm/ juurde.</p></template>
-
 <template id="tpl-priaInfo"><h3>PRIA põllumassiivid</h3>
 <p>Vajuta "↻ Lae kihtide loend", et tuua PRIA WFS-teenusest saadaolevad kihid.
 Kihid, mille nimi sisaldab "PÕLLUD" (nt PRIA_PÕLLUD), rühmitatakse ülemisse

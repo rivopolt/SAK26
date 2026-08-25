@@ -12,6 +12,7 @@ let locationWatchId = null;
 /* ---- NOTAM GEO ---- */
 let notamLayerGroup = null;
 let notamDataSource = null; // "live" | "mirror" | null
+let notamFeaturesRaw = null; // kept so we can test click points against ALL zones, not just the topmost rendered one
 
 /* ---- PRIA ---- */
 let priaLayersMeta = [];        // [{name, title}] from GetCapabilities
@@ -45,7 +46,11 @@ function init() {
     zoomControl: false,
     attributionControl: true,
     minZoom: CONFIG.mapMinZoom,
-    maxZoom: CONFIG.mapMaxZoom
+    maxZoom: CONFIG.mapMaxZoom,
+    // Double-click (desktop) / double-tap (touch) zooms in — this is a
+    // Leaflet default, but made explicit here since it's an intentional
+    // requirement, not just incidental behavior.
+    doubleClickZoom: true
   }).setView(
     savedView ? [savedView.lat, savedView.lng] : CONFIG.initialView.center,
     savedView ? savedView.zoom : CONFIG.initialView.zoom
@@ -59,8 +64,9 @@ function init() {
   buildBaseLayers();
   setupBaseLayerUI();
   setupCollapseToggles();
-  setupEans();
   setupNotam();
+  setupDroneTelemetry();
+  setupRemoteId();
   setupPria();
   setupFileUpload();
   setupMyFilesBrowser();
@@ -75,6 +81,7 @@ function init() {
   map.on("moveend", debounce(() => {
     refreshAllEnabledPriaLayers();
     refreshAllMyLayers();
+    if (notamLayerGroup) notamLayerGroup.bringToFront();
     saveMapView();
   }, 400));
 
@@ -169,60 +176,17 @@ function updateBaseLayerUISync(id) {
 }
 
 /* ---------------------------------------------------------------------- */
-/* EANS UTM / DRONE MAP                                                     */
-/* ---------------------------------------------------------------------- */
-function setupEans() {
-  const toggle = document.getElementById("eansToggle");
-  toggle.addEventListener("change", () => {
-    if (toggle.checked) openEansOverlay(); else closeEansOverlay();
-  });
-}
-
-function eansUrlForCurrentView() {
-  // Confirmed (twice) that utm.eans.ee/avm/ ignores lat/lon/zoom-style query
-  // params — it has no published URL API, so we stopped guessing at
-  // parameter names that don't do anything. The iframe just opens at
-  // whatever view utm.eans.ee itself defaults to; use "Ava uues aknas"
-  // and navigate manually within their tool if you need a specific spot.
-  return CONFIG.eansUrl;
-}
-
-function openEansOverlay() {
-  if (document.getElementById("eansOverlay")) return;
-  const overlay = document.createElement("div");
-  overlay.id = "eansOverlay";
-  overlay.className = "iframeOverlay";
-  overlay.innerHTML = `
-    <div class="iframeOverlayBar">
-      <span>EANS Droonikaart</span>
-      <button id="syncEansBtn" class="linkBtn">🔄 Lae algusesse</button>
-      <a href="${CONFIG.eansUrl}" target="_blank" rel="noopener" class="openNewTabLink">Ava uues aknas ↗</a>
-      <button id="closeEansBtn" class="closeIframeBtn">✕</button>
-    </div>
-    <iframe id="eansIframe" src="${eansUrlForCurrentView()}" title="EANS Droonikaart"></iframe>
-  `;
-  document.getElementById("mapPanel").appendChild(overlay);
-  document.getElementById("closeEansBtn").addEventListener("click", () => {
-    document.getElementById("eansToggle").checked = false;
-    closeEansOverlay();
-  });
-  document.getElementById("syncEansBtn").addEventListener("click", () => {
-    document.getElementById("eansIframe").src = eansUrlForCurrentView();
-  });
-}
-
-function closeEansOverlay() {
-  const overlay = document.getElementById("eansOverlay");
-  if (overlay) overlay.remove();
-}
-
-/* ---------------------------------------------------------------------- */
 /* NOTAM GEO — live UAS geofencing zones from EANS, with a same-origin      */
 /* mirror fallback (see .github/workflows/update-notam.yml) in case the    */
 /* live endpoint ever blocks direct browser fetch (CORS).                  */
 /* ---------------------------------------------------------------------- */
 function setupNotam() {
   document.getElementById("notamToggleBtn").addEventListener("click", toggleNotamLayer);
+  // A single map-click handler (rather than per-feature popups) lets us
+  // detect and show ALL NOTAM zones at a clicked point — Leaflet's default
+  // per-layer popup only ever shows the topmost of several overlapping
+  // polygons, which loses information for genuinely overlapping airspace.
+  map.on("click", handleNotamMapClick);
 }
 
 async function toggleNotamLayer() {
@@ -231,6 +195,7 @@ async function toggleNotamLayer() {
   if (notamLayerGroup) {
     map.removeLayer(notamLayerGroup);
     notamLayerGroup = null;
+    notamFeaturesRaw = null;
     notamDataSource = null;
     btn.classList.remove("active");
     return;
@@ -246,10 +211,13 @@ async function toggleNotamLayer() {
     return;
   }
 
+  notamFeaturesRaw = geojson.features || [];
   notamLayerGroup = L.geoJSON(geojson, {
-    style: notamFeatureStyle,
-    onEachFeature: bindNotamPopup
+    style: notamFeatureStyle
+    // No onEachFeature/popup here — see handleNotamMapClick, which handles
+    // showing info for (potentially several, overlapping) zones at once.
   }).addTo(map);
+  notamLayerGroup.bringToFront(); // NOTAM is safety info — always render on top of other overlays
 
   const sourceLabel = notamDataSource === "live"
     ? "otseühendusest EANS-ist"
@@ -323,42 +291,329 @@ function notamFeatureStyle(feature) {
   };
 }
 
-function bindNotamPopup(feature, layer) {
-  const props = feature.properties || {};
-  const rows = [];
-
-  const addRow = (label, value) => {
-    if (value === undefined || value === null || value === "") return;
-    rows.push(`<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(String(value))}</td></tr>`);
-  };
-
-  addRow("Nimi", props.name || props.identifier);
-  addRow("Piirang", props.restriction);
-  addRow("Põhjus", props.reason);
-  if (props.lower && props.upper) addRow("Kõrgus", `${props.lower} – ${props.upper}`);
-  addRow("Teade", props.message);
-
-  const etMsg = props.extendedProperties && Array.isArray(props.extendedProperties.localizedMessages)
-    ? props.extendedProperties.localizedMessages.find(m => m.language === "et-EE")
-    : null;
-  if (etMsg) addRow("Teade (ET)", etMsg.message);
-
-  const app = Array.isArray(props.applicability) ? props.applicability[0] : null;
-  if (app && app.permanent === "NO" && app.startDateTime && app.endDateTime) {
-    const fmt = iso => new Date(iso).toLocaleString("et-EE");
-    addRow("Kehtiv", `${fmt(app.startDateTime)} – ${fmt(app.endDateTime)}`);
+/* ---- Point-in-polygon test (plain ray-casting), so we can find every
+   NOTAM zone under a click point, not just whichever one happened to be
+   drawn on top. Leaflet has no built-in equivalent. ---- */
+function pointInRing(point, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+    const intersect = ((yi > point[1]) !== (yj > point[1])) &&
+      (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
   }
+  return inside;
+}
 
-  const center = getFeatureCenter(feature, layer);
-  const dirLinkHtml = center
-    ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}" ` +
-      `target="_blank" rel="noopener" class="popupDirLink">🚗 Navigeeri</a>`
-    : "";
+function pointInPolygonCoords(point, polygonCoords) {
+  // polygonCoords[0] = outer ring, any further rings are holes to subtract.
+  if (!pointInRing(point, polygonCoords[0])) return false;
+  for (let i = 1; i < polygonCoords.length; i++) {
+    if (pointInRing(point, polygonCoords[i])) return false;
+  }
+  return true;
+}
+
+function pointInGeometry(latlng, geometry) {
+  if (!geometry) return false;
+  const point = [latlng.lng, latlng.lat]; // GeoJSON coordinate order is [lng, lat]
+  if (geometry.type === "Polygon") {
+    return pointInPolygonCoords(point, geometry.coordinates);
+  }
+  if (geometry.type === "MultiPolygon") {
+    return geometry.coordinates.some(poly => pointInPolygonCoords(point, poly));
+  }
+  return false;
+}
+
+/* ---- Deep/complete data renderer: NOTAM records have nested objects
+   (metaData, zoneAuthority, applicability schedules, etc.) that a plain
+   String(value) would render as "[object Object]" — this flattens
+   everything into dotted-path rows instead, showing genuinely all data
+   rather than a curated subset. ---- */
+function renderDeepRows(obj, prefix) {
+  let html = "";
+  Object.entries(obj || {}).forEach(([k, v]) => {
+    const label = prefix ? `${prefix}.${k}` : k;
+    if (v === null || v === undefined || v === "") return;
+    if (Array.isArray(v)) {
+      if (v.length === 0) return;
+      if (typeof v[0] === "object" && v[0] !== null) {
+        v.forEach((item, i) => { html += renderDeepRows(item, `${label}[${i}]`); });
+      } else {
+        html += `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(v.join(", "))}</td></tr>`;
+      }
+    } else if (typeof v === "object") {
+      html += renderDeepRows(v, label);
+    } else {
+      html += `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(String(v))}</td></tr>`;
+    }
+  });
+  return html;
+}
+
+function handleNotamMapClick(e) {
+  if (!notamLayerGroup || !notamFeaturesRaw) return;
+
+  const matches = notamFeaturesRaw.filter(f => pointInGeometry(e.latlng, f.geometry));
+  if (matches.length === 0) return;
+
+  const sections = matches.map((f, i) => {
+    const props = f.properties || {};
+    const title = props.name || props.identifier || `Tsoon ${i + 1}`;
+    const rows = renderDeepRows(props, "");
+    return `<h4 class="notamZoneTitle">${escapeHtml(title)}</h4><table class="popupTable">${rows}</table>`;
+  }).join("<hr>");
 
   const sourceText = notamDataSource === "live" ? "otseühendus (EANS)" : "peegeldatud koopia";
-  const sourceNote = `<p class="notamSourceNote">Andmed: ${escapeHtml(sourceText)}</p>`;
+  const countNote = matches.length > 1 ? ` — ${matches.length} kattuvat tsooni` : "";
+  const sourceNote = `<p class="notamSourceNote">Andmed: ${escapeHtml(sourceText)}${countNote}</p>`;
 
-  layer.bindPopup(`<table class="popupTable">${rows.join("")}</table>${sourceNote}${dirLinkHtml}`);
+  L.popup({ maxWidth: 340, maxHeight: 400 })
+    .setLatLng(e.latlng)
+    .setContent(`<div class="notamPopupScroll">${sections}${sourceNote}</div>`)
+    .openOn(map);
+}
+
+/* ---------------------------------------------------------------------- */
+/* DRONE TELEMETRY — live Matrice 4T + RC position via a self-hosted DJI    */
+/* Cloud API receiver (see dji-telemetry-receiver/README.md). Polls a      */
+/* plain JSON endpoint; nothing here talks to DJI directly.                */
+/* ---------------------------------------------------------------------- */
+let droneTelemetryMarkers = {}; // sn -> L.Marker
+let droneTelemetryTimer = null;
+
+function setupDroneTelemetry() {
+  document.getElementById("droneTelemetryToggleBtn").addEventListener("click", toggleDroneTelemetry);
+}
+
+function toggleDroneTelemetry() {
+  const btn = document.getElementById("droneTelemetryToggleBtn");
+
+  if (droneTelemetryTimer) {
+    clearInterval(droneTelemetryTimer);
+    droneTelemetryTimer = null;
+    Object.values(droneTelemetryMarkers).forEach(m => map.removeLayer(m));
+    droneTelemetryMarkers = {};
+    btn.classList.remove("active");
+    return;
+  }
+
+  if (!CONFIG.droneTelemetry.receiverUrl) {
+    notify("Drooni asukoha vastuvõtja pole veel seadistatud. Vaata " +
+      "dji-telemetry-receiver/README.md failist, kuidas see üles seada, " +
+      "ja lisa selle aadress js/config.js faili (CONFIG.droneTelemetry.receiverUrl).");
+    return;
+  }
+
+  btn.classList.add("active");
+  pollDroneTelemetry(); // fetch immediately, don't wait for the first interval tick
+  droneTelemetryTimer = setInterval(pollDroneTelemetry, CONFIG.droneTelemetry.pollIntervalMs);
+}
+
+async function pollDroneTelemetry() {
+  try {
+    const resp = await fetch(`${CONFIG.droneTelemetry.receiverUrl}/telemetry/latest`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    renderDroneTelemetry(data.devices || []);
+  } catch (err) {
+    console.warn("Drooni telemeetria laadimine ebaõnnestus:", err);
+    showBanner(`Drooni asukoha andmete laadimine ebaõnnestus (${err.message}).`);
+  }
+}
+
+function droneTelemetryIcon(kind) {
+  const emoji = kind === "aircraft" ? "🛸" : "🎮";
+  return L.divIcon({
+    className: "droneTelemetryIcon",
+    html: `<div class="droneTelemetryIconInner">${emoji}</div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+  });
+}
+
+function renderDroneTelemetry(devices) {
+  const seenSns = new Set();
+
+  devices.forEach(device => {
+    if (device.latitude === undefined || device.longitude === undefined) return;
+    if (device.latitude === 0 && device.longitude === 0) return; // no GPS fix yet
+    seenSns.add(device.sn);
+
+    const latlng = [device.latitude, device.longitude];
+    const label = device.kind === "aircraft" ? "Droon (UAS)" : "Kontroller";
+
+    if (droneTelemetryMarkers[device.sn]) {
+      droneTelemetryMarkers[device.sn].setLatLng(latlng);
+    } else {
+      droneTelemetryMarkers[device.sn] = L.marker(latlng, { icon: droneTelemetryIcon(device.kind) }).addTo(map);
+    }
+
+    // "Show all data" — same flattening approach as NOTAM GEO, so nothing
+    // in the raw telemetry is hidden behind a curated field subset.
+    const rows = renderDeepRows(device.raw || {}, "");
+    const updatedAgo = Math.round((Date.now() / 1000) - device.updated_at);
+    droneTelemetryMarkers[device.sn].bindPopup(
+      `<h4 class="notamZoneTitle">${escapeHtml(label)} (${escapeHtml(device.sn)})</h4>` +
+      `<table class="popupTable">${rows}</table>` +
+      `<p class="notamSourceNote">Uuendatud ${updatedAgo}s tagasi</p>`
+    );
+  });
+
+  // Remove markers for devices that stopped reporting (receiver already
+  // drops anything older than 30s, so this just mirrors that here too).
+  Object.keys(droneTelemetryMarkers).forEach(sn => {
+    if (!seenSns.has(sn)) {
+      map.removeLayer(droneTelemetryMarkers[sn]);
+      delete droneTelemetryMarkers[sn];
+    }
+  });
+}
+
+/* ---------------------------------------------------------------------- */
+/* REMOTE ID — other nearby drones, detected via an ESP32 (Sky-Spy         */
+/* firmware) plugged into the same receiver Pi. Each detection carries    */
+/* BOTH the drone's own position and its reported pilot/operator          */
+/* position (required by the Remote ID standard), so we plot a pair of    */
+/* markers per detection, connected by a line.                            */
+/* ---------------------------------------------------------------------- */
+let remoteIdMarkers = {};   // mac -> { drone: L.Marker, pilot: L.Marker, line: L.Polyline }
+let remoteIdTimer = null;
+
+function setupRemoteId() {
+  document.getElementById("remoteIdToggleBtn").addEventListener("click", toggleRemoteId);
+}
+
+function toggleRemoteId() {
+  const btn = document.getElementById("remoteIdToggleBtn");
+
+  if (remoteIdTimer) {
+    clearInterval(remoteIdTimer);
+    remoteIdTimer = null;
+    Object.values(remoteIdMarkers).forEach(entry => {
+      map.removeLayer(entry.drone);
+      if (entry.pilot) map.removeLayer(entry.pilot);
+      if (entry.line) map.removeLayer(entry.line);
+    });
+    remoteIdMarkers = {};
+    btn.classList.remove("active");
+    return;
+  }
+
+  if (!CONFIG.remoteId.receiverUrl) {
+    notify("Remote ID vastuvõtja pole veel seadistatud. Vaata " +
+      "dji-telemetry-receiver/README.md failist ESP32/Sky-Spy seadistust, " +
+      "ja lisa aadress js/config.js faili (CONFIG.remoteId.receiverUrl).");
+    return;
+  }
+
+  btn.classList.add("active");
+  pollRemoteId();
+  remoteIdTimer = setInterval(pollRemoteId, CONFIG.remoteId.pollIntervalMs);
+}
+
+async function pollRemoteId() {
+  try {
+    const resp = await fetch(`${CONFIG.remoteId.receiverUrl}/remoteid/latest`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    renderRemoteId(data.detections || []);
+  } catch (err) {
+    console.warn("Remote ID andmete laadimine ebaõnnestus:", err);
+    showBanner(`Teiste droonide andmete laadimine ebaõnnestus (${err.message}).`);
+  }
+}
+
+function remoteIdDroneIcon() {
+  return L.divIcon({
+    className: "remoteIdIcon",
+    html: `<div class="remoteIdIconInner remoteIdIconDrone">🛸</div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13]
+  });
+}
+
+function remoteIdPilotIcon() {
+  return L.divIcon({
+    className: "remoteIdIcon",
+    html: `<div class="remoteIdIconInner remoteIdIconPilot">🧍</div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13]
+  });
+}
+
+function renderRemoteId(detections) {
+  const seenMacs = new Set();
+
+  detections.forEach(det => {
+    if (det.drone_lat === undefined || det.drone_long === undefined) return;
+    if (det.drone_lat === 0 && det.drone_long === 0) return;
+    seenMacs.add(det.mac);
+
+    const droneLatLng = [det.drone_lat, det.drone_long];
+    const hasPilotFix = det.pilot_lat !== undefined && det.pilot_long !== undefined &&
+      !(det.pilot_lat === 0 && det.pilot_long === 0);
+    const pilotLatLng = hasPilotFix ? [det.pilot_lat, det.pilot_long] : null;
+
+    const rows = renderDeepRows(det, "");
+    const updatedAgo = Math.round((Date.now() / 1000) - det.updated_at);
+    const title = det.basic_id || det.mac;
+    const popupHtml =
+      `<h4 class="notamZoneTitle">🛸 ${escapeHtml(title)}</h4>` +
+      `<table class="popupTable">${rows}</table>` +
+      `<p class="notamSourceNote">Nähtud ${updatedAgo}s tagasi</p>`;
+
+    if (!remoteIdMarkers[det.mac]) {
+      remoteIdMarkers[det.mac] = {
+        drone: L.marker(droneLatLng, { icon: remoteIdDroneIcon() }).addTo(map),
+        pilot: null,
+        line: null
+      };
+    } else {
+      remoteIdMarkers[det.mac].drone.setLatLng(droneLatLng);
+    }
+    remoteIdMarkers[det.mac].drone.bindPopup(popupHtml);
+
+    const entry = remoteIdMarkers[det.mac];
+    if (hasPilotFix) {
+      if (!entry.pilot) {
+        entry.pilot = L.marker(pilotLatLng, { icon: remoteIdPilotIcon() }).addTo(map);
+      } else {
+        entry.pilot.setLatLng(pilotLatLng);
+      }
+      entry.pilot.bindPopup(
+        `<h4 class="notamZoneTitle">🧍 Piloot (${escapeHtml(title)})</h4>` +
+        `<table class="popupTable">${rows}</table>`
+      );
+
+      if (!entry.line) {
+        entry.line = L.polyline([droneLatLng, pilotLatLng], {
+          color: "#666", weight: 1, dashArray: "4,4"
+        }).addTo(map);
+      } else {
+        entry.line.setLatLngs([droneLatLng, pilotLatLng]);
+      }
+    } else if (entry.pilot) {
+      // Pilot fix was available before but isn't anymore — drop it rather
+      // than showing a stale/misleading operator position.
+      map.removeLayer(entry.pilot);
+      if (entry.line) map.removeLayer(entry.line);
+      entry.pilot = null;
+      entry.line = null;
+    }
+  });
+
+  Object.keys(remoteIdMarkers).forEach(mac => {
+    if (!seenMacs.has(mac)) {
+      const entry = remoteIdMarkers[mac];
+      map.removeLayer(entry.drone);
+      if (entry.pilot) map.removeLayer(entry.pilot);
+      if (entry.line) map.removeLayer(entry.line);
+      delete remoteIdMarkers[mac];
+    }
+  });
 }
 
 /* ---------------------------------------------------------------------- */
@@ -633,13 +888,10 @@ function refreshPriaPresetSelect(selectName) {
 /* GEOLOCATION ("blue dot")                                                 */
 /* ---------------------------------------------------------------------- */
 function setupLocateControls() {
-  document.getElementById("locateBtn").addEventListener("click", toggleLiveLocation);
   document.getElementById("mapLocateBtn").addEventListener("click", toggleLiveLocation);
-  document.getElementById("fitEstoniaBtn").addEventListener("click", () => map.fitBounds(CONFIG.estoniaBounds));
 }
 
 function setLocateButtonsActive(active) {
-  document.getElementById("locateBtn").classList.toggle("active", active);
   document.getElementById("mapLocateBtn").classList.toggle("active", active);
 }
 
@@ -780,13 +1032,13 @@ function setupModals() {
     openModal("Rakenduse info", `
       <h3>SAK26</h3>
       <p>Avatud ligipääsuga kaardirakendus: taustakaardid, PRIA põllumassiivid,
-      EANS droonikaart, sinu enda üleslaetud kaardikihid ja Google Sheets/repo-fail
-      väliandmed ühel vaatel.</p>
+      NOTAM GEO lennuohutuse tsoonid, sinu enda üleslaetud kaardikihid ja Google
+      Sheets/repo-fail väliandmed ühel vaatel.</p>
       <p><strong>Andmete allikad ja litsentsid:</strong></p>
       <ul>
         <li>Maa- ja Ruumiamet — taustakaardid (CC BY 4.0)</li>
         <li>PRIA — põllumassiivide avalik WFS-teenus</li>
-        <li>EANS — UTM/droonikaardi rakendus (utm.eans.ee)</li>
+        <li>EANS — NOTAM/UAS geopiirete andmed (utm.eans.ee)</li>
         <li>OpenStreetMap panustajad</li>
       </ul>
       <p>Vajuta iga jaotise juures oleva ⓘ nupu peale täpsema info nägemiseks.</p>
@@ -1561,9 +1813,22 @@ async function loadMyFilesEntry(fname) {
 function setupSearch() {
   document.getElementById("searchLayerSelect").addEventListener("change", refreshSearchFieldOptions);
   document.getElementById("searchGoBtn").addEventListener("click", performSearch);
+  document.getElementById("searchCancelBtn").addEventListener("click", cancelSearch);
   document.getElementById("mapSearchToggleBtn").addEventListener("click", toggleSearchWidget);
   document.getElementById("searchCloseBtn").addEventListener("click", () => closeSearchWidget());
   refreshSearchLayerOptions();
+}
+
+function cancelSearch() {
+  document.getElementById("searchTextInput").value = "";
+  setStatus("searchStatus", "");
+  const resultBox = document.getElementById("searchResult");
+  resultBox.classList.add("hidden");
+  resultBox.innerHTML = "";
+  if (searchHighlightMarker) {
+    map.removeLayer(searchHighlightMarker);
+    searchHighlightMarker = null;
+  }
 }
 
 function toggleSearchWidget() {
