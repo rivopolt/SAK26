@@ -346,28 +346,79 @@ function renderDeepRows(obj, prefix) {
   return html;
 }
 
+function linkifyPhoneNumbers(text) {
+  // NOTAM messages sometimes embed a phone number as free text (e.g.
+  // "...NOTIFY ESTONIAN AIR FORCE ... ON TEL +372 717 3724.") rather than
+  // as a separate structured field. This finds "TEL"/"PHONE" followed by
+  // a number and turns just that part into a tel: link, leaving
+  // everything else as plain (escaped) text.
+  if (!text) return "";
+  const phoneRegex = /\b(TEL|PHONE)[:.]?\s*(\+?[\d][\d\s\-().]{4,18}\d)/gi;
+  let result = "";
+  let lastIndex = 0;
+  let match;
+  while ((match = phoneRegex.exec(text)) !== null) {
+    const fullMatch = match[0], keyword = match[1], numberPart = match[2];
+    result += escapeHtml(text.slice(lastIndex, match.index));
+    const telHref = numberPart.replace(/[^\d+]/g, "");
+    result += escapeHtml(keyword) + " " + `<a href="tel:${escapeHtml(telHref)}">${escapeHtml(numberPart.trim())}</a>`;
+    lastIndex = match.index + fullMatch.length;
+  }
+  result += escapeHtml(text.slice(lastIndex));
+  return result;
+}
+
+function isSafeHttpUrl(url) {
+  return typeof url === "string" && /^https?:\/\//i.test(url);
+}
+
+function isSafeEmail(email) {
+  return typeof email === "string" && /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(email);
+}
+
 function notamCuratedRows(props) {
   const rows = [];
   const addRow = (label, value) => {
     if (value === undefined || value === null || value === "") return;
     rows.push(`<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(String(value))}</td></tr>`);
   };
+  const addRawHtmlRow = (label, html) => {
+    if (!html) return;
+    rows.push(`<tr><td>${escapeHtml(label)}</td><td>${html}</td></tr>`);
+  };
 
   addRow("Nimi", props.name || props.identifier);
   addRow("Piirang", props.restriction);
   addRow("Põhjus", props.reason);
   if (props.lower && props.upper) addRow("Kõrgus", `${props.lower} – ${props.upper}`);
-  addRow("Teade", props.message);
+  if (props.message) addRawHtmlRow("Teade", linkifyPhoneNumbers(props.message));
 
   const etMsg = props.extendedProperties && Array.isArray(props.extendedProperties.localizedMessages)
     ? props.extendedProperties.localizedMessages.find(m => m.language === "et-EE")
     : null;
-  if (etMsg) addRow("Teade (ET)", etMsg.message);
+  if (etMsg) addRawHtmlRow("Teade (ET)", linkifyPhoneNumbers(etMsg.message));
 
   const app = Array.isArray(props.applicability) ? props.applicability[0] : null;
   if (app && app.permanent === "NO" && app.startDateTime && app.endDateTime) {
     const fmt = iso => new Date(iso).toLocaleString("et-EE");
     addRow("Kehtiv", `${fmt(app.startDateTime)} – ${fmt(app.endDateTime)}`);
+  }
+
+  // Contact info from zoneAuthority — email/website as direct clickable
+  // links, when present and well-formed (defense in depth: only linkify
+  // values that actually look like a URL/email, even though this comes
+  // from a trusted government feed).
+  const authority = Array.isArray(props.zoneAuthority) ? props.zoneAuthority[0] : null;
+  if (authority) {
+    const parts = [];
+    if (authority.contactName) parts.push(escapeHtml(authority.contactName));
+    if (isSafeEmail(authority.email)) {
+      parts.push(`<a href="mailto:${escapeHtml(authority.email)}">${escapeHtml(authority.email)}</a>`);
+    }
+    if (isSafeHttpUrl(authority.siteURL)) {
+      parts.push(`<a href="${escapeHtml(authority.siteURL)}" target="_blank" rel="noopener">Rohkem infot ↗</a>`);
+    }
+    if (parts.length > 0) addRawHtmlRow("Kontakt", parts.join(" — "));
   }
 
   return rows.join("");

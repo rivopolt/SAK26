@@ -10,6 +10,21 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### NOTAM: telefoninumbrid ja kontaktid klõpsatavaks
+Kontrollisin päris NOTAM andmeid — struktureeritud "phone" välja seal
+pole, aga telefoninumbrid võivad esineda vabatekstis (nt "...ON TEL
++372 717 3724."). Lisasin tuvastuse, mis leiab "TEL"/"PHONE" sõna järel
+oleva numbri ja teeb sellest klõpsatava tel: lingi, jättes ülejäänud
+teate tavatekstiks. Testitud otse päris NOTAM tekstinäite peal (sh
+kontroll, et "3A/C", "60 MINUTES" ega "04/2026" valesti lingiks ei
+muutu).
+
+Lisaks lisandus "Kontakt" rida, mis näitab tsooni eest vastutava asutuse
+nime, klõpsatavat e-maili (kui olemas) ja veebilehe linki (kui olemas) —
+see info oli andmetes juba olemas, aga polnud varem üldse kuvatud.
+
+## Varasem muudatuste pakett
+
 ### NOTAM GEO: puhas info tagasi, kattuvad tsoonid nüüd tabidena
 Eemaldasin "laen andmeid"/"laetud" teavitusteksti täielikult (vaikne
 laadimine). Popup-info on tagasi puhtal, valitud väljade kujul (Nimi,
@@ -30,7 +45,7 @@ failist nende nuppude "hidden" klass, ja kõik töötab kohe.
 ja ruudukujuline (4px ümardus, sama mis suumi +/- nupud), mitte enam
 ümmargune.
 
-## Varasem muudatuste pakett
+## Varasemad muudatused (-9)
 
 ### 🛸 Teised droonid (Remote ID — muude droonide tuvastamine)
 Uus nupp kaardil ("🛸 Teised droonid") näitab teiste läheduses olevate
