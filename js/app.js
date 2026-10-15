@@ -50,7 +50,11 @@ function init() {
     // Double-click (desktop) / double-tap (touch) zooms in — this is a
     // Leaflet default, but made explicit here since it's an intentional
     // requirement, not just incidental behavior.
-    doubleClickZoom: true
+    doubleClickZoom: true,
+    // Canvas-renderer: far faster than SVG with many polygons (zoom/pan lag).
+    preferCanvas: true,
+    zoomSnap: 1,
+    wheelPxPerZoomLevel: 90
   }).setView(
     savedView ? [savedView.lat, savedView.lng] : CONFIG.initialView.center,
     savedView ? savedView.zoom : CONFIG.initialView.zoom
@@ -80,7 +84,7 @@ function init() {
 
   map.on("moveend", debounce(() => {
     refreshAllEnabledPriaLayers();
-    refreshAllMyLayers();
+    refreshAllMyLayers(true); // skip re-render when nothing visible changed
     if (notamLayerGroup) notamLayerGroup.bringToFront();
     saveMapView();
   }, 400));
@@ -136,6 +140,10 @@ function buildBaseLayers() {
         // a blank background once you go past 18 (this was the "background
         // map disappears" bug).
         maxNativeZoom: 18,
+        // Don't re-request tiles on every animation frame while zooming/panning
+        updateWhenZooming: false,
+        updateWhenIdle: true,
+        keepBuffer: 3,
         maxZoom: CONFIG.mapMaxZoom,
         minZoom: 3,
         attribution: cfg.attribution
@@ -991,37 +999,77 @@ function setLocateButtonsActive(active) {
   document.getElementById("mapLocateBtn").classList.toggle("active", active);
 }
 
+let locationFollowing = true;
+let locationPollTimer = null;
+let lastLocationFixAt = 0;
+const LOCATION_MAX_INTERVAL_MS = 5000;
+
+function handleLocationFix(pos, state) {
+  lastLocationFixAt = Date.now();
+  const { latitude, longitude, accuracy } = pos.coords;
+  updateUserLocationMarker(latitude, longitude, accuracy);
+  if (state.firstFix) {
+    map.setView([latitude, longitude], CONFIG.locationDefaultZoom, { animate: false });
+    state.firstFix = false;
+    locationFollowing = true;
+  } else if (locationFollowing) {
+    // Follow mode: recenter without animation (animated pans every few
+    // seconds were a source of lag). Drag the map to stop following;
+    // tap the pin again to resume.
+    map.panTo([latitude, longitude], { animate: false });
+  }
+}
+
+function stopLiveLocation() {
+  if (locationWatchId !== null) navigator.geolocation.clearWatch(locationWatchId);
+  locationWatchId = null;
+  if (locationPollTimer) clearInterval(locationPollTimer);
+  locationPollTimer = null;
+  setLocateButtonsActive(false);
+  map.off("dragstart", onUserDragMap);
+}
+
+function onUserDragMap() {
+  locationFollowing = false;
+  document.getElementById("mapLocateBtn").classList.add("notFollowing");
+}
+
 function toggleLiveLocation() {
+  const btn = document.getElementById("mapLocateBtn");
   if (locationWatchId !== null) {
-    navigator.geolocation.clearWatch(locationWatchId);
-    locationWatchId = null;
-    setLocateButtonsActive(false);
+    if (!locationFollowing) {
+      // Active but not following -> resume following, recenter now.
+      locationFollowing = true;
+      btn.classList.remove("notFollowing");
+      if (userLocationMarker) map.panTo(userLocationMarker.getLatLng(), { animate: false });
+      return;
+    }
+    stopLiveLocation();
     return;
   }
   if (!navigator.geolocation) { notify("Brauser ei toeta asukoha tuvastamist."); return; }
 
   setLocateButtonsActive(true);
-  let firstFix = true;
-  locationWatchId = navigator.geolocation.watchPosition(
-    pos => {
-      const { latitude, longitude, accuracy } = pos.coords;
-      updateUserLocationMarker(latitude, longitude, accuracy);
-      if (firstFix) {
-        map.setView([latitude, longitude], CONFIG.locationDefaultZoom);
-        firstFix = false;
-      } else {
-        // "Follow me": keep the current position centered as it moves,
-        // without forcing the zoom level back to 16 each time.
-        map.panTo([latitude, longitude], { animate: true });
-      }
-    },
-    err => {
-      showBanner("Asukoha tuvastamine ebaõnnestus: " + err.message);
-      setLocateButtonsActive(false);
-      locationWatchId = null;
-    },
-    { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
-  );
+  btn.classList.remove("notFollowing");
+  locationFollowing = true;
+  const state = { firstFix: true };
+  const onErr = err => {
+    showBanner("Asukoha tuvastamine ebaõnnestus: " + err.message);
+    stopLiveLocation();
+  };
+  // maximumAge 0 = always a fresh fix, never a cached one.
+  const opts = { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 };
+  locationWatchId = navigator.geolocation.watchPosition(pos => handleLocationFix(pos, state), onErr, opts);
+  map.on("dragstart", onUserDragMap);
+
+  // Some devices only call watchPosition when they move a lot (or stop
+  // while the map is not followed). Guarantee a refresh at least every
+  // 5 s regardless of follow mode.
+  lastLocationFixAt = Date.now();
+  locationPollTimer = setInterval(() => {
+    if (Date.now() - lastLocationFixAt < LOCATION_MAX_INTERVAL_MS - 500) return;
+    navigator.geolocation.getCurrentPosition(pos => handleLocationFix(pos, state), () => {}, opts);
+  }, LOCATION_MAX_INTERVAL_MS);
 }
 
 function updateUserLocationMarker(lat, lng, accuracy) {
@@ -1395,19 +1443,26 @@ function fillOpacityForEntry(entry) {
   return 1 - (pct / 100);
 }
 
-function renderMyLayerForCurrentView(entry) {
+function renderMyLayerForCurrentView(entry, skipIfUnchanged) {
+  const zoom = map.getZoom();
+  const inRange = entry.visible && zoom >= entry.minZoom && zoom <= entry.maxZoom;
+  let visibleFeatures = [];
+  if (inRange) {
+    const viewBounds = map.getBounds();
+    visibleFeatures = entry.rawFeatures.filter(f => f.__bounds && f.__bounds.isValid() && viewBounds.intersects(f.__bounds));
+  }
+  // Signature of what would be drawn; panning that reveals no new features
+  // (e.g. GPS auto-follow) no longer rebuilds all polygons and labels.
+  const sig = inRange ? zoom + "|" + visibleFeatures.length + "|" + entry.rawFeatures.indexOf(visibleFeatures[0]) + "|" + entry.rawFeatures.indexOf(visibleFeatures[visibleFeatures.length - 1]) : "off";
+  if (skipIfUnchanged && entry.renderedLayer && entry.__sig === sig) return;
+  if (skipIfUnchanged && !entry.renderedLayer && sig === "off" && entry.__sig === "off") return;
+  entry.__sig = sig;
+
   if (entry.renderedLayer) {
     map.removeLayer(entry.renderedLayer);
     entry.renderedLayer = null;
   }
-  if (!entry.visible) return;
-
-  const zoom = map.getZoom();
-  if (zoom < entry.minZoom || zoom > entry.maxZoom) return;
-
-  const viewBounds = map.getBounds();
-  const visibleFeatures = entry.rawFeatures.filter(f => f.__bounds && f.__bounds.isValid() && viewBounds.intersects(f.__bounds));
-  if (visibleFeatures.length === 0) return;
+  if (!inRange || visibleFeatures.length === 0) return;
 
   const showLabels = zoom >= entry.labelMinZoom && !!entry.labelField;
   const opacityValue = fillOpacityForEntry(entry);
@@ -1435,8 +1490,8 @@ function renderMyLayerForCurrentView(entry) {
   entry.renderedLayer = geoLayer;
 }
 
-function refreshAllMyLayers() {
-  Object.values(myLayers).forEach(renderMyLayerForCurrentView);
+function refreshAllMyLayers(skipIfUnchanged) {
+  Object.values(myLayers).forEach(e => renderMyLayerForCurrentView(e, !!skipIfUnchanged));
 }
 
 function isPhoneField(key, value) {
@@ -2415,3 +2470,25 @@ function escapeHtml(str) {
 function cssEscape(str) {
   return window.CSS && CSS.escape ? CSS.escape(str) : str.replace(/["\\]/g, "\\$&");
 }
+
+// ---------- PWA: service worker + täisekraani nupp ----------
+(function setupPwa() {
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
+  const btn = document.getElementById("fullscreenBtn");
+  const root = document.documentElement;
+  const req = root.requestFullscreen || root.webkitRequestFullscreen;
+  if (!btn || !req) return; // brauser ei toeta -> nupp jääb peidetuks
+  btn.classList.remove("hidden");
+  const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+  const sync = () => { btn.textContent = isFs() ? "⛶ Välju täisekraanist" : "⛶ Täisekraan"; setTimeout(() => { try { map.invalidateSize(); } catch (e) {} }, 200); };
+  btn.addEventListener("click", () => {
+    try {
+      if (isFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else req.call(root);
+    } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", sync);
+  document.addEventListener("webkitfullscreenchange", sync);
+})();

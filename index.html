@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>SAK26</title>
 
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1f3a2e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SAK26">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+
 <!-- Leaflet core -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -195,6 +204,7 @@
              from these two once the receiver is up and running. -->
         <button id="droneTelemetryToggleBtn" class="mapQuickBtn hidden">🛰️ Drooni asukoht</button>
         <button id="remoteIdToggleBtn" class="mapQuickBtn hidden">🛸 Teised droonid</button>
+        <button id="fullscreenBtn" class="mapQuickBtn hidden">⛶ Täisekraan</button>
         <button id="mapSearchToggleBtn" class="mapQuickBtn">🔍 Otsi objekti</button>
         <div id="mapScaleBar" class="mapScaleBar">
           <div class="mapScaleBarLine"></div>

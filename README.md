@@ -10,6 +10,50 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### GPS värskendus ja kaardi laggimine
+- Asukoha marker värskeneb nüüd ka siis, kui kaart **ei järgi** asukohta: värske fix (`maximumAge: 0`) + varu-päring vähemalt iga 5 s tagant.
+- Kaardi lohistamine lõpetab järgimise (nupp saab sinise raami); nupule vajutus järgib uuesti. Järgimisel pole enam animeeritud panoreerimist.
+- Lagi vähendamiseks: Canvas-renderdaja (`preferCanvas`), tile'id ei laadi suumi ajal pidevalt uuesti, ja kihte/silte ei ehitata liikumisel ümber, kui nähtav hulk ei muutunud.
+
+
+### PWA (paigaldatav rakendus) + täisekraani nupp
+- Uued failid: `manifest.webmanifest`, `sw.js`, `icons/` (192, 512, maskable 512, apple-touch).
+- Chrome/Edge/Android: menüü → "Paigalda rakendus" / "Lisa avalehele" → avaneb ilma brauseri aadressiribata.
+- Nupp "⛶ Täisekraan" kaardi nuppude real; **ilmub ainult kui brauser Fullscreen API-d toetab** (DJI RC Plus 2 sisseehitatud brauseris tuleb järele proovida).
+- Service worker on "võrk enne": kaardiplaadid, NOTAM, PRIA ja telemeetria tulevad alati võrgust; vahemälu on ainult offline-varuks rakenduse failidele.
+- Teed on suhtelised, seega töötab nii GitHub Pages alamteel kui tulevasel oma domeenil.
+
+
+### AUTHENTICATION.md: teadlik otsus vana github.io lingi kohta
+GitHub Pages ei blokeeri ega suuna ümber algset `rivopolt.github.io/SAK26/`
+linki, isegi kui kohandatud domeen + Cloudflare Access on seadistatud —
+see jääb avalikuks, ilma sisselogimiseta. Otsustasime praeguses etapis
+selle riskiga leppida (väike, teadaolev kasutajaskond) — dokumenteeritud
+selgelt `AUTHENTICATION.md` failis, koos konkreetse juhisega: jaga
+edaspidi ainult uut domeeni, mitte kunagi vana github.io linki.
+
+## Varasemad muudatused (-13)
+
+### Ligipääsukontrolli seadistusjuhend (AUTHENTICATION.md)
+Uus fail `AUTHENTICATION.md` — täielik, valmis samm-sammuline juhend
+Cloudflare Access + e-posti ühekordse koodiga sisselogimise
+seadistamiseks. See on PÄRIS ligipääsukontroll (mitte lihtsalt
+kasutajaliidese sisselogimisekraan) — Cloudflare seisab kogu domeeni ees
+ja nõuab kinnitatud sisselogimist iga päringu jaoks, sh otsesed
+faililingid, mitte ainult rakenduse enda lehte.
+
+**Google sisselogimise asemel valisin e-posti ühekordse koodi** —
+sinu kasutajad (jahimehed/droonioperaatorid) ei pruugi kõik Google
+kontot omada/tahta, e-post töötab suvalise aadressiga.
+
+**Blokeeriv sõltuvus:** vajab päris domeeni (`*.github.io` ei sobi —
+juba varem kinnitatud, kuna see on jagatud domeen). Juhend sisaldab
+täpseid samme domeeni registreerimisest kuni testimiseni. Kuludeta
+(Cloudflare Zero Trust tasuta kuni 50 kasutajat) peale domeeni enda
+maksumuse (~10-15 €/aasta).
+
+## Varasemad muudatused (-12)
+
 ### Debug: telefon puudu (EER2615 / A1794/26) — andmeallika lünk, mitte viga
 Kontrollisin päris elavat NOTAM GEO andmevoogu kahel korral ja otsisin
 läbi kõik selles oleva tsoonid — EER2615/A1794/26 pole selles konkreetses
@@ -32,7 +76,7 @@ Kontakt rida näitab nüüd ainult asutuse nime ja klõpsatavat e-maili
 ### Asukoha nupp veel lähemale ZoomOUT nupule
 Vahe on nüüd 0px (varem ~2px) — nupud on visuaalselt otse koos.
 
-## Varasem muudatuste pakett
+## Varasemad muudatused (-11)
 
 ### NOTAM: telefoninumbrid ja kontaktid klõpsatavaks
 Kontrollisin päris NOTAM andmeid — struktureeritud "phone" välja seal

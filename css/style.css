@@ -878,3 +878,6 @@ html, body {
   }
   #mapPanel { width: 100%; }
 }
+
+/* Locate button: active but map not following the position */
+.mapLocateBtn.notFollowing { opacity: 0.75; box-shadow: inset 0 0 0 2px #1a73e8; }
