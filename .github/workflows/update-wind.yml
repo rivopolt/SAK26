@@ -1,0 +1,29 @@
+name: Update weather observations mirror
+
+# Fallback-koopia Keskkonnaagentuuri vaatlusandmetest (tuul). Rakendus proovib
+# alati esmalt otse ilmateenistus.ee-d; seda koopiat kasutatakse ainult siis,
+# kui brauser otsepäringu blokeerib (CORS). Allikas: Keskkonnaagentuur, CC BY 4.0.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # GitHub ei garanteeri täpset aega
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-wind-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch observations XML
+        run: |
+          mkdir -p MyFiles/data
+          curl -fsSL "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php" -o /tmp/obs.xml
+          python3 -c "import xml.dom.minidom as m; m.parse('/tmp/obs.xml')"
+          cp /tmp/obs.xml MyFiles/data/observations.xml
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: refresh weather observations mirror"
+          file_pattern: "MyFiles/data/observations.xml"

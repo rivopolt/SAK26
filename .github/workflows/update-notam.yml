@@ -1,0 +1,41 @@
+name: Update NOTAM GEO mirror
+
+# Fetches the live NOTAM/UAS-geofencing GeoJSON from EANS once a day and
+# saves a same-origin copy into MyFiles/data/notam_geo.geojson. This is
+# ONLY a fallback: the app always tries the live URL first (see
+# CONFIG.notam in js/config.js) and only falls back to this mirrored
+# copy if the live fetch fails (e.g. a CORS restriction).
+#
+# NOTAM/geofencing data is safety-relevant and can change within hours
+# (temporary danger areas, restricted zones), so this mirror should be
+# treated strictly as a "better than nothing" fallback — never as
+# authoritative. The app's UI labels which source is currently in use.
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # once daily, 04:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-notam-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch live NOTAM GeoJSON
+        run: |
+          mkdir -p MyFiles/data
+          curl -fsSL "https://utm.eans.ee/avm/utm/uas.geojson" -o MyFiles/data/notam_geo.geojson
+          # Sanity check: make sure we actually got valid JSON before committing it,
+          # so a transient upstream error never overwrites a good mirror with garbage.
+          python3 -c "import json; json.load(open('MyFiles/data/notam_geo.geojson'))"
+
+      - name: Commit mirror if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: refresh NOTAM GEO mirror"
+          file_pattern: "MyFiles/data/notam_geo.geojson"
