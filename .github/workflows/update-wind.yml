@@ -6,7 +6,7 @@ name: Update weather observations mirror
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # GitHub ei garanteeri täpset aega
+    - cron: "12,42 * * * *"   # kellaaja miinutid :12 ja :42 - GitHub jätab tipptundidel (:00/:30) jooksud sageli vahele
   workflow_dispatch: {}
 
 permissions:
