@@ -293,15 +293,17 @@ function fmtTallinn(d) {
   return d.toLocaleString("et-EE", { timeZone: "Europe/Tallinn", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-function showNotamUpdateNotice() {
+async function showNotamUpdateNotice() {
   if (!notamDataInfo) return;
-  const i = notamDataInfo;
-  const src = notamDataSource === "mirror" ? "koopia (MyFiles)" : "otse EANS-ist";
-  let upd;
-  if (i.updatedAt) upd = `Andmed uuendatud: ${fmtTallinn(i.updatedAt)}`;
-  else if (i.recordDate) upd = `Uusim kirje muudetud: ${fmtTallinn(i.recordDate)}`;
-  else upd = "EANS ei teata uuendusaega";
-  showBanner(`NOTAM GEO — ${upd}. Laaditud: ${fmtTallinn(i.loadedAt)} (${src}), ${i.count} ala.`, 5000);
+  // Time of the last GitHub Action run (written to notam_meta.json by update-notam.yml).
+  let actionDate = null;
+  try {
+    const url = CONFIG.notam.mirrorUrl.replace(/[^/]+$/, "notam_meta.json");
+    const m = await fetch(`${url}?t=${Date.now()}`, { cache: "no-store" });
+    if (m.ok) actionDate = parseHttpDate((await m.json()).fetched_at);
+  } catch (e) { /* no meta file yet */ }
+  const txt = actionDate ? `Git Action uuendas: ${fmtTallinn(actionDate)}` : "Git Action pole veel andmeid uuendanud";
+  showBanner(`NOTAM GEO — ${txt}. ${notamDataInfo.count} ala.`, 7000);
 }
 
 async function loadNotamData() {
