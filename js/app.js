@@ -264,6 +264,31 @@ function notamDateFromJson(gj) {
   return null;
 }
 
+// Fallback when the feed has neither a Last-Modified header nor a top-level
+// timestamp: look inside the zone records for update/modified/created-type
+// date fields and take the newest one.
+function notamNewestRecordDate(gj) {
+  let newest = null;
+  const keyRe = /updat|modif|creat|issued|publish|timestamp|changed|edit/i;
+  const consider = v => {
+    let d = null;
+    if (typeof v === "number") d = new Date(v < 1e12 ? v * 1000 : v);
+    else if (typeof v === "string" && /\d{4}-\d{2}-\d{2}/.test(v)) d = new Date(v);
+    if (d && !isNaN(d.getTime()) && d.getFullYear() > 2015 && d.getTime() < Date.now() + 864e5 * 400) {
+      if (!newest || d > newest) newest = d;
+    }
+  };
+  const walk = (o, depth) => {
+    if (!o || typeof o !== "object" || depth > 2) return;
+    Object.keys(o).forEach(k => {
+      if (keyRe.test(k)) consider(o[k]);
+      if (o[k] && typeof o[k] === "object") walk(o[k], depth + 1);
+    });
+  };
+  (gj.features || []).forEach(f => walk(f.properties, 0));
+  return newest;
+}
+
 function fmtTallinn(d) {
   return d.toLocaleString("et-EE", { timeZone: "Europe/Tallinn", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
@@ -272,8 +297,11 @@ function showNotamUpdateNotice() {
   if (!notamDataInfo) return;
   const i = notamDataInfo;
   const src = notamDataSource === "mirror" ? "koopia (MyFiles)" : "otse EANS-ist";
-  const upd = i.updatedAt ? `Andmed uuendatud: ${fmtTallinn(i.updatedAt)}` : "Allika uuendusaega ei teatata";
-  showBanner(`NOTAM GEO — ${upd}. Laaditud: ${fmtTallinn(i.loadedAt)} (${src}).`, 5000);
+  let upd;
+  if (i.updatedAt) upd = `Andmed uuendatud: ${fmtTallinn(i.updatedAt)}`;
+  else if (i.recordDate) upd = `Uusim kirje muudetud: ${fmtTallinn(i.recordDate)}`;
+  else upd = "EANS ei teata uuendusaega";
+  showBanner(`NOTAM GEO — ${upd}. Laaditud: ${fmtTallinn(i.loadedAt)} (${src}), ${i.count} ala.`, 5000);
 }
 
 async function loadNotamData() {
@@ -283,7 +311,7 @@ async function loadNotamData() {
     if (resp.ok) {
       const geojson = await resp.json();
       notamDataSource = "live";
-      notamDataInfo = { loadedAt: new Date(), updatedAt: parseHttpDate(resp.headers.get("Last-Modified")) || notamDateFromJson(geojson) };
+      notamDataInfo = { loadedAt: new Date(), updatedAt: parseHttpDate(resp.headers.get("Last-Modified")) || notamDateFromJson(geojson), recordDate: notamNewestRecordDate(geojson), count: (geojson.features || []).length };
       return geojson;
     }
   } catch (e) {
@@ -302,7 +330,7 @@ async function loadNotamData() {
         const m = await fetch(`${CONFIG.notam.mirrorUrl.replace(/[^/]+$/, "notam_meta.json")}?t=${Date.now()}`);
         if (m.ok) metaDate = parseHttpDate((await m.json()).fetched_at);
       } catch (e) { /* no meta file yet */ }
-      notamDataInfo = { loadedAt: new Date(), updatedAt: metaDate || notamDateFromJson(geojson) };
+      notamDataInfo = { loadedAt: new Date(), updatedAt: metaDate || notamDateFromJson(geojson), recordDate: notamNewestRecordDate(geojson), count: (geojson.features || []).length };
       return geojson;
     }
   } catch (e) {
