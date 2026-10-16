@@ -67,7 +67,7 @@ const CONFIG = {
   wind: {
     liveUrl: "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php",
     mirrorUrl: "MyFiles/data/observations.xml",
-    refreshMs: 300000,   // 5 min
+    refreshMs: 1800000,  // 30 min
     maxDistanceKm: 80    // kaugemal kui see -> ei näita
   },
 
