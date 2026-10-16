@@ -10,6 +10,9 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Tuulenool parandatud
+- Nool oli 180° valepidi (lõunatuul joonistus põhjast lõunasse). Nüüd osutab nool alati suunas, kuhu tuul puhub (lõunatuul → nool üles).
+
 ### Tuule suund ja kiirus (lähim ilmajaam)
 - Uus tekst + nool "Otsi objekti" nupu all (sama laius, läbipaistev). Must Põhikaardil, valge Ortofotol.
 - Nool näitab, **kuhu** tuul puhub; tekst: keskmine kiirus (puhang) m/s ja ilmakaar, kust tuul puhub. Puudutus/hõljutus näitab jaama nime, kaugust ja vaatluse vanust.
