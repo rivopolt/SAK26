@@ -10,6 +10,12 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Skaala, nuppude asukohad
+- Skaala näitab alates 1000 m kilomeetreid (1 km, 1.5 km, 10 km).
+- Skaala värv: must Põhikaardil, valge Ortofotol (nagu tuul).
+- 📍 ja suum +/− tõstetud ühe nupu võrra ülespoole.
+- Täisekraani nupp: ainult sümbol ⛶, sama suur kui 📍, asub 📍 all (peidus, kui brauser ei toeta).
+
 ### Tuulenool parandatud
 - Nool oli 180° valepidi (lõunatuul joonistus põhjast lõunasse). Nüüd osutab nool alati suunas, kuhu tuul puhub (lõunatuul → nool üles).
 

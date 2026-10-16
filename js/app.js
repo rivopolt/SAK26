@@ -1141,6 +1141,10 @@ function formatScaleMeters(meters) {
   else if (meters < 200) rounded = Math.round(meters / 5) * 5;
   else if (meters < 2000) rounded = Math.round(meters / 50) * 50;
   else rounded = Math.round(meters / 500) * 500;
+  if (rounded >= 1000) {
+    const km = rounded / 1000;
+    return `${km < 10 ? parseFloat(km.toFixed(1)) : Math.round(km)} km`;
+  }
   return `${rounded} m`;
 }
 
@@ -2484,7 +2488,7 @@ function cssEscape(str) {
   if (!btn || !req) return; // brauser ei toeta -> nupp jääb peidetuks
   btn.classList.remove("hidden");
   const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
-  const sync = () => { btn.textContent = isFs() ? "⛶ Välju täisekraanist" : "⛶ Täisekraan"; setTimeout(() => { try { map.invalidateSize(); } catch (e) {} }, 200); };
+  const sync = () => { btn.title = isFs() ? "Välju täisekraanist" : "Täisekraan"; setTimeout(() => { try { map.invalidateSize(); } catch (e) {} }, 200); };
   btn.addEventListener("click", () => {
     try {
       if (isFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
@@ -2509,6 +2513,8 @@ function updateWindTheme() {
   if (!el) return;
   const isPhoto = currentBaseLayer === baseLayerObjects["maaamet_foto"];
   el.classList.toggle("onPhoto", isPhoto);
+  const sb = document.getElementById("mapScaleBar");
+  if (sb) sb.classList.toggle("onPhoto", isPhoto);
 }
 
 function parseWindXml(text) {
@@ -2564,8 +2570,9 @@ async function updateWindWidget() {
     if (d < bestD) { bestD = d; best = s; }
   });
   if (!best || bestD / 1000 > CONFIG.wind.maxDistanceKm) { el.classList.add("hidden"); return; }
-  // Wind direction = where the wind blows FROM; the arrow points where it blows TO.
-  document.getElementById("windArrow").style.transform = `rotate(${(best.dir + 180) % 360}deg)`;
+  // Wind direction = where the wind blows FROM. The glyph "↓" points south (180°) at
+  // rotation 0, so rotating it by `dir` makes it point to dir+180 = where the wind blows TO.
+  document.getElementById("windArrow").style.transform = `rotate(${best.dir}deg)`;
   const from = WIND_COMPASS[Math.round(best.dir / 45) % 8];
   const gust = isFinite(best.gust) ? ` (${best.gust.toFixed(1)})` : "";
   document.getElementById("windText").textContent = `${best.speed.toFixed(1)}${gust} m/s ${from}`;
