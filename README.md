@@ -10,6 +10,9 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Taustakaardi veateade
+- Üksik ebaõnnestunud kaardiplaat (mobiilivõrgu tõrge) tekitas kohe veateate. Nüüd proovitakse plaati 2 s pärast uuesti ning teade tuleb ainult siis, kui ≥4 plaati ebaõnnestub 15 s jooksul (maksimaalselt kord minutis). Teate tekst ei viita enam valesti config.js-ile.
+
 ### iPhone täisekraan
 - iPhone Safaris Fullscreen API-d ei ole, seega päris täisekraani nuppu seal teha ei saa. ⛶ nupp näitab nüüd iPhone'is juhist: Jaga → "Lisa avakuvale"; avakuva ikoonilt avanedes töötab SAK26 ilma aadressiribata (peidetakse, kui juba nii avatud).
 - Lisatud `viewport-fit=cover`, läbipaistev olekuriba ja turvaalad (notš/koduriba), `100dvh` kõrgus.

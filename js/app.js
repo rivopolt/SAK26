@@ -149,8 +149,26 @@ function buildBaseLayers() {
         minZoom: 3,
         attribution: cfg.attribution
       });
-      layer.on("tileerror", () => {
-        showBanner(`"${cfg.name}" kihi pildid ei laadinud serverist. Kontrolli config.js failis kihi nime.`);
+      // One failed tile is usually a transient network blip (mobile data,
+      // a dropped request), not a broken layer. So: retry each failed tile
+      // once after 2 s, and only warn if several tiles keep failing.
+      let tileErrTimes = [];
+      let lastTileWarn = 0;
+      layer.on("tileerror", e => {
+        const tile = e && e.tile;
+        if (tile && !tile.__retried && tile.src) {
+          tile.__retried = true;
+          const src = tile.src;
+          setTimeout(() => { tile.src = src + (src.indexOf("?") > -1 ? "&" : "?") + "_r=" + Date.now(); }, 2000);
+          return;
+        }
+        const now = Date.now();
+        tileErrTimes = tileErrTimes.filter(t => now - t < 15000);
+        tileErrTimes.push(now);
+        if (tileErrTimes.length >= 4 && now - lastTileWarn > 60000) {
+          lastTileWarn = now;
+          showBanner(`"${cfg.name}" kaardipildid laevad halvasti (võrk või Maa-ameti server). Proovi hetke pärast uuesti.`);
+        }
       });
     }
     baseLayerObjects[cfg.id] = layer;
