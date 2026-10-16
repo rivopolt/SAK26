@@ -10,6 +10,12 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Tuule hoiatusmärk ⚠ sõltub andmete east
+- ⚠ ilmub nüüd ainult siis, kui vaatlus on vanem kui 60 min (XML-i timestamp-i järgi). Koopia kasutamine iseenesest enam hoiatust ei anna; allikas (otse/koopia) ja vanus on teates tekstile klõpsates.
+
+### Tuule uuendusvälp 30 min
+- Ilmajaamade andmeid laaditakse uuesti kõige rohkem iga 30 min tagant (`CONFIG.wind.refreshMs`); kaardi liigutamine vahetab jaama ilma uue allalaadimiseta.
+
 ### Skaala, nuppude asukohad
 - Skaala näitab alates 1000 m kilomeetreid (1 km, 1.5 km, 10 km).
 - Skaala värv: must Põhikaardil, valge Ortofotol (nagu tuul).
