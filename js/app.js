@@ -81,6 +81,7 @@ function init() {
   setupPanelToggle();
   setupModals();
   setupScaleBar();
+  setupWind();
 
   map.on("moveend", debounce(() => {
     refreshAllEnabledPriaLayers();
@@ -174,6 +175,7 @@ function switchBaseLayer(id) {
   currentBaseLayer.addTo(map);
   currentBaseLayer.bringToBack();
   updateBaseLayerUISync(id);
+  updateWindTheme();
 }
 
 function updateBaseLayerUISync(id) {
@@ -2492,3 +2494,99 @@ function cssEscape(str) {
   document.addEventListener("fullscreenchange", sync);
   document.addEventListener("webkitfullscreenchange", sync);
 })();
+
+/* ---------------------------------------------------------------------- */
+/* TUUL — lähima ilmajaama tuule suund ja kiirus                           */
+/* Allikas: Keskkonnaagentuur (ilmateenistus.ee), CC BY 4.0                */
+/* ---------------------------------------------------------------------- */
+let windStations = null;      // [{name, lat, lng, dir, speed, gust}]
+let windSource = "live";
+let windStamp = null;
+let windFetchedAt = 0;
+
+function updateWindTheme() {
+  const el = document.getElementById("windWidget");
+  if (!el) return;
+  const isPhoto = currentBaseLayer === baseLayerObjects["maaamet_foto"];
+  el.classList.toggle("onPhoto", isPhoto);
+}
+
+function parseWindXml(text) {
+  const doc = new DOMParser().parseFromString(text, "application/xml");
+  if (doc.querySelector("parsererror")) throw new Error("XML parse");
+  const root = doc.documentElement;
+  const ts = root.getAttribute("timestamp");
+  const num = (st, tag) => {
+    const n = st.getElementsByTagName(tag)[0];
+    if (!n) return NaN;
+    const t = (n.textContent || "").trim().replace(",", ".");
+    return t === "" ? NaN : parseFloat(t);
+  };
+  const out = [];
+  Array.from(doc.getElementsByTagName("station")).forEach(st => {
+    const nameEl = st.getElementsByTagName("name")[0];
+    const s = { name: nameEl ? nameEl.textContent.trim() : "?",
+      lat: num(st, "latitude"), lng: num(st, "longitude"),
+      dir: num(st, "winddirection"), speed: num(st, "windspeed"), gust: num(st, "windspeedmax") };
+    if (isFinite(s.lat) && isFinite(s.lng) && isFinite(s.dir) && isFinite(s.speed)) out.push(s);
+  });
+  return { stations: out, stamp: ts ? parseInt(ts, 10) : null };
+}
+
+async function loadWindData() {
+  if (windStations && Date.now() - windFetchedAt < CONFIG.wind.refreshMs) return;
+  const tryUrl = async url => {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return parseWindXml(await res.text());
+  };
+  let result = null;
+  try { result = await tryUrl(CONFIG.wind.liveUrl); windSource = "live"; }
+  catch (e) {
+    try { result = await tryUrl(CONFIG.wind.mirrorUrl); windSource = "mirror"; }
+    catch (e2) { result = null; }
+  }
+  windFetchedAt = Date.now();
+  if (result && result.stations.length) { windStations = result.stations; windStamp = result.stamp; }
+}
+
+const WIND_COMPASS = ["N","NE","E","SE","S","SW","W","NW"];
+
+async function updateWindWidget() {
+  const el = document.getElementById("windWidget");
+  if (!el) return;
+  await loadWindData();
+  if (!windStations) { el.classList.add("hidden"); return; }
+  const c = map.getCenter();
+  let best = null, bestD = Infinity;
+  windStations.forEach(s => {
+    const d = c.distanceTo([s.lat, s.lng]);
+    if (d < bestD) { bestD = d; best = s; }
+  });
+  if (!best || bestD / 1000 > CONFIG.wind.maxDistanceKm) { el.classList.add("hidden"); return; }
+  // Wind direction = where the wind blows FROM; the arrow points where it blows TO.
+  document.getElementById("windArrow").style.transform = `rotate(${(best.dir + 180) % 360}deg)`;
+  const from = WIND_COMPASS[Math.round(best.dir / 45) % 8];
+  const gust = isFinite(best.gust) ? ` (${best.gust.toFixed(1)})` : "";
+  document.getElementById("windText").textContent = `${best.speed.toFixed(1)}${gust} m/s ${from}`;
+  let age = "";
+  if (windStamp) {
+    const mins = Math.max(0, Math.round((Date.now() / 1000 - windStamp) / 60));
+    age = `, ${mins} min tagasi`;
+  }
+  el.title = `Tuul: ${best.name} (${(bestD / 1000).toFixed(0)} km)${age}. Tuule suund ${Math.round(best.dir)}° (puhub ${from} poolt), keskmine kiirus ${best.speed} m/s` +
+    (isFinite(best.gust) ? `, puhang ${best.gust} m/s` : "") +
+    (windSource === "mirror" ? ". NB: arhiivikoopia, võib olla vana." : ". Allikas: Keskkonnaagentuur.");
+  el.classList.toggle("stale", windSource === "mirror");
+  el.classList.remove("hidden");
+}
+
+function setupWind() {
+  const el = document.getElementById("windWidget");
+  if (!el) return;
+  updateWindTheme();
+  el.addEventListener("click", () => notify(el.title));
+  map.on("moveend", debounce(updateWindWidget, 800));
+  updateWindWidget();
+  setInterval(updateWindWidget, CONFIG.wind.refreshMs);
+}

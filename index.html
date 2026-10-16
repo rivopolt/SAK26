@@ -7,7 +7,7 @@
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1f3a2e">
+<meta name="theme-color" content="#ffffff">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SAK26">
@@ -206,6 +206,10 @@
         <button id="remoteIdToggleBtn" class="mapQuickBtn hidden">🛸 Teised droonid</button>
         <button id="fullscreenBtn" class="mapQuickBtn hidden">⛶ Täisekraan</button>
         <button id="mapSearchToggleBtn" class="mapQuickBtn">🔍 Otsi objekti</button>
+        <div id="windWidget" class="windWidget hidden" title="Tuul lähimas ilmajaamas">
+          <span id="windArrow" class="windArrow">↓</span>
+          <span id="windText" class="windText"></span>
+        </div>
         <div id="mapScaleBar" class="mapScaleBar">
           <div class="mapScaleBarLine"></div>
           <div id="mapScaleBarLabel" class="mapScaleBarLabel"></div>

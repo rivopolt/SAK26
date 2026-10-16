@@ -10,6 +10,18 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### Tuule suund ja kiirus (lähim ilmajaam)
+- Uus tekst + nool "Otsi objekti" nupu all (sama laius, läbipaistev). Must Põhikaardil, valge Ortofotol.
+- Nool näitab, **kuhu** tuul puhub; tekst: keskmine kiirus (puhang) m/s ja ilmakaar, kust tuul puhub. Puudutus/hõljutus näitab jaama nime, kaugust ja vaatluse vanust.
+- Jaam valitakse kaardi keskpunkti järgi (lähim jaam, millel on tuuleandmed, kuni 80 km). Uueneb liikudes ja iga 5 min.
+- Allikas: Keskkonnaagentuur (ilmateenistus.ee XML, CC BY 4.0). Esmalt otse; kui CORS blokeerib, kasutatakse `MyFiles/data/observations.xml` koopiat (uus Action `update-wind.yml`, iga 30 min) ning tekstile lisandub ⚠.
+- Seaded: `CONFIG.wind` failis `js/config.js`.
+
+
+### Uus rakenduse ikoon (Silera logo)
+- `icons/*.png` asendatud logoga (must valgel taustal); `theme_color`/`background_color` on valge. Paigaldatud rakenduse ikooni uuendamiseks eemalda rakendus ja paigalda uuesti.
+
+
 ### GPS värskendus ja kaardi laggimine
 - Asukoha marker värskeneb nüüd ka siis, kui kaart **ei järgi** asukohta: värske fix (`maximumAge: 0`) + varu-päring vähemalt iga 5 s tagant.
 - Kaardi lohistamine lõpetab järgimise (nupp saab sinise raami); nupule vajutus järgib uuesti. Järgimisel pole enam animeeritud panoreerimist.

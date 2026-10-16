@@ -881,3 +881,15 @@ html, body {
 
 /* Locate button: active but map not following the position */
 .mapLocateBtn.notFollowing { opacity: 0.75; box-shadow: inset 0 0 0 2px #1a73e8; }
+
+/* Tuul: läbipaistev, tekst must Põhikaardil, valge Ortofotol */
+.windWidget {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 2px; box-sizing: border-box; cursor: pointer;
+  background: transparent; border: 0;
+  color: #1b1f23; font-size: 13px; font-weight: 700; line-height: 1.2;
+  text-shadow: 0 0 3px rgba(255,255,255,0.7), 0 0 3px rgba(255,255,255,0.7);
+}
+.windWidget.onPhoto { color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.75), 0 0 3px rgba(0,0,0,0.75); }
+.windWidget .windArrow { display: inline-block; font-size: 22px; line-height: 1; transition: transform .3s; }
+.windWidget.stale .windText::after { content: " ⚠"; }

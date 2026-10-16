@@ -62,6 +62,15 @@ const CONFIG = {
      unrestricted zone). These defaults only apply when a feature has
      no color of its own.
   ------------------------------------------------------------------- */
+  /* Tuul: Keskkonnaagentuuri vaatlusandmed (CC BY 4.0), uuenevad iga 10 min.
+     Esmalt otse, kui brauser blokeerib (CORS) -> arhiivikoopia (GitHub Action). */
+  wind: {
+    liveUrl: "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php",
+    mirrorUrl: "MyFiles/data/observations.xml",
+    refreshMs: 300000,   // 5 min
+    maxDistanceKm: 80    // kaugemal kui see -> ei näita
+  },
+
   notam: {
     liveUrl: "https://utm.eans.ee/avm/utm/uas.geojson",
     mirrorUrl: "MyFiles/data/notam_geo.geojson",
