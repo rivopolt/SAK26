@@ -293,17 +293,27 @@ function fmtTallinn(d) {
   return d.toLocaleString("et-EE", { timeZone: "Europe/Tallinn", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+// Short "dd.mm hh.mm" in Estonian time, for the compact NOTAM notice.
+function fmtShortTallinn(d) {
+  const p = new Intl.DateTimeFormat("et-EE", { timeZone: "Europe/Tallinn", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(d);
+  const g = t => (p.find(x => x.type === t) || {}).value || "";
+  return `${g("day")}.${g("month")} ${g("hour")}.${g("minute")}`;
+}
+
 async function showNotamUpdateNotice() {
   if (!notamDataInfo) return;
-  // Time of the last GitHub Action run (written to notam_meta.json by update-notam.yml).
-  let actionDate = null;
+  // "Push": time of the last GitHub Action run (notam_meta.json, written by update-notam.yml).
+  let pushDate = null;
   try {
     const url = CONFIG.notam.mirrorUrl.replace(/[^/]+$/, "notam_meta.json");
     const m = await fetch(`${url}?t=${Date.now()}`, { cache: "no-store" });
-    if (m.ok) actionDate = parseHttpDate((await m.json()).fetched_at);
+    if (m.ok) pushDate = parseHttpDate((await m.json()).fetched_at);
   } catch (e) { /* no meta file yet */ }
-  const txt = actionDate ? `Git Action uuendas: ${fmtTallinn(actionDate)}` : "Git Action pole veel andmeid uuendanud";
-  showBanner(`NOTAM GEO — ${txt}. ${notamDataInfo.count} ala.`, 7000);
+  // "Uuendus": latest update info from the NOTAM source itself (header, feed timestamp, or newest record).
+  const upd = notamDataInfo.updatedAt || notamDataInfo.recordDate;
+  const pushTxt = pushDate ? fmtShortTallinn(pushDate) : "—";
+  const updTxt = upd ? fmtShortTallinn(upd) : "EANS ei teata";
+  showBanner(`Push ${pushTxt}. Uuendus ${updTxt}`, 12000);
 }
 
 async function loadNotamData() {
