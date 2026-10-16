@@ -244,6 +244,36 @@ async function toggleNotamLayer() {
     // showing info for (potentially several, overlapping) zones at once.
   }).addTo(map);
   notamLayerGroup.bringToFront(); // NOTAM is safety info — always render on top of other overlays
+  showNotamUpdateNotice(); // 5 s notice: when the data was last updated
+}
+
+let notamDataInfo = null;
+
+function parseHttpDate(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+// Some feeds carry their own timestamp at top level — use it if present.
+function notamDateFromJson(gj) {
+  if (!gj || typeof gj !== "object") return null;
+  for (const k of ["updated", "updatedAt", "lastUpdated", "last_updated", "timestamp", "generated", "generatedAt", "date"]) {
+    if (gj[k]) { const d = typeof gj[k] === "number" ? new Date(gj[k] < 1e12 ? gj[k] * 1000 : gj[k]) : parseHttpDate(gj[k]); if (d && !isNaN(d)) return d; }
+  }
+  return null;
+}
+
+function fmtTallinn(d) {
+  return d.toLocaleString("et-EE", { timeZone: "Europe/Tallinn", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+function showNotamUpdateNotice() {
+  if (!notamDataInfo) return;
+  const i = notamDataInfo;
+  const src = notamDataSource === "mirror" ? "koopia (MyFiles)" : "otse EANS-ist";
+  const upd = i.updatedAt ? `Andmed uuendatud: ${fmtTallinn(i.updatedAt)}` : "Allika uuendusaega ei teatata";
+  showBanner(`NOTAM GEO — ${upd}. Laaditud: ${fmtTallinn(i.loadedAt)} (${src}).`, 5000);
 }
 
 async function loadNotamData() {
@@ -253,6 +283,7 @@ async function loadNotamData() {
     if (resp.ok) {
       const geojson = await resp.json();
       notamDataSource = "live";
+      notamDataInfo = { loadedAt: new Date(), updatedAt: parseHttpDate(resp.headers.get("Last-Modified")) || notamDateFromJson(geojson) };
       return geojson;
     }
   } catch (e) {
@@ -265,6 +296,13 @@ async function loadNotamData() {
     if (resp.ok) {
       const geojson = await resp.json();
       notamDataSource = "mirror";
+      // Mirror: the GitHub Action writes the real fetch time to a small meta file.
+      let metaDate = null;
+      try {
+        const m = await fetch(`${CONFIG.notam.mirrorUrl.replace(/[^/]+$/, "notam_meta.json")}?t=${Date.now()}`);
+        if (m.ok) metaDate = parseHttpDate((await m.json()).fetched_at);
+      } catch (e) { /* no meta file yet */ }
+      notamDataInfo = { loadedAt: new Date(), updatedAt: metaDate || notamDateFromJson(geojson) };
       return geojson;
     }
   } catch (e) {
@@ -1252,7 +1290,7 @@ function notify(message) {
 /* WARNING BANNER                                                           */
 /* ---------------------------------------------------------------------- */
 let bannerTimeout = null;
-function showBanner(text) {
+function showBanner(text, durationMs) {
   let banner = document.getElementById("warningBanner");
   if (!banner) {
     banner = document.createElement("div");
@@ -1263,7 +1301,7 @@ function showBanner(text) {
   banner.textContent = text;
   banner.classList.add("visible");
   clearTimeout(bannerTimeout);
-  bannerTimeout = setTimeout(() => banner.classList.remove("visible"), 7000);
+  bannerTimeout = setTimeout(() => banner.classList.remove("visible"), durationMs || 7000);
 }
 
 /* ---------------------------------------------------------------------- */

@@ -10,6 +10,11 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### NOTAM GEO uuendusaja teade
+- NOTAM GEO sisselülitamisel ilmub 5 s teade: "Andmed uuendatud: pp.kk.aaaa hh:mm. Laaditud: … (otse EANS-ist / koopia)". Aeg Eesti ajas.
+- Uuendusaeg tuleb allika `Last-Modified` päisest (või GeoJSON-i enda ajatempli väljast). Kui allikas seda ei anna, teatatakse ainult laadimise aeg.
+- Koopia puhul kirjutab Action `MyFiles/data/notam_meta.json` (tegelik laadimisaeg).
+
 ### Taustakaardi veateade
 - Üksik ebaõnnestunud kaardiplaat (mobiilivõrgu tõrge) tekitas kohe veateate. Nüüd proovitakse plaati 2 s pärast uuesti ning teade tuleb ainult siis, kui ≥4 plaati ebaõnnestub 15 s jooksul (maksimaalselt kord minutis). Teate tekst ei viita enam valesti config.js-ile.
 

@@ -33,9 +33,11 @@ jobs:
           # Sanity check: make sure we actually got valid JSON before committing it,
           # so a transient upstream error never overwrites a good mirror with garbage.
           python3 -c "import json; json.load(open('MyFiles/data/notam_geo.geojson'))"
+          # Fetch time sidecar, so the app can show when the mirror was last refreshed
+          python3 -c "import json,datetime; json.dump({'fetched_at': datetime.datetime.now(datetime.timezone.utc).isoformat()}, open('MyFiles/data/notam_meta.json','w'))"
 
       - name: Commit mirror if changed
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: refresh NOTAM GEO mirror"
-          file_pattern: "MyFiles/data/notam_geo.geojson"
+          file_pattern: "MyFiles/data/notam_geo.geojson MyFiles/data/notam_meta.json"
