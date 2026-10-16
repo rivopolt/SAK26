@@ -2485,7 +2485,19 @@ function cssEscape(str) {
   const btn = document.getElementById("fullscreenBtn");
   const root = document.documentElement;
   const req = root.requestFullscreen || root.webkitRequestFullscreen;
-  if (!btn || !req) return; // brauser ei toeta -> nupp jääb peidetuks
+  if (!btn) return;
+  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches || window.matchMedia("(display-mode: fullscreen)").matches;
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (!req) {
+    // iPhone Safari has no Fullscreen API at all. The only way to get a
+    // chrome-free full screen is "Add to Home Screen" (standalone web app),
+    // so the button explains that. Hidden once already running standalone.
+    if (isIOS && !standalone) {
+      btn.classList.remove("hidden");
+      btn.addEventListener("click", () => notify("iPhone'is täisekraan: vajuta Safaris Jaga-nuppu (ruut noolega) → \"Lisa avakuvale\". Ava SAK26 avakuva ikoonilt — see avaneb ilma aadressiribata."));
+    }
+    return; // other unsupported browsers: button stays hidden
+  }
   btn.classList.remove("hidden");
   const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
   const sync = () => { btn.title = isFs() ? "Välju täisekraanist" : "Täisekraan"; setTimeout(() => { try { map.invalidateSize(); } catch (e) {} }, 200); };
@@ -2576,15 +2588,20 @@ async function updateWindWidget() {
   const from = WIND_COMPASS[Math.round(best.dir / 45) % 8];
   const gust = isFinite(best.gust) ? ` (${best.gust.toFixed(1)})` : "";
   document.getElementById("windText").textContent = `${best.speed.toFixed(1)}${gust} m/s ${from}`;
-  let age = "";
+  // Age of the observation (from the XML timestamp, seconds). The warning
+  // sign now depends on how OLD the data is, not on which source delivered it.
+  let ageMin = null;
   if (windStamp) {
-    const mins = Math.max(0, Math.round((Date.now() / 1000 - windStamp) / 60));
-    age = `, ${mins} min tagasi`;
+    const m = Math.round((Date.now() / 1000 - windStamp) / 60);
+    if (m > -5 && m < 60 * 24 * 30) ageMin = Math.max(0, m);
   }
+  const age = ageMin !== null ? `, ${ageMin} min tagasi` : "";
+  const stale = ageMin !== null ? ageMin > 60 : windSource === "mirror";
   el.title = `Tuul: ${best.name} (${(bestD / 1000).toFixed(0)} km)${age}. Tuule suund ${Math.round(best.dir)}° (puhub ${from} poolt), keskmine kiirus ${best.speed} m/s` +
     (isFinite(best.gust) ? `, puhang ${best.gust} m/s` : "") +
-    (windSource === "mirror" ? ". NB: arhiivikoopia, võib olla vana." : ". Allikas: Keskkonnaagentuur.");
-  el.classList.toggle("stale", windSource === "mirror");
+    `. Allikas: Keskkonnaagentuur (${windSource === "mirror" ? "koopia" : "otse"})` +
+    (stale ? ". NB: andmed on vanad!" : ".");
+  el.classList.toggle("stale", stale);
   el.classList.remove("hidden");
 }
 

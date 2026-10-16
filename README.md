@@ -10,6 +10,10 @@ serveripoolset koodi (PHP jms) ei ole vaja.** Kõik, mis varem vajas serverit
 
 ## Uusim muudatuste pakett
 
+### iPhone täisekraan
+- iPhone Safaris Fullscreen API-d ei ole, seega päris täisekraani nuppu seal teha ei saa. ⛶ nupp näitab nüüd iPhone'is juhist: Jaga → "Lisa avakuvale"; avakuva ikoonilt avanedes töötab SAK26 ilma aadressiribata (peidetakse, kui juba nii avatud).
+- Lisatud `viewport-fit=cover`, läbipaistev olekuriba ja turvaalad (notš/koduriba), `100dvh` kõrgus.
+
 ### Tuule hoiatusmärk ⚠ sõltub andmete east
 - ⚠ ilmub nüüd ainult siis, kui vaatlus on vanem kui 60 min (XML-i timestamp-i järgi). Koopia kasutamine iseenesest enam hoiatust ei anna; allikas (otse/koopia) ja vanus on teates tekstile klõpsates.
 

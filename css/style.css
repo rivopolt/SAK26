@@ -21,6 +21,7 @@ html, body {
 #app {
   display: flex;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
 }
 
@@ -900,3 +901,9 @@ html, body {
 /* Skaala: must Põhikaardil, valge Ortofotol (nagu tuul) */
 .mapScaleBar.onPhoto .mapScaleBarLabel { color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.75), 0 0 3px rgba(0,0,0,0.75); }
 .mapScaleBar.onPhoto .mapScaleBarLine { border-color: #fff; filter: drop-shadow(0 0 2px rgba(0,0,0,0.75)); }
+
+/* iPhone (notš / koduriba): hoia juhtnupud turvaalas, kui rakendus käib täisekraanil */
+.mapLocateBtn { right: calc(10px + env(safe-area-inset-right)); }
+.mapLocateBtn { bottom: calc(112px + env(safe-area-inset-bottom)); }
+.mapLocateBtn.mapFullscreenBtn { bottom: calc(72px + env(safe-area-inset-bottom)); }
+.leaflet-bottom.leaflet-right .leaflet-control-zoom { margin: 0 calc(10px + env(safe-area-inset-right)) calc(152px + env(safe-area-inset-bottom)) 0; }
