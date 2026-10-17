@@ -40,7 +40,8 @@ const CONFIG = {
       fallback: { url: "https://kaart.maaamet.ee/wms/alus-geo", layer: "CORINE,BAASKAART,KAART24,HALDUSPIIRID,TEED,KYLAD", format: "image/png", version: "1.3.0" } },
     { id: "maaamet_foto", name: "Ortofoto (Maa-amet)", type: "maaamet-wms",
       layer: "foto", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0",
-      fallback: { url: "https://kaart.maaamet.ee/wms/alus-geo", layer: "of10000", format: "image/png", version: "1.3.0" } }
+      // tiles.maaamet.ee/tm/ ortofoto ei vasta (kontrollitud 17.10.2026); töötab: kaart.maaamet.ee alus-geo / of10000.
+      source: { url: "https://kaart.maaamet.ee/wms/alus-geo", layer: "of10000", format: "image/png", version: "1.3.0" } }
   ],
 
   /* ------------------------------------------------------------------

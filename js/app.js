@@ -194,7 +194,7 @@ function buildBaseLayers() {
   CONFIG.baseLayers.forEach(cfg => {
     let layer;
     if (cfg.type === "maaamet-wms") {
-      layer = makeMaaametLayer(cfg, { url: CONFIG.maaametWmsUrl, layer: cfg.layer, format: cfg.format }, false);
+      layer = makeMaaametLayer(cfg, cfg.source || { url: CONFIG.maaametWmsUrl, layer: cfg.layer, format: cfg.format }, false);
     }
     baseLayerObjects[cfg.id] = layer;
     if (cfg.default) {
