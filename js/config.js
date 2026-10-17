@@ -35,9 +35,12 @@ const CONFIG = {
 
   baseLayers: [
     { id: "maaamet_kaart", name: "Põhikaart (Maa-amet)", type: "maaamet-wms",
-      layer: "kaart", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0", default: true },
+      layer: "kaart", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0", default: true,
+      // Varuserver (Maa-ameti dokumenteeritud avalik WMS), kasutusele kui põhiserver korduvalt ebaõnnestub
+      fallback: { url: "https://kaart.maaamet.ee/wms/alus", layer: "MA-ALUS", format: "image/png" } },
     { id: "maaamet_foto", name: "Ortofoto (Maa-amet)", type: "maaamet-wms",
-      layer: "foto", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0" }
+      layer: "foto", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0",
+      fallback: { url: "https://kaart.maaamet.ee/wms/fotokaart", layer: "EESTIFOTO", format: "image/jpeg" } }
   ],
 
   /* ------------------------------------------------------------------

@@ -124,52 +124,77 @@ function setupCollapseToggles() {
 /* ---------------------------------------------------------------------- */
 /* BASE LAYERS                                                              */
 /* ---------------------------------------------------------------------- */
+function makeMaaametLayer(cfg, source, isFallback) {
+  const layer = L.tileLayer.wms(source.url, {
+    layers: source.layer,
+    format: source.format,
+    version: "1.1.1",
+    transparent: false,
+    uppercase: true,
+    crs: L.CRS.EPSG3857,
+    // Maa-amet has no native imagery past zoom 18, but the map itself
+    // (and features like search) can reach zoom 19 — maxNativeZoom
+    // makes Leaflet upscale the zoom-18 tiles instead of just showing
+    // a blank background once you go past 18.
+    maxNativeZoom: 18,
+    // Don't re-request tiles on every animation frame while zooming/panning
+    updateWhenZooming: false,
+    updateWhenIdle: true,
+    keepBuffer: 3,
+    maxZoom: CONFIG.mapMaxZoom,
+    minZoom: 3,
+    attribution: cfg.attribution
+  });
+  // One failed tile is usually a transient network blip, so retry each
+  // failed tile once after 2 s. If several tiles keep failing, switch to the
+  // fallback server (if configured) and only then warn.
+  let tileErrTimes = [];
+  let lastTileWarn = 0;
+  layer.on("tileerror", e => {
+    const tile = e && e.tile;
+    if (tile && !tile.__retried && tile.src) {
+      tile.__retried = true;
+      const src = tile.src;
+      setTimeout(() => { tile.src = src + (src.indexOf("?") > -1 ? "&" : "?") + "_r=" + Date.now(); }, 2000);
+      return;
+    }
+    console.warn("Base map tile failed:", tile && tile.src);
+    const now = Date.now();
+    tileErrTimes = tileErrTimes.filter(t => now - t < 15000);
+    tileErrTimes.push(now);
+    if (tileErrTimes.length < 4) return;
+    if (!isFallback && cfg.fallback && !cfg.__usingFallback) {
+      swapToFallbackBaseLayer(cfg);
+      return;
+    }
+    if (now - lastTileWarn > 60000) {
+      lastTileWarn = now;
+      showBanner(`"${cfg.name}" kaardipildid ei lae (võrk või Maa-ameti server). Proovi hetke pärast uuesti.`);
+    }
+  });
+  return layer;
+}
+
+function swapToFallbackBaseLayer(cfg) {
+  cfg.__usingFallback = true;
+  const old = baseLayerObjects[cfg.id];
+  const wasActive = currentBaseLayer === old;
+  const alt = makeMaaametLayer(cfg, cfg.fallback, true);
+  baseLayerObjects[cfg.id] = alt;
+  if (wasActive) {
+    map.removeLayer(old);
+    currentBaseLayer = alt;
+    alt.addTo(map);
+    alt.bringToBack();
+  }
+  showBanner(`"${cfg.name}": põhiserver ei vasta, kasutan Maa-ameti varuserverit.`);
+}
+
 function buildBaseLayers() {
   CONFIG.baseLayers.forEach(cfg => {
     let layer;
     if (cfg.type === "maaamet-wms") {
-      layer = L.tileLayer.wms(CONFIG.maaametWmsUrl, {
-        layers: cfg.layer,
-        format: cfg.format,
-        version: "1.1.1",
-        transparent: false,
-        uppercase: true,
-        crs: L.CRS.EPSG3857,
-        // Maa-amet has no native imagery past zoom 18, but the map itself
-        // (and features like search) can reach zoom 19 — maxNativeZoom
-        // makes Leaflet upscale the zoom-18 tiles instead of just showing
-        // a blank background once you go past 18 (this was the "background
-        // map disappears" bug).
-        maxNativeZoom: 18,
-        // Don't re-request tiles on every animation frame while zooming/panning
-        updateWhenZooming: false,
-        updateWhenIdle: true,
-        keepBuffer: 3,
-        maxZoom: CONFIG.mapMaxZoom,
-        minZoom: 3,
-        attribution: cfg.attribution
-      });
-      // One failed tile is usually a transient network blip (mobile data,
-      // a dropped request), not a broken layer. So: retry each failed tile
-      // once after 2 s, and only warn if several tiles keep failing.
-      let tileErrTimes = [];
-      let lastTileWarn = 0;
-      layer.on("tileerror", e => {
-        const tile = e && e.tile;
-        if (tile && !tile.__retried && tile.src) {
-          tile.__retried = true;
-          const src = tile.src;
-          setTimeout(() => { tile.src = src + (src.indexOf("?") > -1 ? "&" : "?") + "_r=" + Date.now(); }, 2000);
-          return;
-        }
-        const now = Date.now();
-        tileErrTimes = tileErrTimes.filter(t => now - t < 15000);
-        tileErrTimes.push(now);
-        if (tileErrTimes.length >= 4 && now - lastTileWarn > 60000) {
-          lastTileWarn = now;
-          showBanner(`"${cfg.name}" kaardipildid laevad halvasti (võrk või Maa-ameti server). Proovi hetke pärast uuesti.`);
-        }
-      });
+      layer = makeMaaametLayer(cfg, { url: CONFIG.maaametWmsUrl, layer: cfg.layer, format: cfg.format }, false);
     }
     baseLayerObjects[cfg.id] = layer;
     if (cfg.default) {
