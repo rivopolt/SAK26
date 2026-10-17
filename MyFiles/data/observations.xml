@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<observations timestamp="1792263106">
+<observations timestamp="1792272492">
     <station>
         <name>Kuressaare linn</name>
         <wmocode></wmocode>
@@ -9,8 +9,8 @@
         <visibility></visibility>
         <precipitations></precipitations>
         <airpressure></airpressure>
-        <relativehumidity>78</relativehumidity>
-        <airtemperature>10.1</airtemperature>
+        <relativehumidity>79</relativehumidity>
+        <airtemperature>9.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -29,12 +29,12 @@
         <phenomenon>Cloudy with clear spells</phenomenon>
         <visibility>35</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.6</airpressure>
-        <relativehumidity>81.3</relativehumidity>
-        <airtemperature>9</airtemperature>
-        <winddirection>9</winddirection>
-        <windspeed>3.6</windspeed>
-        <windspeedmax>4.8</windspeedmax>
+        <airpressure>1025.1</airpressure>
+        <relativehumidity>78.8</relativehumidity>
+        <airtemperature>8.1</airtemperature>
+        <winddirection>28</winddirection>
+        <windspeed>3</windspeed>
+        <windspeedmax>3.5</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -50,12 +50,12 @@
         <phenomenon></phenomenon>
         <visibility>35</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.6</airpressure>
-        <relativehumidity>78</relativehumidity>
-        <airtemperature>9.5</airtemperature>
-        <winddirection>3</winddirection>
-        <windspeed>10</windspeed>
-        <windspeedmax>14.1</windspeedmax>
+        <airpressure>1025.3</airpressure>
+        <relativehumidity>77</relativehumidity>
+        <airtemperature>8.7</airtemperature>
+        <winddirection>14</winddirection>
+        <windspeed>8.1</windspeed>
+        <windspeedmax>12</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -68,18 +68,18 @@
         <wmocode>26045</wmocode>
         <longitude>26.541397222079624</longitude>
         <latitude>59.52141111042325</latitude>
-        <phenomenon>Cloudy with clear spells</phenomenon>
+        <phenomenon>Overcast</phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1021.8</airpressure>
-        <relativehumidity>78.1</relativehumidity>
-        <airtemperature>10.1</airtemperature>
-        <winddirection>4</winddirection>
-        <windspeed>10.8</windspeed>
-        <windspeedmax>12.8</windspeedmax>
+        <airpressure>1023.6</airpressure>
+        <relativehumidity>82.5</relativehumidity>
+        <airtemperature>9.7</airtemperature>
+        <winddirection>353</winddirection>
+        <windspeed>8.9</windspeed>
+        <windspeedmax>10.8</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>40</waterlevel_eh2000>
-        <watertemperature>11.6</watertemperature>
+        <waterlevel_eh2000>36</waterlevel_eh2000>
+        <watertemperature>11.5</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -89,15 +89,15 @@
         <wmocode>26046</wmocode>
         <longitude>27.39827499992098</longitude>
         <latitude>59.32902499979958</latitude>
-        <phenomenon>Light rain</phenomenon>
-        <visibility>5</visibility>
-        <precipitations>0.5</precipitations>
-        <airpressure>1020.6</airpressure>
-        <relativehumidity>96</relativehumidity>
-        <airtemperature>9</airtemperature>
-        <winddirection>359</winddirection>
-        <windspeed>4.1</windspeed>
-        <windspeedmax>7.5</windspeedmax>
+        <phenomenon>Cloudy with clear spells</phenomenon>
+        <visibility>20</visibility>
+        <precipitations>0</precipitations>
+        <airpressure>1022.4</airpressure>
+        <relativehumidity>82</relativehumidity>
+        <airtemperature>8.6</airtemperature>
+        <winddirection>17</winddirection>
+        <windspeed>4.7</windspeed>
+        <windspeedmax>8.6</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -110,15 +110,15 @@
         <wmocode>26058</wmocode>
         <longitude>28.10933333290948</longitude>
         <latitude>59.38952777723252</latitude>
-        <phenomenon>Light shower</phenomenon>
-        <visibility>6</visibility>
+        <phenomenon>Overcast</phenomenon>
+        <visibility>20</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1019.7</airpressure>
-        <relativehumidity>98</relativehumidity>
-        <airtemperature>9.6</airtemperature>
-        <winddirection>345</winddirection>
-        <windspeed>3.4</windspeed>
-        <windspeedmax>6</windspeedmax>
+        <airpressure>1021.7</airpressure>
+        <relativehumidity>87</relativehumidity>
+        <airtemperature>8.3</airtemperature>
+        <winddirection>352</winddirection>
+        <windspeed>3.8</windspeed>
+        <windspeedmax>5.6</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -134,12 +134,12 @@
         <phenomenon>Overcast</phenomenon>
         <visibility>20</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1021.8</airpressure>
-        <relativehumidity>93</relativehumidity>
-        <airtemperature>8.1</airtemperature>
-        <winddirection>355</winddirection>
-        <windspeed>2.8</windspeed>
-        <windspeedmax>6.6</windspeedmax>
+        <airpressure>1023.5</airpressure>
+        <relativehumidity>91</relativehumidity>
+        <airtemperature>7.7</airtemperature>
+        <winddirection>349</winddirection>
+        <windspeed>2.5</windspeed>
+        <windspeedmax>5.4</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -152,12 +152,12 @@
         <wmocode>26145</wmocode>
         <longitude>26.952113888925975</longitude>
         <latitude>58.86540277798971</latitude>
-        <phenomenon>Light shower</phenomenon>
-        <visibility>15</visibility>
+        <phenomenon>Overcast</phenomenon>
+        <visibility>20</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1020.6</airpressure>
-        <relativehumidity>94</relativehumidity>
-        <airtemperature>9.9</airtemperature>
+        <airpressure>1022.5</airpressure>
+        <relativehumidity>83</relativehumidity>
+        <airtemperature>8.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -173,15 +173,15 @@
         <wmocode>26144</wmocode>
         <longitude>26.41500555568271</longitude>
         <latitude>58.74983611073539</latitude>
-        <phenomenon>Light shower</phenomenon>
-        <visibility>11</visibility>
-        <precipitations>0.1</precipitations>
-        <airpressure>1021.1</airpressure>
-        <relativehumidity>95</relativehumidity>
-        <airtemperature>9.3</airtemperature>
-        <winddirection>352</winddirection>
-        <windspeed>6.1</windspeed>
-        <windspeedmax>8.6</windspeedmax>
+        <phenomenon></phenomenon>
+        <visibility>20</visibility>
+        <precipitations>0</precipitations>
+        <airpressure>1022.8</airpressure>
+        <relativehumidity>89</relativehumidity>
+        <airtemperature>8.2</airtemperature>
+        <winddirection>2</winddirection>
+        <windspeed>5.3</windspeed>
+        <windspeedmax>7.3</windspeedmax>
         <waterlevel>66</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -195,35 +195,35 @@
         <longitude>26.46130555576748</longitude>
         <latitude>58.264072222179834</latitude>
         <phenomenon>Overcast</phenomenon>
-        <visibility>4</visibility>
-        <precipitations>0.1</precipitations>
-        <airpressure>1020.5</airpressure>
-        <relativehumidity>98.7</relativehumidity>
-        <airtemperature>10</airtemperature>
-        <winddirection>296</winddirection>
-        <windspeed>2</windspeed>
-        <windspeedmax>3.3</windspeedmax>
+        <visibility>35</visibility>
+        <precipitations>0</precipitations>
+        <airpressure>1022.2</airpressure>
+        <relativehumidity>93.8</relativehumidity>
+        <airtemperature>8.9</airtemperature>
+        <winddirection>7</winddirection>
+        <windspeed>2.6</windspeed>
+        <windspeedmax>5.1</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
         <uvindex></uvindex>
         <sunshineduration>288</sunshineduration>
-        <globalradiation>-2.5</globalradiation>
+        <globalradiation>-2.6</globalradiation>
     </station>
     <station>
         <name>Võru</name>
         <wmocode>26249</wmocode>
         <longitude>27.01950555496306</longitude>
         <latitude>57.84627777702059</latitude>
-        <phenomenon>Fog</phenomenon>
-        <visibility>1.4</visibility>
+        <phenomenon>Mist</phenomenon>
+        <visibility>1.3</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1020.6</airpressure>
+        <airpressure>1021.2</airpressure>
         <relativehumidity>100</relativehumidity>
-        <airtemperature>7.4</airtemperature>
-        <winddirection>241</winddirection>
-        <windspeed>1.1</windspeed>
-        <windspeedmax>2.3</windspeedmax>
+        <airtemperature>8.1</airtemperature>
+        <winddirection>0</winddirection>
+        <windspeed>0.8</windspeed>
+        <windspeedmax>1.6</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -236,15 +236,15 @@
         <wmocode>26247</wmocode>
         <longitude>26.037733333042386</longitude>
         <latitude>57.79004999975144</latitude>
-        <phenomenon></phenomenon>
-        <visibility>2</visibility>
-        <precipitations>0</precipitations>
-        <airpressure>1020.6</airpressure>
+        <phenomenon>Light rain</phenomenon>
+        <visibility>8</visibility>
+        <precipitations>0.1</precipitations>
+        <airpressure>1021.6</airpressure>
         <relativehumidity>98</relativehumidity>
-        <airtemperature>8.5</airtemperature>
-        <winddirection>227</winddirection>
-        <windspeed>0.7</windspeed>
-        <windspeedmax>1.1</windspeedmax>
+        <airtemperature>9.5</airtemperature>
+        <winddirection>3</winddirection>
+        <windspeed>4.6</windspeed>
+        <windspeedmax>8.1</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -257,15 +257,15 @@
         <wmocode>26233</wmocode>
         <longitude>25.60015555555622</longitude>
         <latitude>58.37777499979958</latitude>
-        <phenomenon>Light shower</phenomenon>
-        <visibility>7</visibility>
-        <precipitations>0.1</precipitations>
-        <airpressure>1021.3</airpressure>
-        <relativehumidity>95.7</relativehumidity>
-        <airtemperature>9.3</airtemperature>
-        <winddirection>8</winddirection>
-        <windspeed>3.7</windspeed>
-        <windspeedmax>6.3</windspeedmax>
+        <phenomenon>Overcast</phenomenon>
+        <visibility>20</visibility>
+        <precipitations>0</precipitations>
+        <airpressure>1022.9</airpressure>
+        <relativehumidity>89.7</relativehumidity>
+        <airtemperature>8.3</airtemperature>
+        <winddirection>14</winddirection>
+        <windspeed>3.5</windspeed>
+        <windspeedmax>5.2</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -281,12 +281,12 @@
         <phenomenon>Overcast</phenomenon>
         <visibility>20</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1022</airpressure>
-        <relativehumidity>88.5</relativehumidity>
-        <airtemperature>9</airtemperature>
-        <winddirection>358</winddirection>
-        <windspeed>2.2</windspeed>
-        <windspeedmax>6.1</windspeedmax>
+        <airpressure>1023.7</airpressure>
+        <relativehumidity>87.3</relativehumidity>
+        <airtemperature>8.1</airtemperature>
+        <winddirection>340</winddirection>
+        <windspeed>1.9</windspeed>
+        <windspeedmax>3.4</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -299,15 +299,15 @@
         <wmocode>26134</wmocode>
         <longitude>24.733944444124358</longitude>
         <latitude>58.973174999418106</latitude>
-        <phenomenon>Overcast</phenomenon>
+        <phenomenon>Cloudy with clear spells</phenomenon>
         <visibility>20</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1022.6</airpressure>
-        <relativehumidity>90</relativehumidity>
-        <airtemperature>8.2</airtemperature>
-        <winddirection>357</winddirection>
-        <windspeed>4.5</windspeed>
-        <windspeedmax>6.7</windspeedmax>
+        <airpressure>1024.4</airpressure>
+        <relativehumidity>86</relativehumidity>
+        <airtemperature>7.8</airtemperature>
+        <winddirection>1</winddirection>
+        <windspeed>4.3</windspeed>
+        <windspeedmax>7</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -323,12 +323,12 @@
         <phenomenon>Cloudy with clear spells</phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.5</airpressure>
-        <relativehumidity>86.2</relativehumidity>
-        <airtemperature>8.1</airtemperature>
-        <winddirection>347</winddirection>
-        <windspeed>2.9</windspeed>
-        <windspeedmax>3.7</windspeedmax>
+        <airpressure>1025.1</airpressure>
+        <relativehumidity>83.2</relativehumidity>
+        <airtemperature>8</airtemperature>
+        <winddirection>359</winddirection>
+        <windspeed>3.5</windspeed>
+        <windspeedmax>4.7</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -341,18 +341,18 @@
         <wmocode>26128</wmocode>
         <longitude>23.51355555534363</longitude>
         <latitude>58.572674999100215</latitude>
-        <phenomenon>Cloudy with clear spells</phenomenon>
+        <phenomenon>Overcast</phenomenon>
         <visibility>35</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.1</airpressure>
-        <relativehumidity>80.5</relativehumidity>
-        <airtemperature>9.9</airtemperature>
-        <winddirection>8</winddirection>
-        <windspeed>5.9</windspeed>
-        <windspeedmax>9.1</windspeedmax>
+        <airpressure>1024.9</airpressure>
+        <relativehumidity>84</relativehumidity>
+        <airtemperature>9</airtemperature>
+        <winddirection>13</winddirection>
+        <windspeed>4.9</windspeed>
+        <windspeedmax>6.6</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>35</waterlevel_eh2000>
-        <watertemperature>11.6</watertemperature>
+        <waterlevel_eh2000>28</waterlevel_eh2000>
+        <watertemperature>11.3</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -363,20 +363,20 @@
         <longitude>24.485197221899487</longitude>
         <latitude>58.38456666634923</latitude>
         <phenomenon>Overcast</phenomenon>
-        <visibility>35</visibility>
+        <visibility>33</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1021.9</airpressure>
-        <relativehumidity>84</relativehumidity>
-        <airtemperature>9.7</airtemperature>
-        <winddirection>342</winddirection>
-        <windspeed>5</windspeed>
-        <windspeedmax>8.5</windspeedmax>
+        <airpressure>1023.8</airpressure>
+        <relativehumidity>86</relativehumidity>
+        <airtemperature>8.5</airtemperature>
+        <winddirection>333</winddirection>
+        <windspeed>3.3</windspeed>
+        <windspeedmax>5.3</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>25</waterlevel_eh2000>
-        <watertemperature>10</watertemperature>
+        <waterlevel_eh2000>22</waterlevel_eh2000>
+        <watertemperature>10.1</watertemperature>
         <uvindex>0</uvindex>
         <sunshineduration>0</sunshineduration>
-        <globalradiation>-1.807</globalradiation>
+        <globalradiation>-2.389</globalradiation>
     </station>
     <station>
         <name>Kihnu</name>
@@ -386,12 +386,12 @@
         <phenomenon>Overcast</phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1022.1</airpressure>
-        <relativehumidity>84.3</relativehumidity>
-        <airtemperature>10</airtemperature>
-        <winddirection>29</winddirection>
-        <windspeed>2.3</windspeed>
-        <windspeedmax>5</windspeedmax>
+        <airpressure>1023.8</airpressure>
+        <relativehumidity>78.8</relativehumidity>
+        <airtemperature>9.4</airtemperature>
+        <winddirection>7</winddirection>
+        <windspeed>2.9</windspeed>
+        <windspeedmax>6.5</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -405,17 +405,17 @@
         <longitude>23.258883333206178</longitude>
         <latitude>57.78339444411078</latitude>
         <phenomenon>Cloudy with clear spells</phenomenon>
-        <visibility>41</visibility>
+        <visibility>44</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1022.1</airpressure>
-        <relativehumidity>80</relativehumidity>
-        <airtemperature>11</airtemperature>
-        <winddirection>32</winddirection>
-        <windspeed>3</windspeed>
-        <windspeedmax>8.4</windspeedmax>
+        <airpressure>1023.9</airpressure>
+        <relativehumidity>75</relativehumidity>
+        <airtemperature>10.8</airtemperature>
+        <winddirection>34</winddirection>
+        <windspeed>3.1</windspeed>
+        <windspeedmax>7.9</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>42</waterlevel_eh2000>
-        <watertemperature>12.149</watertemperature>
+        <waterlevel_eh2000>34</waterlevel_eh2000>
+        <watertemperature>12.052</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -428,18 +428,18 @@
         <phenomenon>Cloudy with clear spells</phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1024.2</airpressure>
-        <relativehumidity>71.2</relativehumidity>
-        <airtemperature>10.9</airtemperature>
-        <winddirection>14</winddirection>
+        <airpressure>1025.6</airpressure>
+        <relativehumidity>71.7</relativehumidity>
+        <airtemperature>10.1</airtemperature>
+        <winddirection>19</winddirection>
         <windspeed>8.4</windspeed>
-        <windspeedmax>11.5</windspeedmax>
+        <windspeedmax>10.6</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
         <uvindex></uvindex>
         <sunshineduration>0</sunshineduration>
-        <globalradiation>-1.081</globalradiation>
+        <globalradiation>-1.256</globalradiation>
     </station>
     <station>
         <name>Sõrve</name>
@@ -449,12 +449,12 @@
         <phenomenon>Overcast</phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.4</airpressure>
-        <relativehumidity>80</relativehumidity>
-        <airtemperature>10.1</airtemperature>
-        <winddirection>14</winddirection>
-        <windspeed>3</windspeed>
-        <windspeedmax>5.4</windspeedmax>
+        <airpressure>1024.8</airpressure>
+        <relativehumidity>77</relativehumidity>
+        <airtemperature>9.5</airtemperature>
+        <winddirection>29</winddirection>
+        <windspeed>3.9</windspeed>
+        <windspeedmax>8.6</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -467,18 +467,18 @@
         <wmocode>26115</wmocode>
         <longitude>22.066300000084773</longitude>
         <latitude>58.92095277719588</latitude>
-        <phenomenon>Overcast</phenomenon>
+        <phenomenon>Variable clouds</phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1024.7</airpressure>
-        <relativehumidity>68</relativehumidity>
-        <airtemperature>10</airtemperature>
-        <winddirection>17</winddirection>
-        <windspeed>4</windspeed>
-        <windspeedmax>6.3</windspeedmax>
+        <airpressure>1026.3</airpressure>
+        <relativehumidity>67</relativehumidity>
+        <airtemperature>8.8</airtemperature>
+        <winddirection>22</winddirection>
+        <windspeed>5</windspeed>
+        <windspeedmax>7.2</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>29</waterlevel_eh2000>
-        <watertemperature>12.6</watertemperature>
+        <waterlevel_eh2000>31</waterlevel_eh2000>
+        <watertemperature>12.5</watertemperature>
         <uvindex></uvindex>
         <sunshineduration>32</sunshineduration>
         <globalradiation></globalradiation>
@@ -491,18 +491,18 @@
         <phenomenon></phenomenon>
         <visibility></visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.7</airpressure>
-        <relativehumidity>84.5</relativehumidity>
-        <airtemperature>9</airtemperature>
-        <winddirection>350</winddirection>
-        <windspeed>3.8</windspeed>
-        <windspeedmax>5.8</windspeedmax>
+        <airpressure>1025.4</airpressure>
+        <relativehumidity>82</relativehumidity>
+        <airtemperature>8.6</airtemperature>
+        <winddirection>10</winddirection>
+        <windspeed>3.4</windspeed>
+        <windspeedmax>5.5</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
         <uvindex>0</uvindex>
         <sunshineduration></sunshineduration>
-        <globalradiation>-2.466</globalradiation>
+        <globalradiation>-2.398</globalradiation>
     </station>
     <station>
         <name>Tooma</name>
@@ -512,12 +512,12 @@
         <phenomenon></phenomenon>
         <visibility></visibility>
         <precipitations>0</precipitations>
-        <airpressure>1021.5</airpressure>
-        <relativehumidity>93.1</relativehumidity>
-        <airtemperature>8.7</airtemperature>
-        <winddirection>360</winddirection>
-        <windspeed>4.6</windspeed>
-        <windspeedmax>7.6</windspeedmax>
+        <airpressure>1023.2</airpressure>
+        <relativehumidity>88.4</relativehumidity>
+        <airtemperature>7.8</airtemperature>
+        <winddirection>350</winddirection>
+        <windspeed>3.2</windspeed>
+        <windspeedmax>4.8</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -536,9 +536,9 @@
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
         <airtemperature></airtemperature>
-        <winddirection>17</winddirection>
-        <windspeed>11.4</windspeed>
-        <windspeedmax>13.5</windspeedmax>
+        <winddirection>25</winddirection>
+        <windspeed>11.3</windspeed>
+        <windspeedmax>13.7</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -557,9 +557,9 @@
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
         <airtemperature></airtemperature>
-        <winddirection>7</winddirection>
-        <windspeed>11</windspeed>
-        <windspeedmax>13.2</windspeedmax>
+        <winddirection>14</winddirection>
+        <windspeed>10.7</windspeed>
+        <windspeedmax>13.1</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -578,9 +578,9 @@
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
         <airtemperature></airtemperature>
-        <winddirection>359</winddirection>
-        <windspeed>10.7</windspeed>
-        <windspeedmax>14.7</windspeedmax>
+        <winddirection>13</winddirection>
+        <windspeed>9.6</windspeed>
+        <windspeedmax>12.6</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -599,11 +599,11 @@
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
         <airtemperature></airtemperature>
-        <winddirection>22</winddirection>
-        <windspeed>5.8</windspeed>
-        <windspeedmax>10</windspeedmax>
+        <winddirection>28</winddirection>
+        <windspeed>5.6</windspeed>
+        <windspeedmax>9.7</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>30</waterlevel_eh2000>
+        <waterlevel_eh2000>28</waterlevel_eh2000>
         <watertemperature>12.5</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
@@ -617,15 +617,15 @@
         <phenomenon></phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.8</airpressure>
-        <relativehumidity>80.7</relativehumidity>
-        <airtemperature>10.1</airtemperature>
-        <winddirection>356</winddirection>
-        <windspeed>4.8</windspeed>
-        <windspeedmax>10.5</windspeedmax>
+        <airpressure>1025.5</airpressure>
+        <relativehumidity>76.9</relativehumidity>
+        <airtemperature>9.3</airtemperature>
+        <winddirection>16</winddirection>
+        <windspeed>5.1</windspeed>
+        <windspeedmax>7.7</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>35</waterlevel_eh2000>
-        <watertemperature>11.2</watertemperature>
+        <waterlevel_eh2000>38</waterlevel_eh2000>
+        <watertemperature>11.1</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -638,18 +638,18 @@
         <phenomenon></phenomenon>
         <visibility>50</visibility>
         <precipitations>0</precipitations>
-        <airpressure>1023.5</airpressure>
-        <relativehumidity>75.9</relativehumidity>
-        <airtemperature>10.1</airtemperature>
-        <winddirection>358</winddirection>
-        <windspeed>5.2</windspeed>
+        <airpressure>1025.1</airpressure>
+        <relativehumidity>77.2</relativehumidity>
+        <airtemperature>9.2</airtemperature>
+        <winddirection>12</winddirection>
+        <windspeed>4.8</windspeed>
         <windspeedmax>6.3</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>38</waterlevel_eh2000>
-        <watertemperature>11.6</watertemperature>
+        <waterlevel_eh2000>32</waterlevel_eh2000>
+        <watertemperature>11.5</watertemperature>
         <uvindex></uvindex>
         <sunshineduration>0</sunshineduration>
-        <globalradiation>-2.3</globalradiation>
+        <globalradiation>-2.5</globalradiation>
     </station>
     <station>
         <name>Kõrgessaare</name>
@@ -662,12 +662,12 @@
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
         <airtemperature></airtemperature>
-        <winddirection>11</winddirection>
-        <windspeed>8.9</windspeed>
-        <windspeedmax>10</windspeedmax>
-        <waterlevel>22</waterlevel>
+        <winddirection>15</winddirection>
+        <windspeed>9.9</windspeed>
+        <windspeedmax>10.6</windspeedmax>
+        <waterlevel>34</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>11.1</watertemperature>
+        <watertemperature>11</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -682,13 +682,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.6</airtemperature>
-        <winddirection>2</winddirection>
-        <windspeed>3.7</windspeed>
-        <windspeedmax>7.9</windspeedmax>
+        <airtemperature>9.6</airtemperature>
+        <winddirection>10</winddirection>
+        <windspeed>3.6</windspeed>
+        <windspeedmax>6.8</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>41</waterlevel_eh2000>
-        <watertemperature>11.9</watertemperature>
+        <waterlevel_eh2000>37</waterlevel_eh2000>
+        <watertemperature>11.8</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -700,15 +700,15 @@
         <latitude>58.03666666633333</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0.3</precipitations>
+        <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.6</airtemperature>
-        <winddirection>25</winddirection>
-        <windspeed>3.9</windspeed>
-        <windspeedmax>5.7</windspeedmax>
+        <airtemperature>8.8</airtemperature>
+        <winddirection>26</winddirection>
+        <windspeed>4.6</windspeed>
+        <windspeedmax>7.1</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>40</waterlevel_eh2000>
+        <waterlevel_eh2000>35</waterlevel_eh2000>
         <watertemperature>11.8</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
@@ -729,8 +729,8 @@
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>38</waterlevel_eh2000>
-        <watertemperature>9.8</watertemperature>
+        <waterlevel_eh2000>34</waterlevel_eh2000>
+        <watertemperature>9.6</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -745,10 +745,10 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.7</airtemperature>
-        <winddirection>22</winddirection>
-        <windspeed>9.9</windspeed>
-        <windspeedmax>11.9</windspeedmax>
+        <airtemperature>8.8</airtemperature>
+        <winddirection>36</winddirection>
+        <windspeed>8.9</windspeed>
+        <windspeedmax>11.6</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -766,13 +766,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.9</airtemperature>
-        <winddirection>13</winddirection>
-        <windspeed>7.3</windspeed>
-        <windspeedmax>9.3</windspeedmax>
+        <airtemperature>8.9</airtemperature>
+        <winddirection>28</winddirection>
+        <windspeed>8.2</windspeed>
+        <windspeedmax>11.1</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>29</waterlevel_eh2000>
-        <watertemperature>9.8</watertemperature>
+        <waterlevel_eh2000>28</waterlevel_eh2000>
+        <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -787,13 +787,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.5</airtemperature>
-        <winddirection>343</winddirection>
-        <windspeed>5.8</windspeed>
-        <windspeedmax>7.1</windspeedmax>
+        <airtemperature>8.9</airtemperature>
+        <winddirection>10</winddirection>
+        <windspeed>5.4</windspeed>
+        <windspeedmax>7.2</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>30</waterlevel_eh2000>
-        <watertemperature>11.2</watertemperature>
+        <waterlevel_eh2000>25</waterlevel_eh2000>
+        <watertemperature>11</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -808,10 +808,10 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.9</airtemperature>
-        <winddirection>323</winddirection>
-        <windspeed>9.3</windspeed>
-        <windspeedmax>10.2</windspeedmax>
+        <airtemperature>9</airtemperature>
+        <winddirection>335</winddirection>
+        <windspeed>9.2</windspeed>
+        <windspeedmax>10.7</windspeedmax>
         <waterlevel>29</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>11</watertemperature>
@@ -829,13 +829,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.2</airtemperature>
+        <airtemperature>7.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10.3</watertemperature>
+        <watertemperature>10.2</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -850,13 +850,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.7</airtemperature>
-        <winddirection>8</winddirection>
-        <windspeed>9.8</windspeed>
-        <windspeedmax>10.9</windspeedmax>
+        <airtemperature>9.1</airtemperature>
+        <winddirection>19</winddirection>
+        <windspeed>9.1</windspeed>
+        <windspeedmax>10.2</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>24</waterlevel_eh2000>
-        <watertemperature>11.3</watertemperature>
+        <waterlevel_eh2000>30</waterlevel_eh2000>
+        <watertemperature>11.1</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -871,13 +871,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10</airtemperature>
-        <winddirection>10</winddirection>
-        <windspeed>6.9</windspeed>
-        <windspeedmax>8.5</windspeedmax>
+        <airtemperature>8.7</airtemperature>
+        <winddirection>16</winddirection>
+        <windspeed>7.3</windspeed>
+        <windspeedmax>9.6</windspeedmax>
         <waterlevel></waterlevel>
-        <waterlevel_eh2000>30</waterlevel_eh2000>
-        <watertemperature>12.1</watertemperature>
+        <waterlevel_eh2000>26</waterlevel_eh2000>
+        <watertemperature>12.2</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -892,11 +892,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.1</airtemperature>
+        <airtemperature>8.8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>140</waterlevel>
+        <waterlevel>137</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.5</watertemperature>
         <uvindex></uvindex>
@@ -955,11 +955,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.1</airtemperature>
+        <airtemperature>7.8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>136</waterlevel>
+        <waterlevel>134</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>11.1</watertemperature>
         <uvindex></uvindex>
@@ -976,13 +976,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.8</airtemperature>
+        <airtemperature>7.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>62</waterlevel>
+        <waterlevel>61</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.8</watertemperature>
+        <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -997,13 +997,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.1</airtemperature>
+        <airtemperature>8.2</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>91</waterlevel>
+        <waterlevel>90</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.8</watertemperature>
+        <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -1018,13 +1018,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8</airtemperature>
+        <airtemperature>7.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>101</waterlevel>
+        <waterlevel>100</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10.1</watertemperature>
+        <watertemperature>9.9</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -1038,12 +1038,12 @@
         <visibility></visibility>
         <precipitations>0</precipitations>
         <airpressure></airpressure>
-        <relativehumidity>83</relativehumidity>
-        <airtemperature>8.9</airtemperature>
+        <relativehumidity>84</relativehumidity>
+        <airtemperature>8.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>105</waterlevel>
+        <waterlevel>104</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.2</watertemperature>
         <uvindex></uvindex>
@@ -1060,13 +1060,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.3</airtemperature>
+        <airtemperature>8.4</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>58</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.7</watertemperature>
+        <watertemperature>9.6</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -1081,13 +1081,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.4</airtemperature>
+        <airtemperature></airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>80</waterlevel>
+        <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.1</watertemperature>
+        <watertemperature></watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -1123,7 +1123,7 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.5</airtemperature>
+        <airtemperature>8.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -1144,13 +1144,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature></airtemperature>
+        <airtemperature>8.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel></waterlevel>
+        <waterlevel>139</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature></watertemperature>
+        <watertemperature>8.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -1162,14 +1162,14 @@
         <latitude>58.00380666679806</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0.3</precipitations>
+        <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.9</airtemperature>
+        <airtemperature>9.1</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>172</waterlevel>
+        <waterlevel>171</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.2</watertemperature>
         <uvindex></uvindex>
@@ -1186,7 +1186,7 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.4</airtemperature>
+        <airtemperature>9.5</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -1207,13 +1207,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.3</airtemperature>
+        <airtemperature>9.5</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>50</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.2</watertemperature>
+        <watertemperature>9.3</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -1228,10 +1228,10 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.5</airtemperature>
+        <airtemperature>9.6</airtemperature>
         <winddirection></winddirection>
-        <windspeed>7.3</windspeed>
-        <windspeedmax>8.9</windspeedmax>
+        <windspeed>8.2</windspeed>
+        <windspeedmax>10.4</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>11.5</watertemperature>
@@ -1249,10 +1249,10 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.5</airtemperature>
+        <airtemperature>9.6</airtemperature>
         <winddirection></winddirection>
-        <windspeed>7.3</windspeed>
-        <windspeedmax>8.9</windspeedmax>
+        <windspeed>8.2</windspeed>
+        <windspeedmax>10.4</windspeedmax>
         <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>11.5</watertemperature>
@@ -1269,8 +1269,8 @@
         <visibility></visibility>
         <precipitations>0</precipitations>
         <airpressure></airpressure>
-        <relativehumidity>79</relativehumidity>
-        <airtemperature>10</airtemperature>
+        <relativehumidity>82</relativehumidity>
+        <airtemperature>8.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -1289,9 +1289,9 @@
         <phenomenon></phenomenon>
         <visibility></visibility>
         <precipitations></precipitations>
-        <airpressure>1020.9</airpressure>
-        <relativehumidity>97</relativehumidity>
-        <airtemperature>9.1</airtemperature>
+        <airpressure>1023.1</airpressure>
+        <relativehumidity>89</relativehumidity>
+        <airtemperature>7.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -1313,9 +1313,9 @@
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
         <airtemperature></airtemperature>
-        <winddirection>343</winddirection>
-        <windspeed>2.9</windspeed>
-        <windspeedmax>7.1</windspeedmax>
+        <winddirection>351</winddirection>
+        <windspeed>2.1</windspeed>
+        <windspeedmax>4.9</windspeedmax>
         <waterlevel>65</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
@@ -1330,7 +1330,7 @@
         <latitude>58.87277777711111</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0.046</precipitations>
+        <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
         <airtemperature></airtemperature>
@@ -1379,7 +1379,7 @@
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>35</waterlevel>
+        <waterlevel></waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
         <uvindex></uvindex>
@@ -1505,7 +1505,7 @@
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel></waterlevel>
+        <waterlevel>-15</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
         <uvindex></uvindex>
@@ -1884,7 +1884,7 @@
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel></waterlevel>
+        <waterlevel>-24</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
         <uvindex></uvindex>
@@ -2215,8 +2215,8 @@
         <visibility></visibility>
         <precipitations>0</precipitations>
         <airpressure></airpressure>
-        <relativehumidity>84</relativehumidity>
-        <airtemperature>9</airtemperature>
+        <relativehumidity>83</relativehumidity>
+        <airtemperature>7.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -2237,11 +2237,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.3</airtemperature>
+        <airtemperature>8.7</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>42</waterlevel>
+        <waterlevel>39</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>11.5</watertemperature>
         <uvindex></uvindex>
@@ -2258,13 +2258,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.7</airtemperature>
+        <airtemperature>8.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>145</waterlevel>
+        <waterlevel>137</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.9</watertemperature>
+        <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2279,13 +2279,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>5</airtemperature>
+        <airtemperature>8.1</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>72</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>7.2</watertemperature>
+        <watertemperature>7.3</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2300,7 +2300,7 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>7.3</airtemperature>
+        <airtemperature>9.2</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -2321,13 +2321,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.2</airtemperature>
+        <airtemperature>9.1</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>46</waterlevel>
+        <waterlevel>41</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10.4</watertemperature>
+        <watertemperature>10.5</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2342,13 +2342,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.5</airtemperature>
+        <airtemperature>9.4</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>106</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.4</watertemperature>
+        <watertemperature>9.5</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2363,11 +2363,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.1</airtemperature>
+        <airtemperature>8.7</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>86</waterlevel>
+        <waterlevel>85</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
@@ -2381,10 +2381,10 @@
         <latitude>58.21161944495307</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0.2</precipitations>
+        <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10</airtemperature>
+        <airtemperature>9.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -2405,7 +2405,7 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>7.9</airtemperature>
+        <airtemperature>9.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -2426,13 +2426,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.3</airtemperature>
+        <airtemperature>9.8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>52</waterlevel>
+        <waterlevel>51</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>8.8</watertemperature>
+        <watertemperature>8.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2447,11 +2447,11 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.4</airtemperature>
+        <airtemperature>9.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>112</waterlevel>
+        <waterlevel>109</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.4</watertemperature>
         <uvindex></uvindex>
@@ -2468,13 +2468,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.1</airtemperature>
+        <airtemperature>9.1</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>84</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.9</watertemperature>
+        <watertemperature>9.8</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2489,13 +2489,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.5</airtemperature>
+        <airtemperature>8.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>86</waterlevel>
+        <waterlevel>85</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.2</watertemperature>
+        <watertemperature>9.1</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2510,13 +2510,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.3</airtemperature>
+        <airtemperature>8.2</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>222</waterlevel>
+        <waterlevel>221</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.1</watertemperature>
+        <watertemperature>9</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2531,13 +2531,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>7.9</airtemperature>
+        <airtemperature>7.8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>93</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.4</watertemperature>
+        <watertemperature>9.3</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2552,13 +2552,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.1</airtemperature>
+        <airtemperature>9.2</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>32</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10.5</watertemperature>
+        <watertemperature>10.3</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2573,13 +2573,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10.3</airtemperature>
+        <airtemperature>9.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>47</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.9</watertemperature>
+        <watertemperature>9.8</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2594,11 +2594,11 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>7.7</airtemperature>
+        <airtemperature>7.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>55</waterlevel>
+        <waterlevel>54</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.1</watertemperature>
         <uvindex></uvindex>
@@ -2615,7 +2615,7 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.5</airtemperature>
+        <airtemperature>7.8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -2635,8 +2635,8 @@
         <visibility></visibility>
         <precipitations>0</precipitations>
         <airpressure></airpressure>
-        <relativehumidity>80</relativehumidity>
-        <airtemperature>9.1</airtemperature>
+        <relativehumidity>78</relativehumidity>
+        <airtemperature>8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -2657,11 +2657,11 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.2</airtemperature>
+        <airtemperature>8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>108</waterlevel>
+        <waterlevel>106</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>10.2</watertemperature>
         <uvindex></uvindex>
@@ -2678,13 +2678,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.9</airtemperature>
+        <airtemperature>8.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>144</waterlevel>
+        <waterlevel>143</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10.2</watertemperature>
+        <watertemperature>10.1</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2699,13 +2699,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.7</airtemperature>
+        <airtemperature>8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>64</waterlevel>
+        <waterlevel>63</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10.4</watertemperature>
+        <watertemperature>10.1</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2741,13 +2741,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.7</airtemperature>
+        <airtemperature>8.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>144</waterlevel>
+        <waterlevel>143</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.9</watertemperature>
+        <watertemperature>9.8</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2762,11 +2762,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.5</airtemperature>
+        <airtemperature>8.1</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>101</waterlevel>
+        <waterlevel>100</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
@@ -2783,11 +2783,11 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.3</airtemperature>
+        <airtemperature>8.1</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>141</waterlevel>
+        <waterlevel>140</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>10.2</watertemperature>
         <uvindex></uvindex>
@@ -2804,13 +2804,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.1</airtemperature>
+        <airtemperature>8.2</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>141</waterlevel>
+        <waterlevel>143</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.8</watertemperature>
+        <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2825,13 +2825,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.3</airtemperature>
+        <airtemperature>7.8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>115</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10</watertemperature>
+        <watertemperature>9.9</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2846,11 +2846,11 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.2</airtemperature>
+        <airtemperature>8.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>163</waterlevel>
+        <waterlevel>162</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.3</watertemperature>
         <uvindex></uvindex>
@@ -2867,7 +2867,7 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>7.6</airtemperature>
+        <airtemperature>8</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -2888,13 +2888,13 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>7.8</airtemperature>
+        <airtemperature>7.9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>79</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>10.6</watertemperature>
+        <watertemperature>10.5</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2913,9 +2913,9 @@
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>67</waterlevel>
+        <waterlevel>68</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.8</watertemperature>
+        <watertemperature>9.7</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2927,14 +2927,14 @@
         <latitude>57.59846638858099</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0</precipitations>
+        <precipitations>0.2</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.1</airtemperature>
+        <airtemperature>8.3</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>135</waterlevel>
+        <waterlevel>134</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>8.3</watertemperature>
         <uvindex></uvindex>
@@ -2948,14 +2948,14 @@
         <latitude>58.26744583268521</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0.4</precipitations>
+        <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.6</airtemperature>
+        <airtemperature>8.5</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>119</waterlevel>
+        <waterlevel>118</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>10</watertemperature>
         <uvindex></uvindex>
@@ -2969,16 +2969,16 @@
         <latitude>58.423463332781104</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations></precipitations>
+        <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature></airtemperature>
+        <airtemperature>8.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel></waterlevel>
+        <waterlevel>131</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature></watertemperature>
+        <watertemperature>10.9</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -2993,11 +2993,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.9</airtemperature>
+        <airtemperature>8.5</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>120</waterlevel>
+        <waterlevel>118</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>10.7</watertemperature>
         <uvindex></uvindex>
@@ -3014,7 +3014,7 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10</airtemperature>
+        <airtemperature>9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -3035,13 +3035,13 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.2</airtemperature>
+        <airtemperature>9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
         <waterlevel>112</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
-        <watertemperature>9.2</watertemperature>
+        <watertemperature>9.3</watertemperature>
         <uvindex></uvindex>
         <sunshineduration></sunshineduration>
         <globalradiation></globalradiation>
@@ -3056,11 +3056,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.2</airtemperature>
+        <airtemperature>8.5</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>190</waterlevel>
+        <waterlevel>187</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.1</watertemperature>
         <uvindex></uvindex>
@@ -3077,11 +3077,11 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.6</airtemperature>
+        <airtemperature>10</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>165</waterlevel>
+        <waterlevel>170</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature></watertemperature>
         <uvindex></uvindex>
@@ -3098,11 +3098,11 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.9</airtemperature>
+        <airtemperature>9.5</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>169</waterlevel>
+        <waterlevel>177</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.5</watertemperature>
         <uvindex></uvindex>
@@ -3119,11 +3119,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>10</airtemperature>
-        <winddirection>341</winddirection>
-        <windspeed>4.1</windspeed>
-        <windspeedmax>5.4</windspeedmax>
-        <waterlevel>162</waterlevel>
+        <airtemperature>9.1</airtemperature>
+        <winddirection>348</winddirection>
+        <windspeed>5.2</windspeed>
+        <windspeedmax>7.5</windspeedmax>
+        <waterlevel>157</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>9.8</watertemperature>
         <uvindex></uvindex>
@@ -3140,11 +3140,11 @@
         <precipitations></precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9.3</airtemperature>
+        <airtemperature>8.6</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
-        <waterlevel>69</waterlevel>
+        <waterlevel>68</waterlevel>
         <waterlevel_eh2000></waterlevel_eh2000>
         <watertemperature>11.5</watertemperature>
         <uvindex></uvindex>
@@ -3161,7 +3161,7 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>9</airtemperature>
+        <airtemperature>8.2</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -3179,10 +3179,10 @@
         <latitude>59.176313888095066</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0.1</precipitations>
+        <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.8</airtemperature>
+        <airtemperature>7.7</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -3200,10 +3200,10 @@
         <latitude>58.03926111082016</latitude>
         <phenomenon></phenomenon>
         <visibility></visibility>
-        <precipitations>0</precipitations>
+        <precipitations>0.1</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>8.2</airtemperature>
+        <airtemperature>9</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
@@ -3224,7 +3224,7 @@
         <precipitations>0</precipitations>
         <airpressure></airpressure>
         <relativehumidity></relativehumidity>
-        <airtemperature>6.1</airtemperature>
+        <airtemperature>8.2</airtemperature>
         <winddirection></winddirection>
         <windspeed></windspeed>
         <windspeedmax></windspeedmax>
