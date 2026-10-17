@@ -128,7 +128,7 @@ function makeMaaametLayer(cfg, source, isFallback) {
   const layer = L.tileLayer.wms(source.url, {
     layers: source.layer,
     format: source.format,
-    version: "1.1.1",
+    version: source.version || "1.1.1",
     transparent: false,
     uppercase: true,
     crs: L.CRS.EPSG3857,

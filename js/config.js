@@ -37,10 +37,10 @@ const CONFIG = {
     { id: "maaamet_kaart", name: "Põhikaart (Maa-amet)", type: "maaamet-wms",
       layer: "kaart", format: "image/png", attribution: "Maa- ja Ruumiamet, CC BY 4.0", default: true,
       // Varuserver (Maa-ameti dokumenteeritud avalik WMS), kasutusele kui põhiserver korduvalt ebaõnnestub
-      fallback: { url: "https://kaart.maaamet.ee/wms/alus", layer: "MA-ALUS", format: "image/png" } },
+      fallback: { url: "https://kaart.maaamet.ee/wms/alus-geo", layer: "CORINE,BAASKAART,KAART24,HALDUSPIIRID,TEED,KYLAD", format: "image/png", version: "1.3.0" } },
     { id: "maaamet_foto", name: "Ortofoto (Maa-amet)", type: "maaamet-wms",
       layer: "foto", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0",
-      fallback: { url: "https://kaart.maaamet.ee/wms/fotokaart", layer: "EESTIFOTO", format: "image/jpeg" } }
+      fallback: { url: "https://kaart.maaamet.ee/wms/alus-geo", layer: "of10000", format: "image/png", version: "1.3.0" } }
   ],
 
   /* ------------------------------------------------------------------

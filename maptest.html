@@ -15,13 +15,14 @@ pre{white-space:pre-wrap;background:#f4f4f4;padding:8px;border-radius:6px;font-s
 <script>
 const BBOX="2755000,8036000,2756000,8037000";
 const base=(u,l,f,extra)=>`${u}${u.includes("?")?"&":"?"}SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=${l}&STYLES=&FORMAT=${f}&SRS=EPSG:3857&BBOX=${BBOX}&WIDTH=256&HEIGHT=256${extra||""}`;
+const alus=(l)=>`https://kaart.maaamet.ee/wms/alus-geo?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=${l}&STYLES=&FORMAT=image/png&CRS=EPSG:3857&BBOX=${BBOX}&WIDTH=256&HEIGHT=256`;
 const tests=[
- ["Põhiserver: Ortofoto (foto)", base("https://tiles.maaamet.ee/tm/wms","foto","image/jpeg")],
- ["Põhiserver: Põhikaart (kaart)", base("https://tiles.maaamet.ee/tm/wms","kaart","image/png")],
- ["Põhiserver (ilma /wms): foto", base("https://tiles.maaamet.ee/tm/","foto","image/jpeg")],
- ["Varu: fotokaart / EESTIFOTO", base("https://kaart.maaamet.ee/wms/fotokaart","EESTIFOTO","image/jpeg")],
- ["Varu: alus / MA-ALUS", base("https://kaart.maaamet.ee/wms/alus","MA-ALUS","image/png")],
- ["Varu: alus / EESTIFOTO", base("https://kaart.maaamet.ee/wms/alus","EESTIFOTO","image/jpeg")]
+ ["Põhiserver: Ortofoto (tm foto)", base("https://tiles.maaamet.ee/tm/wms","foto","image/jpeg")],
+ ["Põhiserver: Põhikaart (tm kaart)", base("https://tiles.maaamet.ee/tm/wms","kaart","image/png")],
+ ["TMS: foto@GMC", "https://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/16/36500/27400.png"],
+ ["Varu: alus-geo of10000 (ortofoto)", alus("of10000")],
+ ["Varu: alus-geo põhikaart", alus("CORINE,BAASKAART,KAART24,HALDUSPIIRID,TEED,KYLAD")],
+ ["Varu: fotokaart / EESTIFOTO (1.1.1)", base("https://kaart.maaamet.ee/wms/fotokaart","EESTIFOTO","image/jpeg")]
 ];
 const rows=document.getElementById("rows");
 tests.forEach(([name,url])=>{
