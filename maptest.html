@@ -16,13 +16,18 @@ pre{white-space:pre-wrap;background:#f4f4f4;padding:8px;border-radius:6px;font-s
 const BBOX="2755000,8036000,2756000,8037000";
 const base=(u,l,f,extra)=>`${u}${u.includes("?")?"&":"?"}SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=${l}&STYLES=&FORMAT=${f}&SRS=EPSG:3857&BBOX=${BBOX}&WIDTH=256&HEIGHT=256${extra||""}`;
 const alus=(l)=>`https://kaart.maaamet.ee/wms/alus-geo?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=${l}&STYLES=&FORMAT=image/png&CRS=EPSG:3857&BBOX=${BBOX}&WIDTH=256&HEIGHT=256`;
+const WIDE="2915000,7980000,3035000,8100000"; // ca 120 km, madal suum (~zoom 9-10)
+const wide13=(u,l,crs)=>`${u}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=${l}&STYLES=&FORMAT=image/jpeg&CRS=${crs}&BBOX=${WIDE}&WIDTH=256&HEIGHT=256`;
+const wide11=(u,l)=>`${u}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=${l}&STYLES=&FORMAT=image/jpeg&SRS=EPSG:3857&BBOX=${WIDE}&WIDTH=256&HEIGHT=256`;
 const tests=[
- ["Põhiserver: Ortofoto (tm foto)", base("https://tiles.maaamet.ee/tm/wms","foto","image/jpeg")],
- ["Põhiserver: Põhikaart (tm kaart)", base("https://tiles.maaamet.ee/tm/wms","kaart","image/png")],
- ["TMS: foto@GMC", "https://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/16/36500/27400.png"],
- ["Varu: alus-geo of10000 (ortofoto)", alus("of10000")],
- ["Varu: alus-geo põhikaart", alus("CORINE,BAASKAART,KAART24,HALDUSPIIRID,TEED,KYLAD")],
- ["Varu: fotokaart / EESTIFOTO (1.1.1)", base("https://kaart.maaamet.ee/wms/fotokaart","EESTIFOTO","image/jpeg")]
+ ["MADAL SUUM: alus-geo of10000 (oodatud tühi)", wide13("https://kaart.maaamet.ee/wms/alus-geo","of10000","EPSG:3857")],
+ ["MADAL SUUM: alus-geo EESTIFOTO 3857", wide13("https://kaart.maaamet.ee/wms/alus-geo","EESTIFOTO","EPSG:3857")],
+ ["MADAL SUUM: fotokaart EESTIFOTO 1.3.0 3857", wide13("https://kaart.maaamet.ee/wms/fotokaart","EESTIFOTO","EPSG:3857")],
+ ["MADAL SUUM: fotokaart EESTIFOTO 1.1.1 3857", wide11("https://kaart.maaamet.ee/wms/fotokaart","EESTIFOTO")],
+ ["MADAL SUUM: fotokaart MA-FOTOKAART 1.1.1 3857", wide11("https://kaart.maaamet.ee/wms/fotokaart","MA-FOTOKAART")],
+ ["LÄHI SUUM: alus-geo of10000 (töötab)", alus("of10000")],
+ ["LÄHI SUUM: fotokaart EESTIFOTO 1.1.1 3857", base("https://kaart.maaamet.ee/wms/fotokaart","EESTIFOTO","image/jpeg")],
+ ["Põhiserver: Ortofoto (tm foto)", base("https://tiles.maaamet.ee/tm/wms","foto","image/jpeg")]
 ];
 const rows=document.getElementById("rows");
 tests.forEach(([name,url])=>{
