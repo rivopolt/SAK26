@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="et"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maa-ameti kaardiserveri test</title>
+<style>
+body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:12px;max-width:760px}
+h1{font-size:18px} .row{display:flex;gap:10px;align-items:center;border:1px solid #ccc;border-radius:6px;padding:8px;margin:8px 0}
+.row img{width:96px;height:96px;object-fit:cover;background:#eee;border:1px solid #bbb}
+.ok{color:#0a7a2f;font-weight:700}.bad{color:#b00020;font-weight:700} small{color:#555;word-break:break-all}
+pre{white-space:pre-wrap;background:#f4f4f4;padding:8px;border-radius:6px;font-size:12px}
+</style></head><body>
+<h1>Maa-ameti kaardiserveri test</h1>
+<p>Iga rida proovib laadida ühe kaardiplaadi (Tallinna kesklinn). Roheline = pilt tuli, punane = ebaõnnestus. Saada mulle ekraanipilt.</p>
+<div id="rows"></div>
+<h1>Kihtide nimed (GetCapabilities)</h1><pre id="caps">laen…</pre>
+<script>
+const BBOX="2755000,8036000,2756000,8037000";
+const base=(u,l,f,extra)=>`${u}${u.includes("?")?"&":"?"}SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=${l}&STYLES=&FORMAT=${f}&SRS=EPSG:3857&BBOX=${BBOX}&WIDTH=256&HEIGHT=256${extra||""}`;
+const tests=[
+ ["Põhiserver: Ortofoto (foto)", base("https://tiles.maaamet.ee/tm/wms","foto","image/jpeg")],
+ ["Põhiserver: Põhikaart (kaart)", base("https://tiles.maaamet.ee/tm/wms","kaart","image/png")],
+ ["Põhiserver (ilma /wms): foto", base("https://tiles.maaamet.ee/tm/","foto","image/jpeg")],
+ ["Varu: fotokaart / EESTIFOTO", base("https://kaart.maaamet.ee/wms/fotokaart","EESTIFOTO","image/jpeg")],
+ ["Varu: alus / MA-ALUS", base("https://kaart.maaamet.ee/wms/alus","MA-ALUS","image/png")],
+ ["Varu: alus / EESTIFOTO", base("https://kaart.maaamet.ee/wms/alus","EESTIFOTO","image/jpeg")]
+];
+const rows=document.getElementById("rows");
+tests.forEach(([name,url])=>{
+  const d=document.createElement("div");d.className="row";
+  const img=new Image();const t0=performance.now();
+  const s=document.createElement("div");s.innerHTML=`<b>${name}</b><br><span>laen…</span><br><small>${url}</small>`;
+  img.onload=()=>{s.querySelector("span").className="ok";s.querySelector("span").textContent=`OK (${Math.round(performance.now()-t0)} ms, ${img.naturalWidth}×${img.naturalHeight})`};
+  img.onerror=()=>{s.querySelector("span").className="bad";s.querySelector("span").textContent="EBAÕNNESTUS"};
+  img.src=url;d.appendChild(img);d.appendChild(s);rows.appendChild(d);
+});
+const caps=document.getElementById("caps");
+const capUrls=["https://tiles.maaamet.ee/tm/wms?SERVICE=WMS&REQUEST=GetCapabilities","https://kaart.maaamet.ee/wms/fotokaart?service=WMS&version=1.1.1&request=GetCapabilities"];
+caps.textContent="";
+Promise.all(capUrls.map(u=>fetch(u).then(r=>r.text()).then(t=>{
+  const names=[...t.matchAll(/<Layer[^>]*>\s*<Name>([^<]+)<\/Name>/g)].map(m=>m[1]);
+  return u.split("/")[2]+" → "+(names.length?names.join(", "):"vastus ilma kihtideta ("+t.slice(0,120).replace(/\s+/g," ")+")");
+}).catch(e=>u.split("/")[2]+" → ei saa lugeda ("+e.message+"; brauser blokeerib või server ei vasta)")))
+).then(a=>caps.textContent=a.join("\n\n"));
+</script></body></html>
