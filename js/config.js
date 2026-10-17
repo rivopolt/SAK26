@@ -41,7 +41,9 @@ const CONFIG = {
     { id: "maaamet_foto", name: "Ortofoto (Maa-amet)", type: "maaamet-wms",
       layer: "foto", format: "image/jpeg", attribution: "Maa- ja Ruumiamet, CC BY 4.0",
       // tiles.maaamet.ee/tm/ ortofoto ei vasta (kontrollitud 17.10.2026); töötab: kaart.maaamet.ee alus-geo / of10000.
-      source: { url: "https://kaart.maaamet.ee/wms/alus-geo", layer: "of10000", format: "image/png", version: "1.3.0" } }
+      // EESTIFOTO = ortofoto-mosaiik kõigil suumidel (alus-geo, EPSG:3857 kontrollitud 17.10.2026);
+      // of10000 = detailsem ortofoto lähisuumil (nähtav mõõtkavas <1:24 010). Üks päring, of10000 joonistub peale.
+      source: { url: "https://kaart.maaamet.ee/wms/alus-geo", layer: "EESTIFOTO,of10000", format: "image/jpeg", version: "1.3.0" } }
   ],
 
   /* ------------------------------------------------------------------
